@@ -826,6 +826,11 @@
                             <button onclick="exportExcel('Biota', appData.biota)"
                                 class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium"><i
                                     class="fas fa-file-excel mr-1"></i> Excel</button>
+                            <input type="file" id="biotaExcelInput" accept=".xlsx, .xls" class="hidden"
+                                onchange="importBiotaExcel(event)">
+                            <button onclick="document.getElementById('biotaExcelInput').click()"
+                                class="bg-blue-50 text-blue-600 border border-blue-200 px-3 py-2 rounded-lg text-sm font-medium"><i
+                                    class="fas fa-file-import mr-1"></i> İçe Aktar</button>
                             <button onclick="openModal('biotaModal')"
                                 class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium"><i
                                     class="fas fa-plus mr-1"></i> Sipariş Ekle</button>
@@ -2065,6 +2070,59 @@
 
         // Kalan yardımcı ve modül fonksiyonları
         function exportExcel(f, d) { if (d.length === 0) return; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d), f); XLSX.writeFile(wb, `${f}_${new Date().toISOString().slice(0, 10)}.xlsx`); }
+
+        function importBiotaExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const wsname = wb.SheetNames[0];
+                    const ws = wb.Sheets[wsname];
+                    const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+                    if (json.length <= 1) {
+                        alert("Excel dosyasında veri bulunamadı veya sadece başlık var.");
+                        e.target.value = '';
+                        return;
+                    }
+
+                    let count = 0;
+                    for (let i = 1; i < json.length; i++) {
+                        const row = json[i];
+                        if (!row || row.length === 0 || (!row[0] && !row[1] && !row[2])) continue;
+
+                        const newItem = {
+                            id: Date.now().toString() + Math.random().toString(36).substring(7),
+                            orderNo: row[0] ? row[0].toString() : '',
+                            materialNo: row[1] ? row[1].toString() : '',
+                            materialDesc: row[2] ? row[2].toString() : '',
+                            date: row[3] ? row[3].toString() : '',
+                            qty: row[4] ? row[4].toString() : '0',
+                            deliveredQty: '0'
+                        };
+
+                        appData.biota.push(newItem);
+                        count++;
+                    }
+
+                    if (count > 0) {
+                        saveData('biota');
+                        renderBiota();
+                        alert(`${count} adet Biota siparişi başarıyla eklendi.`);
+                    } else {
+                        alert("Eklenecek geçerli kayıt bulunamadı.");
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("Excel okunurken hata oluştu. Lütfen dosya formatının doğruluğunu (.xlsx) kontrol edin.");
+                }
+                e.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        }
         function previewImage(e, id, phId) { const r = new FileReader(); r.onload = function () { const el = document.getElementById(id); el.src = r.result; el.classList.remove('hidden'); document.getElementById(phId).classList.add('hidden'); }; if (e.target.files[0]) r.readAsDataURL(e.target.files[0]); }
         function handleFileConvert(e, dId, nId) { const f = e.target.files[0]; if (!f) return; if (f.size > 2 * 1024 * 1024) return alert("Maks 2MB!"); const r = new FileReader(); r.onload = (ev) => { document.getElementById(dId).value = ev.target.result; document.getElementById(nId).value = f.name; }; r.readAsDataURL(f); }
         function updateClock() { const d = new Date(); document.getElementById('topTime').innerText = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }); document.getElementById('topDate').innerText = d.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
