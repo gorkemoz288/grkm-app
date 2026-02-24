@@ -312,6 +312,15 @@
                             class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
                             <i class="fas fa-handshake w-5 text-center"></i> Teklif Takip
                         </button>
+                        <button
+                            onclick="window.open('https://notebooklm.google.com/notebook/52441e1a-778c-4e76-9a3c-29d0fc27f550', '_blank')"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition text-purple-400 hover:text-purple-300">
+                            <i class="fas fa-brain w-5 text-center"></i> KAM Ai
+                        </button>
+                        <button onclick="nav('production')"
+                            class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition text-amber-500 hover:text-amber-400">
+                            <i class="fas fa-industry w-5 text-center"></i> Üretim Takip
+                        </button>
                     </div>
                 </div>
 
@@ -1099,6 +1108,37 @@
                     </div>
                 </div>
 
+                <!-- 11. ÜRETİM TAKİP -->
+                <div id="view-production"
+                    class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4 pb-10">
+                    <div
+                        class="flex flex-wrap justify-between items-center gap-4 shrink-0 glass p-4 rounded-xl no-print">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white"><i
+                                    class="fas fa-industry text-amber-500 mr-2"></i>Üretim Takip Çizelgesi</h3>
+                            <p class="text-xs text-slate-500 mt-1">Haftalık toplantılar için makinelerin öngörülen bitiş
+                                tarihlerini güncelleyin.</p>
+                        </div>
+                    </div>
+                    <div class="glass rounded-xl overflow-hidden flex-1 flex flex-col shadow-sm">
+                        <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
+                            <table class="w-full text-sm text-left border-collapse">
+                                <thead
+                                    class="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wide">
+                                    <tr>
+                                        <th class="p-4 w-1/3">Makine Adı</th>
+                                        <th class="p-4 w-1/3">Geçen Hafta Bitiş Tarihi</th>
+                                        <th class="p-4 w-1/3">Bu Hafta Bitiş Tarihi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyProduction"
+                                    class="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900/40">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -1358,9 +1398,16 @@
         let appData = {
             home: { motivationImg: '', motivationText: '', todos: [], shopping: [], shortcuts: [] },
             orders: [], shipping: [], biota: [], intel: [],
-            prices: [], proposals: [], notes: [], finance: [],
+            prices: [], proposals: [], notes: [], finance: [], production: [],
             todos: { todos: [], notes: [] }
         };
+
+        const productionMachineList = [
+            "Bekum / UN01", "Uniloy-Uc 750 / UN02", "Uniloy-Msa / UN03", "Uniblow-I / UN04",
+            "Uniblow-II / UN05", "Aiemme / UN06", "Uniloy-Msc D / UN07", "Uniloy-Msc D III / UN08",
+            "Automa / UN09", "Uniloy-Msc D / UN10", "Uniloy-Msc D / UN11", "Uniloy-Msc D-V / UN12",
+            "Bekum / UN13", "UN14", "MSB / UN15"
+        ];
 
         // PDF Font (Türkçe Karakter Desteği)
         window.pdfFontBase64 = null;
@@ -1428,7 +1475,7 @@
         function initDataListeners() {
             if (!currentUser) return;
             const ref = db.collection('users').doc(currentUser.uid).collection('data');
-            const modules = ['home', 'orders', 'shipping', 'biota', 'intel', 'prices', 'proposals', 'notes', 'finance'];
+            const modules = ['home', 'orders', 'shipping', 'biota', 'intel', 'prices', 'proposals', 'notes', 'finance', 'production'];
             modules.forEach(mod => {
                 ref.doc(mod).onSnapshot(doc => {
                     if (doc.exists) appData[mod] = doc.data().items || [];
@@ -1455,7 +1502,7 @@
             const btn = document.querySelector(`button[onclick="nav('${tab}')"]`);
             if (btn) btn.classList.add('bg-slate-800', 'text-white');
 
-            const titles = { home: 'Hoşgeldiniz', dashboard: 'Dashboard (Analiz)', orders: 'Siparişler Listesi', shipping: 'Lojistik & Sevkiyat Planı', biota: 'Biota Özel', color: 'Renk Onay', intel: 'İstihbarat', prices: 'Fiyatlar', proposals: 'Teklif & Satış', notes: 'Notlar', finance: 'Finans' };
+            const titles = { home: 'Hoşgeldiniz', dashboard: 'Dashboard (Analiz)', orders: 'Siparişler Listesi', shipping: 'Lojistik & Sevkiyat Planı', biota: 'Biota Özel', color: 'Renk Onay', intel: 'İstihbarat', prices: 'Fiyatlar', proposals: 'Teklif & Satış', notes: 'Notlar', finance: 'Finans', production: 'Üretim Takip Çizelgesi' };
             document.getElementById('pageTitle').innerText = titles[tab] || '';
             refreshUI(tab);
             if (window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
@@ -1471,6 +1518,7 @@
             if (mod === 'proposals') renderProposals();
             if (mod === 'notes') renderNotes();
             if (mod === 'finance') renderFinance();
+            if (mod === 'production') renderProduction();
         }
 
         // --- YENİ DASHBOARD HESAPLAMALARI ---
@@ -2134,14 +2182,69 @@
         function renderPriceLists() { const c = appData.prices.find(x => x.id === activePriceCustomer); document.getElementById('listPriceCustomers').innerHTML = appData.prices.map(x => `<li onclick="activePriceCustomer='${x.id}';renderPriceLists()" class="p-3 cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${activePriceCustomer === x.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''}"><div class="text-sm font-medium">${x.name}</div></li>`).join(''); if (c) { document.getElementById('selectedPriceCustomerName').innerText = c.name; document.getElementById('btnAddPriceProd').classList.remove('hidden'); document.getElementById('tbodyPriceProducts').innerHTML = (c.products || []).map(p => `<tr><td class="p-3 text-sm">${p.unisonName}</td><td class="p-3 text-sm">${p.custName}</td><td class="p-3 text-sm font-mono">${p.price}</td><td class="p-3 text-xs">${p.validity}</td><td class="p-3"><button onclick="delItem('prices','${p.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`).join(''); } }
         function addPriceCustomer() { const n = prompt("Müşteri Adı:"); if (n) { appData.prices.push({ id: Date.now().toString(), name: n, products: [] }); saveData('prices'); renderPriceLists(); } }
         function addPriceProduct() { if (!activePriceCustomer) return; const c = appData.prices.find(x => x.id === activePriceCustomer); const u = prompt("Unison Adı:"), m = prompt("Müşteri Adı:"), f = prompt("Fiyat:"), v = prompt("Geçerlilik:"); if (u) { if (!c.products) c.products = []; c.products.push({ id: Date.now().toString(), unisonName: u, custName: m, price: f, validity: v }); saveData('prices'); renderPriceLists(); } }
-        function renderProposals() { ['Teklif', 'Takip', 'Sonuç', 'Tamamlandı'].forEach(st => { document.getElementById('cnt-' + st).innerText = appData.proposals.filter(p => p.status === st).length; document.getElementById('kb-' + st).innerHTML = appData.proposals.filter(p => p.status === st).map(p => `<div id="prop-${p.id}" draggable="true" ondragstart="ev.dataTransfer.setData('text','${p.id}')" class="kanban-item relative group"><div class="text-sm font-medium">${p.customer}</div><div class="text-xs text-slate-500">${p.title}</div><button onclick="delItem('proposals','${p.id}')" class="absolute top-2 right-2 text-red-400 opacity-0 group-hover:opacity-100"><i class="fas fa-times"></i></button></div>`).join(''); }); }
-        function allowDrop(ev) { ev.preventDefault(); } function dropProp(ev, st) { ev.preventDefault(); const item = appData.proposals.find(p => p.id === ev.dataTransfer.getData("text")); if (item) { item.status = st; saveData('proposals'); } }
+        function renderProposals() { ['Teklif', 'Takip', 'Sonuç', 'Tamamlandı'].forEach(st => { document.getElementById('cnt-' + st).innerText = appData.proposals.filter(p => p.status === st).length; document.getElementById('kb-' + st).innerHTML = appData.proposals.filter(p => p.status === st).map(p => `<div id="prop-${p.id}" draggable="true" ondragstart="event.dataTransfer.setData('text','${p.id}')" class="kanban-item relative group"><div class="text-sm font-medium">${p.customer}</div><div class="text-xs text-slate-500">${p.title}</div><div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100"><button onclick="openModal('proposalModal', '${p.id}', 'proposals')" class="text-blue-500 hover:text-blue-600"><i class="fas fa-edit"></i></button><button onclick="delItem('proposals','${p.id}')" class="text-red-400 hover:text-red-500"><i class="fas fa-times"></i></button></div></div>`).join(''); }); }
+        function allowDrop(ev) { ev.preventDefault(); } function dropProp(ev, st) { ev.preventDefault(); const item = appData.proposals.find(p => p.id === ev.dataTransfer.getData("text")); if (item) { item.status = st; saveData('proposals'); renderProposals(); } }
         function renderNotes() { document.getElementById('gridNotes').innerHTML = appData.notes.map(n => `<div class="glass p-4 relative group border-t-4 border-slate-800"><div class="text-[10px] text-slate-400">${n.date || ''}</div><h4 class="font-medium text-sm">${n.title}</h4><p class="text-xs text-slate-600 mt-1">${n.content}</p><div class="absolute bottom-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('noteModal','${n.id}','notes')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('notes','${n.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
         function updateFinCategories() { const t = document.getElementById('finType').value, c = document.getElementById('finCategory'); c.innerHTML = ''; if (t === 'gelir') ['Maaş', 'Yemek', 'Ek', 'Diğer'].forEach(x => c.innerHTML += `<option>${x}</option>`); else if (t === 'kk') ['Akbank', 'Yapı Kredi', 'Garanti', 'Diğer'].forEach(x => c.innerHTML += `<option>${x}</option>`); else if (t === 'kredi') ['Akbank Kredi', 'Nurçehre', 'Diğer'].forEach(x => c.innerHTML += `<option>${x}</option>`); document.getElementById('finCatWrapper').style.display = t === 'yatirim' ? 'none' : 'block'; document.getElementById('finInvWrapper').style.display = t === 'yatirim' ? 'block' : 'none'; }
         function saveFinanceRecord(e) { e.preventDefault(); const t = document.getElementById('finType').value, c = document.getElementById('finCategory').value, a = document.getElementById('finAmount').value; let n = c; if (t === 'yatirim') { n = `${document.getElementById('finInvType').value} (${document.getElementById('finInvQty').value})`; } appData.finance.push({ id: Date.now().toString(), month: currentFinMonth, type: t, name: n, amount: a }); saveData('finance'); closeModal('financeModal'); }
         function renderFinance() { const r = appData.finance.filter(x => x.month === currentFinMonth); let g = 0, k = 0, kr = 0, y = 0;['gelir', 'kk', 'kredi', 'yatirim'].forEach(t => { const l = r.filter(x => x.type === t); document.getElementById('fin-list-' + t).innerHTML = l.map(i => `<div class="flex justify-between p-2 border-b border-slate-100 text-sm"><span>${i.name}</span><span class="font-mono">${i.amount} ₺ <i onclick="delItem('finance','${i.id}')" class="fas fa-times text-red-400 cursor-pointer ml-2"></i></span></div>`).join(''); let tot = l.reduce((s, i) => s + parseFloat(i.amount), 0); if (t === 'gelir') g = tot; if (t === 'kk') k = tot; if (t === 'kredi') kr = tot; if (t === 'yatirim') y = tot; }); document.getElementById('fin-tot-gelir').innerText = g + ' ₺'; document.getElementById('fin-tot-gider').innerText = (k + kr) + ' ₺'; document.getElementById('fin-tot-yatirim').innerText = y + ' ₺'; }
         function changeFinMonth(m) { currentFinMonth = m; renderFinance(); }
         function delItem(m, id) { if (confirm('Sil?')) { appData[m] = appData[m].filter(x => x.id !== id); saveData(m); } }
+
+        // --- ÜRETİM TAKİP ---
+        function renderProduction() {
+            const tb = document.getElementById('tbodyProduction');
+            if (!tb) return;
+            tb.innerHTML = productionMachineList.map(machine => {
+                // Find existing record
+                const record = appData.production.find(x => x.machine === machine);
+                const dateVal = record ? (record.endDate || '') : '';
+                const prevDateVal = record ? (record.prevEndDate || '') : '';
+
+                return `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800">
+                    <td class="p-4 font-medium text-slate-800 dark:text-slate-200">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs shrink-0">${machine.split('/').pop().trim()}</span>
+                            <span>${machine}</span>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-1">
+                            <input type="${prevDateVal === 'Aktif sipariş / Biota' ? 'text' : 'date'}" value="${prevDateVal}" 
+                                onfocus="if(this.value==='Aktif sipariş / Biota'){this.type='date';this.value='';}" 
+                                onchange="saveProductionDate('${machine}', 'prev', this.value)" 
+                                class="bg-slate-50 dark:bg-slate-800 border-none px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500 text-sm w-40 transition text-slate-500 dark:text-slate-400">
+                            <button onclick="saveProductionDate('${machine}', 'prev', 'Aktif sipariş / Biota'); renderProduction();" title="Biota İşaretle" class="px-2 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded text-xs transition whitespace-nowrap"><i class="fas fa-leaf"></i> Biota</button>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-1">
+                            <input type="${dateVal === 'Aktif sipariş / Biota' ? 'text' : 'date'}" value="${dateVal}" 
+                                onfocus="if(this.value==='Aktif sipariş / Biota'){this.type='date';this.value='';}" 
+                                onchange="saveProductionDate('${machine}', 'curr', this.value)" 
+                                class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded outline-none focus:border-amber-500 text-sm w-40 transition shadow-sm text-slate-700 dark:text-slate-300">
+                            <button onclick="saveProductionDate('${machine}', 'curr', 'Aktif sipariş / Biota'); renderProduction();" title="Biota İşaretle" class="px-2 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded text-xs transition whitespace-nowrap"><i class="fas fa-leaf"></i> Biota</button>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function saveProductionDate(machine, type, dateVal) {
+            const idx = appData.production.findIndex(x => x.machine === machine);
+            if (idx > -1) {
+                if (type === 'prev') appData.production[idx].prevEndDate = dateVal;
+                else appData.production[idx].endDate = dateVal;
+            } else {
+                const newItem = { id: Date.now().toString() + Math.random().toString(36).substr(2, 5), machine: machine, endDate: '', prevEndDate: '' };
+                if (type === 'prev') newItem.prevEndDate = dateVal;
+                else newItem.endDate = dateVal;
+                appData.production.push(newItem);
+            }
+            saveData('production');
+        }
 
         // --- RENK ONAY FORMU PDF (A4 Dikey, Tek Sayfa) ---
         async function exportColorPDF() {
