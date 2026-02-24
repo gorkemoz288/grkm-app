@@ -727,6 +727,11 @@
                             </select>
                         </div>
                         <div class="flex gap-2">
+                            <button onclick="document.getElementById('fileOrdersExcel').click()"
+                                class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i
+                                    class="fas fa-file-import mr-1"></i> İçe Aktar</button>
+                            <input type="file" id="fileOrdersExcel" class="hidden" accept=".xlsx, .xls"
+                                onchange="importOrdersExcel(event)">
                             <button onclick="exportExcel('Siparişler', appData.orders)"
                                 class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i
                                     class="fas fa-file-excel mr-1"></i> Excel</button>
@@ -1157,6 +1162,9 @@
                         class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500">
                 </div>
                 <div><label class="text-xs text-slate-500">Sipariş No</label><input type="text" name="orderNo" required
+                        class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500">
+                </div>
+                <div><label class="text-xs text-slate-500">Sipariş Tarihi</label><input type="date" name="orderDate"
                         class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500">
                 </div>
                 <div><label class="text-xs text-slate-500">Ürün Kodu</label><input type="text" name="productCode"
@@ -1735,6 +1743,13 @@
             if (filter === 'active') list = list.filter(o => o.status !== 'Tamamlandı');
             if (filter === 'completed') list = list.filter(o => o.status === 'Tamamlandı');
 
+            // Sort orders by Termin Tarihi (deadline) nearest first
+            list.sort((a, b) => {
+                const da = a.deadline ? new Date(a.deadline) : new Date(8640000000000000); // Max date if no deadline
+                const db = b.deadline ? new Date(b.deadline) : new Date(8640000000000000);
+                return da - db;
+            });
+
             document.getElementById('orderCountText').innerText = `Toplam ${list.length} sipariş listeleniyor.`;
 
             grid.innerHTML = list.map(o => {
@@ -1825,10 +1840,13 @@
                         <!-- Termin -->
                         <div class="flex items-center gap-2 ${isLate ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-slate-50 dark:bg-slate-800/50'} rounded-lg px-3 py-2">
                             <i class="fas fa-calendar-alt ${isLate ? 'text-red-500' : 'text-slate-400'} shrink-0"></i>
-                            <div class="min-w-0">
+                            <div class="min-w-0 flex flex-col w-full">
                                 <span class="text-[10px] text-slate-400 uppercase font-semibold block">Termin Tarihi</span>
-                                <span class="font-medium ${isLate ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${o.deadline || '-'}</span>
-                                ${isLate ? '<span class="text-[10px] text-red-500 font-bold ml-2">GECİKMİŞ!</span>' : ''}
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium ${isLate ? 'text-red-600 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}">${o.deadline || '-'}</span>
+                                    ${isLate ? '<span class="text-[10px] text-red-500 font-bold ml-2">GECİKMİŞ!</span>' : ''}
+                                    ${o.orderDate ? `<span class="text-[9px] text-slate-400 ml-auto whitespace-nowrap">Sipariş: ${o.orderDate}</span>` : ''}
+                                </div>
                             </div>
                         </div>
 
@@ -2159,15 +2177,73 @@
                     if (count > 0) {
                         saveData('biota');
                         renderBiota();
-                        alert(`${count} adet Biota siparişi başarıyla eklendi.`);
-                    } else {
-                        alert("Eklenecek geçerli kayıt bulunamadı.");
+                        alert(`${count} sipariş başarıyla eklendi!`);
                     }
+
                 } catch (error) {
-                    console.error(error);
-                    alert("Excel okunurken hata oluştu. Lütfen dosya formatının doğruluğunu (.xlsx) kontrol edin.");
+                    console.error("Excel ayrıştırma hatası:", error);
+                    alert("Dosya işlenirken bir hata oluştu. Excel formatının doğruluğunu kontrol edin.");
                 }
-                e.target.value = '';
+            };
+            e.target.value = '';
+        }
+
+        function importOrdersExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const wsname = wb.SheetNames[0];
+                    const ws = wb.Sheets[wsname];
+                    const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+                    if (json.length <= 1) {
+                        alert("Excel dosyasında veri bulunamadı veya sadece başlık var.");
+                        e.target.value = '';
+                        return;
+                    }
+
+                    let count = 0;
+                    for (let i = 1; i < json.length; i++) {
+                        const row = json[i];
+                        if (!row || row.length === 0 || (!row[0] && !row[1] && !row[2])) continue;
+
+                        const newItem = {
+                            id: Date.now().toString() + Math.random().toString(36).substring(7),
+                            customer: row[0] ? row[0].toString() : '',
+                            orderNo: row[1] ? row[1].toString() : '',
+                            productCode: row[2] ? row[2].toString() : '',
+                            totalQty: row[3] ? row[3].toString() : '0',
+                            deadline: row[4] ? row[4].toString() : '',
+                            orderDate: row[5] ? row[5].toString() : '',
+                            deliveredQty: '0',
+                            status: 'Üretim',
+                            price: '',
+                            currency: 'USD',
+                            boxQty: '',
+                            unisonCode: '',
+                            transport: '',
+                            location: '',
+                            notes: 'Excel\'den aktarıldı.'
+                        };
+
+                        appData.orders.push(newItem);
+                        count++;
+                    }
+
+                    if (count > 0) {
+                        saveData('orders');
+                        renderOrders();
+                        alert(`${count} sipariş başarıyla eklendi! Varsayılan sütun yapısı: Müşteri | Sipariş No | Ürün Kodu | Toplam Adet | Termin Tarihi | Sipariş Tarihi`);
+                    }
+
+                } catch (error) {
+                    console.error("Excel ayrıştırma hatası:", error);
+                    alert("Dosya işlenirken bir hata oluştu. Excel formatının doğruluğunu kontrol edin.");
+                }
             };
             reader.readAsArrayBuffer(file);
         }
