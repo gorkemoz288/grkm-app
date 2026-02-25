@@ -1745,9 +1745,11 @@
 
             // Sort orders by Termin Tarihi (deadline) nearest first
             list.sort((a, b) => {
-                const da = a.deadline ? new Date(a.deadline) : new Date(8640000000000000); // Max date if no deadline
-                const db = b.deadline ? new Date(b.deadline) : new Date(8640000000000000);
-                return da - db;
+                const da = a.deadline ? new Date(a.deadline).getTime() : 8640000000000000;
+                const db = b.deadline ? new Date(b.deadline).getTime() : 8640000000000000;
+                const tA = isNaN(da) ? 8640000000000000 : da;
+                const tB = isNaN(db) ? 8640000000000000 : db;
+                return tA - tB;
             });
 
             document.getElementById('orderCountText').innerText = `Toplam ${list.length} sipariş listeleniyor.`;
@@ -2206,6 +2208,18 @@
                         return;
                     }
 
+                    function parseExcelDate(val) {
+                        if (!val) return '';
+                        if (typeof val === 'number') {
+                            const d = new Date(Math.round((val - 25569) * 86400 * 1000));
+                            if (!isNaN(d)) return d.toISOString().split('T')[0];
+                        }
+                        let s = val.toString().trim();
+                        if (s.includes('.')) { const p = s.split('.'); if (p.length === 3) return `${p[2]}-${p[1]}-${p[0]}`; }
+                        if (s.includes('/')) { const p = s.split('/'); if (p.length === 3) return `${p[2]}-${p[1]}-${p[0]}`; }
+                        return s;
+                    }
+
                     let count = 0;
                     for (let i = 1; i < json.length; i++) {
                         const row = json[i];
@@ -2217,8 +2231,8 @@
                             orderNo: row[1] ? row[1].toString() : '',
                             productCode: row[2] ? row[2].toString() : '',
                             totalQty: row[3] ? row[3].toString() : '0',
-                            deadline: row[4] ? row[4].toString() : '',
-                            orderDate: row[5] ? row[5].toString() : '',
+                            deadline: parseExcelDate(row[4]),
+                            orderDate: parseExcelDate(row[5]),
                             deliveredQty: '0',
                             status: 'Üretim',
                             price: '',
