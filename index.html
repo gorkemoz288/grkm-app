@@ -1739,7 +1739,12 @@
             const search = (document.getElementById('searchOrders')?.value || '').toLowerCase();
             const filter = document.getElementById('filterOrders')?.value || 'active';
 
-            let list = appData.orders.filter(o => (o.customer?.toLowerCase().includes(search) || o.orderNo?.toLowerCase().includes(search)));
+            let list = appData.orders.filter(o =>
+            (o.customer?.toLowerCase().includes(search) ||
+                o.orderNo?.toLowerCase().includes(search) ||
+                o.productCode?.toLowerCase().includes(search) ||
+                o.unisonCode?.toLowerCase().includes(search))
+            );
             if (filter === 'active') list = list.filter(o => o.status !== 'Tamamlandı');
             if (filter === 'completed') list = list.filter(o => o.status === 'Tamamlandı');
 
