@@ -265,28 +265,25 @@
                         </div>
                     </div>
 
-                    <!-- Satır 4: Listeler -->
+                    <!-- Satır 4: Listeler ve Hacimler -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="glass p-4">
                             <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Açık Sipariş Yoğunluğu (Top 5)</h4>
                             <div id="dash-top-customers" class="space-y-3"></div>
                         </div>
-                        <div class="glass p-4 md:col-span-2">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Unison Üretim Tamamlanma Yüzdesi</h4>
-                            <div id="dash-unison-progress" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-48 overflow-y-auto custom-scrollbar pr-2"></div>
-                        </div>
-                    </div>
-
-                    <!-- Satır 5: Lojistik -->
-                    <div class="glass p-4">
-                        <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3"><i class="fas fa-truck-loading text-blue-500 mr-1"></i> Lojistik / Sevkiyat Hazırlık Aşaması (Kısmi Teslimatlar)</h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs">
-                                <thead class="text-slate-500 border-b border-slate-100 dark:border-slate-700">
-                                    <tr><th class="pb-2 font-medium">Sipariş No</th><th class="pb-2 font-medium">Müşteri</th><th class="pb-2 font-medium">Durum (Teslim/Toplam)</th><th class="pb-2 font-medium">Kalan</th></tr>
-                                </thead>
-                                <tbody id="dash-logistics" class="divide-y divide-slate-50 dark:divide-slate-800/50"></tbody>
-                            </table>
+                        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="glass p-4 border-t-4 border-blue-500 flex flex-col justify-center items-center text-center">
+                                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Üretim Siparişleri (Kalan)</p>
+                                <h3 class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2" id="dash-qty-prod">0 Ad.</h3>
+                            </div>
+                            <div class="glass p-4 border-t-4 border-orange-500 flex flex-col justify-center items-center text-center">
+                                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">İthal Siparişler (Kalan)</p>
+                                <h3 class="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-2" id="dash-qty-imp">0 Ad.</h3>
+                            </div>
+                            <div class="glass p-4 border-t-4 border-teal-500 flex flex-col justify-center items-center text-center">
+                                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Stok Siparişleri (Kalan)</p>
+                                <h3 class="text-3xl font-bold text-teal-600 dark:text-teal-400 mt-2" id="dash-qty-stk">0 Ad.</h3>
+                            </div>
                         </div>
                     </div>
 
@@ -298,7 +295,7 @@
                         <div class="flex items-center gap-3">
                             <div class="relative">
                                 <i class="fas fa-search absolute left-3 top-2.5 text-slate-400"></i>
-                                <input type="text" id="searchOrders" placeholder="Sipariş veya Müşteri Ara..." class="pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-64 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" onkeyup="renderOrders()">
+                                <input type="text" id="searchOrders" placeholder="Sipariş, Müşteri, Ürün, Unison Kod..." class="pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" onkeyup="renderOrders()">
                             </div>
                             <select id="filterOrders" onchange="renderOrders()" class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-300 outline-none">
                                 <option value="all">Tüm Siparişler</option>
@@ -439,7 +436,7 @@
                 
                 <!-- 10. FİNANS -->
                 <div id="view-finance" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4 pb-10">
-                    <div class="flex justify-between items-center glass p-3 rounded-xl no-print flex-wrap gap-4 shrink-0"><div class="flex items-center gap-3"><label class="text-sm font-medium text-slate-600">Ay / Yıl Seçimi:</label><input type="month" id="finMonthPicker" onchange="changeFinMonth(this.value)" class="border border-slate-200 p-2 rounded-lg text-sm outline-none focus:border-blue-500"></div><div class="flex gap-2"><button onclick="exportPDF('Finansal Kayıt', 'finPrintArea')" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium"><i class="fas fa-file-pdf mr-1"></i> PDF</button><button onclick="openModal('financeModal')" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium"><i class="fas fa-plus mr-1"></i> Kayıt Ekle</button></div></div>
+                    <div class="flex justify-between items-center glass p-3 rounded-xl no-print flex-wrap gap-4 shrink-0"><div class="flex items-center gap-3"><label class="text-sm font-medium text-slate-600">Ay / Yıl Seçimi:</label><input type="month" id="finMonthPicker" onchange="changeFinMonth(this.value)" class="border border-slate-200 p-2 rounded-lg text-sm outline-none focus:border-blue-500"></div><div class="flex gap-2"><button onclick="exportFinancePDF()" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium"><i class="fas fa-file-pdf mr-1"></i> PDF</button><button onclick="openModal('financeModal')" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium"><i class="fas fa-plus mr-1"></i> Kayıt Ekle</button></div></div>
                     <div id="finPrintArea" class="flex-1 overflow-y-auto custom-scrollbar">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"><div class="glass p-4 text-center border-t-4 border-emerald-500"><p class="text-[10px] text-slate-500 uppercase font-semibold">Toplam Gelir</p><h3 class="text-2xl font-bold text-emerald-600 mt-1" id="fin-tot-gelir">0 ₺</h3></div><div class="glass p-4 text-center border-t-4 border-red-500"><p class="text-[10px] text-slate-500 uppercase font-semibold">Toplam Gider (KK+Kredi)</p><h3 class="text-2xl font-bold text-red-600 mt-1" id="fin-tot-gider">0 ₺</h3></div><div class="glass p-4 text-center border-t-4 border-amber-500"><p class="text-[10px] text-slate-500 uppercase font-semibold">Toplam Yatırım</p><h3 class="text-2xl font-bold text-amber-600 mt-1" id="fin-tot-yatirim">0 ₺</h3></div></div>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4"><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-emerald-600 mb-3 border-b border-slate-100 pb-2">GELİRLER</h4><div id="fin-list-gelir" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-red-500 mb-3 border-b border-slate-100 pb-2">KREDİ KARTLARI</h4><div id="fin-list-kk" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-red-600 mb-3 border-b border-slate-100 pb-2">KREDİ & BORÇ</h4><div id="fin-list-kredi" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-amber-500 mb-3 border-b border-slate-100 pb-2">YATIRIMLAR</h4><div id="fin-list-yatirim" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div></div>
@@ -464,6 +461,7 @@
                 <div><label class="text-xs text-slate-500">Teslim Edilen</label><input type="number" name="deliveredQty" value="0" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
                 <div class="flex gap-2"><div class="flex-1"><label class="text-xs text-slate-500">Birim Fiyat</label><input type="number" step="0.001" name="price" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div><div class="w-20"><label class="text-xs text-slate-500">Döviz</label><select name="currency" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"><option>USD</option><option>EUR</option><option>TL</option></select></div></div>
                 <div><label class="text-xs text-slate-500">Koli İçi Adet</label><input type="number" name="boxQty" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
+                <div><label class="text-xs text-slate-500">Sipariş Tarihi</label><input type="date" name="orderDate" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
                 <div><label class="text-xs text-slate-500">Termin Tarihi</label><input type="date" name="deadline" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
                 <div><label class="text-xs text-slate-500">Durum</label><select name="status" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"><option>Üretim</option><option>İthal</option><option>Stok</option><option>Tamamlandı</option></select></div>
                 <div><label class="text-xs text-slate-500">Nakliye</label><input type="text" name="transport" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
@@ -640,8 +638,7 @@
 
             // Diğer analizler
             let custMap = {};
-            let unisonStats = {};
-            let logisticsList = [];
+            let srcQty = { 'Üretim': 0, 'İthal': 0, 'Stok': 0 };
 
             active.forEach(o => {
                 let p = parseFloat(o.price) || 0;
@@ -657,17 +654,14 @@
                 else if(o.currency === 'TL') tl += (p * rem);
                 
                 // Kaynak Dağılımı (Sipariş Adedi üzerinden)
-                if(o.status && src[o.status] !== undefined) src[o.status]++;
+                if(o.status && src[o.status] !== undefined) {
+                    src[o.status]++;
+                    if(srcQty[o.status] !== undefined) srcQty[o.status] += rem;
+                }
                 
                 // Müşteri Dağılımı (Kalan Miktar Üzerinden)
                 if(!custMap[o.customer]) custMap[o.customer] = 0;
                 custMap[o.customer] += rem;
-
-                // Unison Tamamlanma
-                let uCode = o.unisonCode || 'Belirtilmedi';
-                if(!unisonStats[uCode]) unisonStats[uCode] = { t:0, d:0 };
-                unisonStats[uCode].t += tq;
-                unisonStats[uCode].d += dq;
 
                 // Tarih bazlı hesaplamalar
                 if(o.deadline) {
@@ -686,11 +680,6 @@
                         else if(diffDays <= 15) heat15++;
                         else if(diffDays <= 30) heat30++;
                     }
-                }
-
-                // Lojistik hazırlık (Teslimat başlamış veya kalan çok az)
-                if(dq > 0 || (rem > 0 && rem <= 50)) {
-                    logisticsList.push(o);
                 }
             });
 
@@ -732,31 +721,10 @@
                 </div>`;
             }).join('') : '<p class="text-xs text-slate-400">Veri yok</p>';
 
-            // DOM Updates (Row 4 - Unison)
-            let sortedU = Object.keys(unisonStats).map(k => {
-                let p = unisonStats[k].t > 0 ? (unisonStats[k].d / unisonStats[k].t) * 100 : 0;
-                return { name: k, perc: p.toFixed(0), t: unisonStats[k].t, d: unisonStats[k].d };
-            }).sort((a,b)=>b.t-a.t).slice(0,6); 
-            
-            document.getElementById('dash-unison-progress').innerHTML = sortedU.length ? sortedU.map(u => {
-                let color = u.perc >= 100 ? 'bg-emerald-500' : (u.perc > 50 ? 'bg-indigo-500' : 'bg-amber-500');
-                return `<div class="mb-2 bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-100 dark:border-slate-700">
-                    <div class="flex justify-between text-[10px] font-medium mb-1"><span class="truncate" title="${u.name}">${u.name}</span><span>%${u.perc}</span></div>
-                    <div class="progress-bar bg-white dark:bg-slate-900"><div class="progress-fill ${color}" style="width:${Math.min(u.perc, 100)}%"></div></div>
-                    <div class="text-[9px] text-slate-400 text-right mt-1">${u.d} / ${u.t}</div>
-                </div>`;
-            }).join('') : '<p class="text-xs text-slate-400">Veri yok</p>';
-
-            // DOM Updates (Row 5 - Logistics)
-            document.getElementById('dash-logistics').innerHTML = logisticsList.length ? logisticsList.slice(0,5).map(o => {
-                let rem = (parseInt(o.totalQty)||0) - (parseInt(o.deliveredQty)||0);
-                return `<tr class="hover:bg-slate-50 transition">
-                    <td class="py-2 text-blue-600 font-mono font-medium">${o.orderNo}</td>
-                    <td class="py-2 truncate max-w-[150px]" title="${o.customer}">${o.customer}</td>
-                    <td class="py-2"><span class="bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded text-[10px]">${o.deliveredQty} / ${o.totalQty}</span></td>
-                    <td class="py-2 font-medium ${rem<=0?'text-emerald-500':'text-amber-600'}">${rem<=0 ? 'Hazır/Bitti' : rem}</td>
-                </tr>`;
-            }).join('') : '<tr><td colspan="4" class="py-3 text-xs text-slate-400 text-center">Sevkiyata hazırlanan kısmi teslimat yok.</td></tr>';
+            // DOM Updates (Row 4 - Kaynak Sipariş Miktarları)
+            document.getElementById('dash-qty-prod').innerText = srcQty['Üretim'].toLocaleString('tr-TR') + ' Ad.';
+            document.getElementById('dash-qty-imp').innerText = srcQty['İthal'].toLocaleString('tr-TR') + ' Ad.';
+            document.getElementById('dash-qty-stk').innerText = srcQty['Stok'].toLocaleString('tr-TR') + ' Ad.';
         }
 
         // --- FORMS & MODALS ---
@@ -839,7 +807,13 @@
             const search = (document.getElementById('searchOrders')?.value || '').toLowerCase();
             const filter = document.getElementById('filterOrders')?.value || 'active';
 
-            let list = appData.orders.filter(o => (o.customer?.toLowerCase().includes(search) || o.orderNo?.toLowerCase().includes(search)));
+            let list = appData.orders.filter(o => (
+                o.customer?.toLowerCase().includes(search) || 
+                o.orderNo?.toLowerCase().includes(search) ||
+                o.productCode?.toLowerCase().includes(search) ||
+                o.unisonCode?.toLowerCase().includes(search)
+            ));
+            
             if(filter === 'active') list = list.filter(o => o.status !== 'Tamamlandı');
             if(filter === 'completed') list = list.filter(o => o.status === 'Tamamlandı');
 
@@ -873,7 +847,8 @@
                                 <span class="text-xs font-mono font-bold text-slate-400 dark:text-slate-500">#${o.orderNo || 'Bilinmiyor'}</span>
                                 <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wide ${statusColor}">${o.status || 'Belirtilmedi'}</span>
                             </div>
-                            <h3 class="font-bold text-slate-800 dark:text-white text-[15px] leading-tight line-clamp-2" title="${o.customer || ''}">${o.customer || 'Müşteri Belirtilmedi'}</h3>
+                            <h3 class="font-bold text-slate-800 dark:text-white text-[15px] leading-tight line-clamp-2 mb-1" title="${o.customer || ''}">${o.customer || 'Müşteri Belirtilmedi'}</h3>
+                            ${o.orderDate ? `<div class="text-[10px] text-slate-500"><i class="fas fa-calendar-plus opacity-70 mr-1"></i>Sipariş: ${o.orderDate}</div>` : ''}
                         </div>
                         <input type="checkbox" class="cb-orders rounded border-slate-300 w-[18px] h-[18px] text-blue-600 focus:ring-blue-500 shrink-0 cursor-pointer" value="${o.id}" ${isChecked} onchange="toggleSelect('orders', '${o.id}', this.checked)">
                     </div>
@@ -925,14 +900,14 @@
                 doc.setFont("Roboto");
             }
             doc.text('Siparis Listesi', 14, 15);
-            const head = [['Siparis No', 'Firma', 'Urun (Unison)', 'Adet', 'Kalan', 'Fiyat', 'Durum/Termin', 'Aciklama']];
+            const head = [['Siparis No/Trh', 'Firma', 'Urun (Unison)', 'Adet', 'Kalan', 'Fiyat', 'Durum/Termin', 'Aciklama']];
             
             let exp = appData.orders;
             if(document.getElementById('filterOrders')?.value === 'active') exp = exp.filter(o => o.status !== 'Tamamlandı');
             if(selectedItems.orders.length > 0) exp = exp.filter(x => selectedItems.orders.includes(x.id));
 
             const body = exp.map(o => [
-                o.orderNo || '', o.customer || '', `${o.productCode||''}\n${o.unisonCode||''}`,
+                `${o.orderNo || ''}\n${o.orderDate || ''}`, o.customer || '', `${o.productCode||''}\n${o.unisonCode||''}`,
                 o.totalQty || '', `${(parseInt(o.totalQty)||0) - (parseInt(o.deliveredQty)||0)}`,
                 `${o.price||''} ${o.currency||''}`, `${o.status||''}\n${o.deadline||''}`, o.notes || ''
             ]);
@@ -992,10 +967,48 @@
             doc.save(`Sevkiyat_${new Date().toISOString().slice(0,10)}.pdf`);
         }
 
+        async function exportFinancePDF() {
+            const fontB64 = await getPdfFont();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p');
+            
+            if(fontB64) {
+                doc.addFileToVFS("Roboto-Regular.ttf", fontB64);
+                doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+                doc.setFont("Roboto");
+            }
+            
+            doc.text('Finansal Kayitlar - ' + currentFinMonth, 14, 15);
+            const head = [['Kategori', 'Detay/Isim', 'Tutar (TL)']];
+            
+            const exp = appData.finance.filter(x => x.month === currentFinMonth);
+            const body = exp.map(x => [
+                x.type.toUpperCase(), 
+                x.name || '', 
+                parseFloat(x.amount).toLocaleString('tr-TR') + ' TL'
+            ]);
+
+            doc.autoTable({ 
+                head: head, 
+                body: body, 
+                startY: 20, 
+                styles: { font: fontB64 ? 'Roboto' : 'helvetica', fontSize: 9, cellPadding: 3 }
+            });
+            
+            doc.save(`Finans_${currentFinMonth}.pdf`);
+        }
+
         // Kalan yardımcı ve modül fonksiyonları
         function exportExcel(f, d) { if(d.length===0) return; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d), f); XLSX.writeFile(wb, `${f}_${new Date().toISOString().slice(0,10)}.xlsx`); }
         function previewImage(e, id, phId) { const r = new FileReader(); r.onload = function() { const el = document.getElementById(id); el.src = r.result; el.classList.remove('hidden'); document.getElementById(phId).classList.add('hidden'); }; if(e.target.files[0]) r.readAsDataURL(e.target.files[0]); }
-        function handleFileConvert(e, dId, nId) { const f = e.target.files[0]; if(!f) return; if(f.size>2*1024*1024) return alert("Maks 2MB!"); const r = new FileReader(); r.onload=(ev)=>{document.getElementById(dId).value=ev.target.result; document.getElementById(nId).value=f.name;}; r.readAsDataURL(f); }
+        function handleFileConvert(e, dId, nId) { 
+            const f = e.target.files[0]; 
+            if(!f) return; 
+            if(f.size > 500 * 1024) return alert("Maks 500KB (Veritabanı limiti nedeniyle)!"); 
+            const r = new FileReader(); 
+            r.onload=(ev)=>{document.getElementById(dId).value=ev.target.result; document.getElementById(nId).value=f.name;}; 
+            r.readAsDataURL(f); 
+        }
         function updateClock() { const d = new Date(); document.getElementById('topTime').innerText = d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}); document.getElementById('topDate').innerText = d.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'}); }
         
         // --- BİOTA İÇE AKTAR VE RENDER ---
@@ -1052,7 +1065,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // BİOTA ARAMA EKLENDİ
         function renderBiota() { 
             const tb = document.getElementById('tbodyBiota'); 
             if(!tb) return; 
@@ -1083,13 +1095,11 @@
             }).join(''); 
         }
 
-        // MAİLE KOPYALA FONKSİYONU GÜNCELLENDİ
         function copyBiotaMail() { 
             if(editedBiotaOrders.length === 0) {
                 alert("Kopyalanacak düzenlenmiş sipariş bulunamadı. Lütfen önce yeni teslimat ekleyin.");
                 return;
             }
-            // Join ile aralarına virgülsüz alt satıra inme işlemi (\n) eklendi
             const t = `Merhaba Fatma Hanım,\n\nDüzenlenen sipariş numaraları;\n${editedBiotaOrders.join('\n')}\n\nTeşekkürler.`; 
             
             navigator.clipboard.writeText(t).then(() => {
@@ -1100,10 +1110,33 @@
             }); 
         }
         
-        function renderIntel() { document.getElementById('gridIntel').innerHTML = appData.intel.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(x => `<div class="glass p-4 relative group"><div class="text-[10px] text-blue-500 font-bold">${x.category}</div><h4 class="font-medium">${x.title}</h4><p class="text-[10px] text-slate-400 mb-2">${x.date||''}</p><p class="text-sm text-slate-600 line-clamp-3">${x.desc}</p><div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('intelModal','${x.id}','intel')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('intel','${x.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
-        function renderPriceLists() { const c=appData.prices.find(x=>x.id===activePriceCustomer); document.getElementById('listPriceCustomers').innerHTML=appData.prices.map(x=>`<li onclick="activePriceCustomer='${x.id}';renderPriceLists()" class="p-3 cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${activePriceCustomer===x.id?'bg-blue-50 border-l-4 border-blue-500':''}"><div class="text-sm font-medium">${x.name}</div></li>`).join(''); if(c){document.getElementById('selectedPriceCustomerName').innerText=c.name; document.getElementById('btnAddPriceProd').classList.remove('hidden'); document.getElementById('tbodyPriceProducts').innerHTML=(c.products||[]).map(p=>`<tr><td class="p-3 text-sm">${p.unisonName}</td><td class="p-3 text-sm">${p.custName}</td><td class="p-3 text-sm font-mono">${p.price}</td><td class="p-3 text-xs">${p.validity}</td><td class="p-3"><button onclick="delItem('prices','${p.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`).join('');} }
+        function renderIntel() { 
+            document.getElementById('gridIntel').innerHTML = [...appData.intel].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(x => `<div class="glass p-4 relative group"><div class="text-[10px] text-blue-500 font-bold">${x.category}</div><h4 class="font-medium">${x.title}</h4><p class="text-[10px] text-slate-400 mb-2">${x.date||''}</p><p class="text-sm text-slate-600 line-clamp-3">${x.desc}</p><div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('intelModal','${x.id}','intel')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('intel','${x.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); 
+        }
+        
+        function renderPriceLists() { 
+            const c=appData.prices.find(x=>x.id===activePriceCustomer); 
+            document.getElementById('listPriceCustomers').innerHTML=appData.prices.map(x=>`<li onclick="activePriceCustomer='${x.id}';renderPriceLists()" class="p-3 cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${activePriceCustomer===x.id?'bg-blue-50 border-l-4 border-blue-500':''}"><div class="text-sm font-medium">${x.name}</div></li>`).join(''); 
+            if(c){
+                document.getElementById('selectedPriceCustomerName').innerText=c.name; 
+                document.getElementById('btnAddPriceProd').classList.remove('hidden'); 
+                document.getElementById('tbodyPriceProducts').innerHTML=(c.products||[]).map(p=>`<tr><td class="p-3 text-sm">${p.unisonName}</td><td class="p-3 text-sm">${p.custName}</td><td class="p-3 text-sm font-mono">${p.price}</td><td class="p-3 text-xs">${p.validity}</td><td class="p-3"><button onclick="delPriceProduct('${c.id}','${p.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`).join('');
+            } 
+        }
+        
         function addPriceCustomer() { const n=prompt("Müşteri Adı:"); if(n){appData.prices.push({id:Date.now().toString(),name:n,products:[]}); saveData('prices'); renderPriceLists();} }
         function addPriceProduct() { if(!activePriceCustomer)return; const c=appData.prices.find(x=>x.id===activePriceCustomer); const u=prompt("Unison Adı:"), m=prompt("Müşteri Adı:"), f=prompt("Fiyat:"), v=prompt("Geçerlilik:"); if(u){if(!c.products)c.products=[]; c.products.push({id:Date.now().toString(),unisonName:u,custName:m,price:f,validity:v}); saveData('prices'); renderPriceLists();} }
+        
+        function delPriceProduct(custId, prodId) {
+            if(confirm('Ürünü silmek istediğinize emin misiniz?')) {
+                const c = appData.prices.find(x => x.id === custId);
+                if(c) {
+                    c.products = c.products.filter(p => p.id !== prodId);
+                    saveData('prices');
+                    renderPriceLists();
+                }
+            }
+        }
         
         function renderProposals() { 
             ['Teklif','Takip','Sonuç','Tamamlandı'].forEach(st => { 
