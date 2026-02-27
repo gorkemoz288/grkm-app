@@ -373,7 +373,7 @@
                 <div id="view-biota" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
                     <div class="glass p-4 border-l-4 border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10 flex justify-between items-center shrink-0">
                         <div><h3 class="font-bold text-emerald-700 dark:text-emerald-400">Biota Özel Sipariş Modülü</h3><p class="text-xs text-slate-500">Kısmi teslimatları girerek ana siparişten otomatik düşürün.</p></div>
-                        <button onclick="copyBiotaMail()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-500 transition"><i class="fas fa-envelope mr-1"></i> Maile Kopyala</button>
+                        <button onclick="copyBiotaMail()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-500 transition shadow-sm"><i class="fas fa-envelope mr-1"></i> Maile Kopyala</button>
                     </div>
                     <div class="flex flex-wrap justify-between items-center gap-2 no-print shrink-0">
                         <input type="text" id="searchBiota" placeholder="Malzeme No, Açıklama, Sipariş No..." class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 outline-none focus:border-blue-500 transition" onkeyup="renderBiota()">
@@ -1083,7 +1083,23 @@
             }).join(''); 
         }
 
-        function copyBiotaMail() { if(editedBiotaOrders.length===0) return; const t = `Merhaba,\nDüzenlenen sipariş numaraları; ${editedBiotaOrders.join(', ')} teşekkürler.`; navigator.clipboard.writeText(t).then(()=>{alert("Kopyalandı");editedBiotaOrders=[];}).catch(()=>{alert("Kopyalanamadı.");}); }
+        // MAİLE KOPYALA FONKSİYONU GÜNCELLENDİ
+        function copyBiotaMail() { 
+            if(editedBiotaOrders.length === 0) {
+                alert("Kopyalanacak düzenlenmiş sipariş bulunamadı. Lütfen önce yeni teslimat ekleyin.");
+                return;
+            }
+            // Join ile aralarına virgülsüz alt satıra inme işlemi (\n) eklendi
+            const t = `Merhaba Fatma Hanım,\n\nDüzenlenen sipariş numaraları;\n${editedBiotaOrders.join('\n')}\n\nTeşekkürler.`; 
+            
+            navigator.clipboard.writeText(t).then(() => {
+                alert("Mail şablonu kopyalandı!");
+                editedBiotaOrders = []; // Sıfırla
+            }).catch(() => {
+                alert("Panoya kopyalanamadı.");
+            }); 
+        }
+        
         function renderIntel() { document.getElementById('gridIntel').innerHTML = appData.intel.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(x => `<div class="glass p-4 relative group"><div class="text-[10px] text-blue-500 font-bold">${x.category}</div><h4 class="font-medium">${x.title}</h4><p class="text-[10px] text-slate-400 mb-2">${x.date||''}</p><p class="text-sm text-slate-600 line-clamp-3">${x.desc}</p><div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('intelModal','${x.id}','intel')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('intel','${x.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
         function renderPriceLists() { const c=appData.prices.find(x=>x.id===activePriceCustomer); document.getElementById('listPriceCustomers').innerHTML=appData.prices.map(x=>`<li onclick="activePriceCustomer='${x.id}';renderPriceLists()" class="p-3 cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${activePriceCustomer===x.id?'bg-blue-50 border-l-4 border-blue-500':''}"><div class="text-sm font-medium">${x.name}</div></li>`).join(''); if(c){document.getElementById('selectedPriceCustomerName').innerText=c.name; document.getElementById('btnAddPriceProd').classList.remove('hidden'); document.getElementById('tbodyPriceProducts').innerHTML=(c.products||[]).map(p=>`<tr><td class="p-3 text-sm">${p.unisonName}</td><td class="p-3 text-sm">${p.custName}</td><td class="p-3 text-sm font-mono">${p.price}</td><td class="p-3 text-xs">${p.validity}</td><td class="p-3"><button onclick="delItem('prices','${p.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`).join('');} }
         function addPriceCustomer() { const n=prompt("Müşteri Adı:"); if(n){appData.prices.push({id:Date.now().toString(),name:n,products:[]}); saveData('prices'); renderPriceLists();} }
