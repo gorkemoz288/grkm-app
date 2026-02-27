@@ -369,14 +369,14 @@
                     </div>
                 </div>
 
-                <!-- 4. BİOTA SİPARİŞ (GÜNCELLENDİ: EXCEL İÇE AKTAR VE KOLON FORMATLARI) -->
+                <!-- 4. BİOTA SİPARİŞ -->
                 <div id="view-biota" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
                     <div class="glass p-4 border-l-4 border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10 flex justify-between items-center shrink-0">
                         <div><h3 class="font-bold text-emerald-700 dark:text-emerald-400">Biota Özel Sipariş Modülü</h3><p class="text-xs text-slate-500">Kısmi teslimatları girerek ana siparişten otomatik düşürün.</p></div>
                         <button onclick="copyBiotaMail()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-500 transition"><i class="fas fa-envelope mr-1"></i> Maile Kopyala</button>
                     </div>
                     <div class="flex flex-wrap justify-between items-center gap-2 no-print shrink-0">
-                        <input type="text" id="searchBiota" placeholder="Malzeme No, Açıklama..." class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-64 outline-none" onkeyup="renderBiota()">
+                        <input type="text" id="searchBiota" placeholder="Malzeme No, Açıklama, Sipariş No..." class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 outline-none focus:border-blue-500 transition" onkeyup="renderBiota()">
                         <div class="flex gap-2">
                             <!-- Gizli Dosya Seçici -->
                             <input type="file" id="biotaExcelInput" class="hidden" accept=".xlsx, .xls, .csv" onchange="importBiotaExcel(event)">
@@ -1011,12 +1011,10 @@
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
                     
-                    // {raw: false} formatların korunmasını sağlar, özellikle gg.aa.yyyy tarihleri için kritik.
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
                     
                     let addedCount = 0;
                     jsonData.forEach(row => {
-                        // Tam olarak belirtilen sütun isimleriyle eşleştirme
                         const orderNo = row['Sipariş No'] || '';
                         const materialNo = row['Malzeme No'] || '';
                         const materialDesc = row['Açıklama'] || '';
@@ -1043,7 +1041,7 @@
                         renderBiota();
                         alert(`${addedCount} adet kayıt başarıyla içe aktarıldı.`);
                     } else {
-                        alert("Dosyada uygun kayıt bulunamadı. Lütfen Excel sütun başlıklarının tam olarak (Sipariş No, Malzeme No, Açıklama, Tarih, Sipariş Adet) şeklinde olduğundan emin olun.");
+                        alert("Dosyada uygun kayıt bulunamadı.");
                     }
                 } catch (error) {
                     console.error("Excel okuma hatası:", error);
@@ -1054,7 +1052,37 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function renderBiota() { const tb = document.getElementById('tbodyBiota'); if(!tb) return; tb.innerHTML = appData.biota.map(x => { const t=parseInt(x.qty)||0, d=parseInt(x.deliveredQty)||0, r=t-d; return `<tr><td class="p-3"><input type="checkbox" class="cb-biota rounded border-slate-300" value="${x.id}" onchange="toggleSelect('biota', '${x.id}', this.checked)"></td><td class="p-3 font-mono text-slate-700 dark:text-slate-300">${x.orderNo}</td><td class="p-3 text-blue-600 dark:text-blue-400 font-medium">${x.materialNo}</td><td class="p-3 text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title="${x.materialDesc}">${x.materialDesc}</td><td class="p-3 text-xs">${x.date}</td><td class="p-3 font-medium">${t}</td><td class="p-3 font-bold ${r<=0?'text-emerald-500':'text-amber-500'}">${r<=0?'Bitti':r}</td><td class="p-3"><button onclick="openModal('biotaModal', '${x.id}', 'biota')" class="text-slate-400 hover:text-blue-500 hover:bg-blue-50 p-1.5 rounded transition"><i class="fas fa-pen"></i></button></td></tr>`}).join(''); }
+        // BİOTA ARAMA EKLENDİ
+        function renderBiota() { 
+            const tb = document.getElementById('tbodyBiota'); 
+            if(!tb) return; 
+            
+            // Arama kutusundaki değeri küçük harfe çevirerek al
+            const searchTerm = (document.getElementById('searchBiota')?.value || '').toLowerCase();
+            
+            // Filtreleme mantığı
+            const filteredList = appData.biota.filter(x => 
+                (x.materialNo && x.materialNo.toLowerCase().includes(searchTerm)) ||
+                (x.materialDesc && x.materialDesc.toLowerCase().includes(searchTerm)) ||
+                (x.orderNo && x.orderNo.toLowerCase().includes(searchTerm))
+            );
+
+            // Tabloyu filtreli listeye göre çiz
+            tb.innerHTML = filteredList.map(x => { 
+                const t = parseInt(x.qty) || 0, d = parseInt(x.deliveredQty) || 0, r = t - d; 
+                return `<tr>
+                    <td class="p-3"><input type="checkbox" class="cb-biota rounded border-slate-300" value="${x.id}" onchange="toggleSelect('biota', '${x.id}', this.checked)"></td>
+                    <td class="p-3 font-mono text-slate-700 dark:text-slate-300">${x.orderNo}</td>
+                    <td class="p-3 text-blue-600 dark:text-blue-400 font-medium">${x.materialNo}</td>
+                    <td class="p-3 text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title="${x.materialDesc}">${x.materialDesc}</td>
+                    <td class="p-3 text-xs">${x.date}</td>
+                    <td class="p-3 font-medium">${t}</td>
+                    <td class="p-3 font-bold ${r<=0 ? 'text-emerald-500' : 'text-amber-500'}">${r<=0 ? 'Bitti' : r}</td>
+                    <td class="p-3"><button onclick="openModal('biotaModal', '${x.id}', 'biota')" class="text-slate-400 hover:text-blue-500 hover:bg-blue-50 p-1.5 rounded transition"><i class="fas fa-pen"></i></button></td>
+                </tr>`;
+            }).join(''); 
+        }
+
         function copyBiotaMail() { if(editedBiotaOrders.length===0) return; const t = `Merhaba,\nDüzenlenen sipariş numaraları; ${editedBiotaOrders.join(', ')} teşekkürler.`; navigator.clipboard.writeText(t).then(()=>{alert("Kopyalandı");editedBiotaOrders=[];}).catch(()=>{alert("Kopyalanamadı.");}); }
         function renderIntel() { document.getElementById('gridIntel').innerHTML = appData.intel.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(x => `<div class="glass p-4 relative group"><div class="text-[10px] text-blue-500 font-bold">${x.category}</div><h4 class="font-medium">${x.title}</h4><p class="text-[10px] text-slate-400 mb-2">${x.date||''}</p><p class="text-sm text-slate-600 line-clamp-3">${x.desc}</p><div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('intelModal','${x.id}','intel')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('intel','${x.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
         function renderPriceLists() { const c=appData.prices.find(x=>x.id===activePriceCustomer); document.getElementById('listPriceCustomers').innerHTML=appData.prices.map(x=>`<li onclick="activePriceCustomer='${x.id}';renderPriceLists()" class="p-3 cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${activePriceCustomer===x.id?'bg-blue-50 border-l-4 border-blue-500':''}"><div class="text-sm font-medium">${x.name}</div></li>`).join(''); if(c){document.getElementById('selectedPriceCustomerName').innerText=c.name; document.getElementById('btnAddPriceProd').classList.remove('hidden'); document.getElementById('tbodyPriceProducts').innerHTML=(c.products||[]).map(p=>`<tr><td class="p-3 text-sm">${p.unisonName}</td><td class="p-3 text-sm">${p.custName}</td><td class="p-3 text-sm font-mono">${p.price}</td><td class="p-3 text-xs">${p.validity}</td><td class="p-3"><button onclick="delItem('prices','${p.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`).join('');} }
