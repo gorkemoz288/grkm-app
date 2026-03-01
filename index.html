@@ -16,10 +16,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Storage modülü eklendi) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <script>
         tailwind.config = {
@@ -292,15 +293,25 @@
                 <!-- 2. SİPARİŞLER (YENİ GRID / KART GÖRÜNÜMÜ) -->
                 <div id="view-orders" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-2 no-print shrink-0 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
                             <div class="relative">
                                 <i class="fas fa-search absolute left-3 top-2.5 text-slate-400"></i>
                                 <input type="text" id="searchOrders" placeholder="Sipariş, Müşteri, Ürün, Unison Kod..." class="pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition" onkeyup="renderOrders()">
                             </div>
+                            <select id="filterCustomer" onchange="renderOrders()" class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-300 outline-none max-w-[150px] truncate">
+                                <option value="all">Tüm Müşteriler</option>
+                            </select>
                             <select id="filterOrders" onchange="renderOrders()" class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-300 outline-none">
                                 <option value="all">Tüm Siparişler</option>
                                 <option value="active" selected>Aktif Siparişler</option>
                                 <option value="completed">Tamamlananlar</option>
+                            </select>
+                            <select id="sortOrders" onchange="renderOrders()" class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm font-medium text-slate-600 dark:text-slate-300 outline-none">
+                                <option value="default">Sıralama: Varsayılan</option>
+                                <option value="orderAsc">Sipariş: Eskiden Yeniye</option>
+                                <option value="orderDesc">Sipariş: Yeniden Eskiye</option>
+                                <option value="deadlineAsc">Teslim: En Yakın</option>
+                                <option value="deadlineDesc">Teslim: En Uzak</option>
                             </select>
                         </div>
                         <div class="flex gap-2">
@@ -804,8 +815,20 @@
         function renderOrders() {
             const grid = document.getElementById('gridOrders');
             if(!grid) return;
+
+            // Müşteri filtresini dinamik olarak veritabanındaki benzersiz müşterilerle dolduruyoruz
+            const custSelect = document.getElementById('filterCustomer');
+            if (custSelect) {
+                const currentCust = custSelect.value;
+                const uniqueCustomers = [...new Set(appData.orders.map(o => o.customer).filter(Boolean))].sort();
+                custSelect.innerHTML = '<option value="all">Tüm Müşteriler</option>' + uniqueCustomers.map(c => `<option value="${c}">${c}</option>`).join('');
+                if (uniqueCustomers.includes(currentCust)) custSelect.value = currentCust;
+            }
+
             const search = (document.getElementById('searchOrders')?.value || '').toLowerCase();
             const filter = document.getElementById('filterOrders')?.value || 'active';
+            const custFilter = document.getElementById('filterCustomer')?.value || 'all';
+            const sortVal = document.getElementById('sortOrders')?.value || 'default';
 
             let list = appData.orders.filter(o => (
                 o.customer?.toLowerCase().includes(search) || 
@@ -816,6 +839,25 @@
             
             if(filter === 'active') list = list.filter(o => o.status !== 'Tamamlandı');
             if(filter === 'completed') list = list.filter(o => o.status === 'Tamamlandı');
+            if(custFilter !== 'all') list = list.filter(o => o.customer === custFilter);
+
+            // Yeni Sıralama Mantığı
+            if (sortVal !== 'default') {
+                list.sort((a, b) => {
+                    const getSafeTime = (d, fallback) => { const t = d ? new Date(d).getTime() : NaN; return isNaN(t) ? fallback : t; };
+                    
+                    if (sortVal === 'orderAsc' || sortVal === 'orderDesc') {
+                        const tA = getSafeTime(a.orderDate, 0); // Tarih yoksa en eski kabul et
+                        const tB = getSafeTime(b.orderDate, 0);
+                        return sortVal === 'orderAsc' ? tA - tB : tB - tA;
+                    } else if (sortVal === 'deadlineAsc' || sortVal === 'deadlineDesc') {
+                        const tA = getSafeTime(a.deadline, Infinity); // Termin yoksa en sona at
+                        const tB = getSafeTime(b.deadline, Infinity);
+                        return sortVal === 'deadlineAsc' ? tA - tB : tB - tA;
+                    }
+                    return 0;
+                });
+            }
 
             document.getElementById('orderCountText').innerText = `Toplam ${list.length} sipariş listeleniyor.`;
 
@@ -1001,14 +1043,48 @@
         // Kalan yardımcı ve modül fonksiyonları
         function exportExcel(f, d) { if(d.length===0) return; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d), f); XLSX.writeFile(wb, `${f}_${new Date().toISOString().slice(0,10)}.xlsx`); }
         function previewImage(e, id, phId) { const r = new FileReader(); r.onload = function() { const el = document.getElementById(id); el.src = r.result; el.classList.remove('hidden'); document.getElementById(phId).classList.add('hidden'); }; if(e.target.files[0]) r.readAsDataURL(e.target.files[0]); }
-        function handleFileConvert(e, dId, nId) { 
+        
+        // Yeni Dosya Yükleme Fonksiyonu (Firebase Storage - 1MB Limiti Çözümü)
+        async function handleFileConvert(e, dId, nId) { 
             const f = e.target.files[0]; 
             if(!f) return; 
-            if(f.size > 500 * 1024) return alert("Maks 500KB (Veritabanı limiti nedeniyle)!"); 
-            const r = new FileReader(); 
-            r.onload=(ev)=>{document.getElementById(dId).value=ev.target.result; document.getElementById(nId).value=f.name;}; 
-            r.readAsDataURL(f); 
+
+            try {
+                // Yükleniyor durumunu göstermek için butonu pasifize etme
+                const formElement = e.target.closest('form');
+                const uploadBtn = formElement.querySelector('button[type="submit"]');
+                const originalText = uploadBtn.innerText;
+                
+                uploadBtn.innerText = "Dosya Yükleniyor...";
+                uploadBtn.disabled = true;
+
+                // Firebase Storage referansı oluşturma
+                const storageRef = firebase.storage().ref(`uploads/${currentUser.uid}/${Date.now()}_${f.name}`);
+                
+                // Dosyayı yükleme
+                const snapshot = await storageRef.put(f);
+                
+                // İndirme linkini (URL) alma
+                const downloadURL = await snapshot.ref.getDownloadURL();
+
+                // Formdaki gizli inputlara URL ve dosya ismini atama
+                document.getElementById(dId).value = downloadURL; 
+                document.getElementById(nId).value = f.name;
+
+                // Butonu eski haline getirme
+                uploadBtn.innerText = originalText;
+                uploadBtn.disabled = false;
+                
+            } catch (error) {
+                console.error("Firebase Storage yükleme hatası:", error);
+                alert("Dosya yüklenirken bir hata oluştu. İnternet bağlantınızı kontrol edin.");
+                
+                const uploadBtn = e.target.closest('form').querySelector('button[type="submit"]');
+                uploadBtn.innerText = "Kaydet";
+                uploadBtn.disabled = false;
+            }
         }
+        
         function updateClock() { const d = new Date(); document.getElementById('topTime').innerText = d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}); document.getElementById('topDate').innerText = d.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'}); }
         
         // --- BİOTA İÇE AKTAR VE RENDER ---
@@ -1111,7 +1187,26 @@
         }
         
         function renderIntel() { 
-            document.getElementById('gridIntel').innerHTML = [...appData.intel].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(x => `<div class="glass p-4 relative group"><div class="text-[10px] text-blue-500 font-bold">${x.category}</div><h4 class="font-medium">${x.title}</h4><p class="text-[10px] text-slate-400 mb-2">${x.date||''}</p><p class="text-sm text-slate-600 line-clamp-3">${x.desc}</p><div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('intelModal','${x.id}','intel')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('intel','${x.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); 
+            // Tarih kontrolü sağlanarak NaN çökme hatası düzeltildi
+            const sortedIntel = [...appData.intel].sort((a,b) => {
+                const dateA = a.date ? new Date(a.date).getTime() : 0;
+                const dateB = b.date ? new Date(b.date).getTime() : 0;
+                return dateB - dateA;
+            });
+            
+            document.getElementById('gridIntel').innerHTML = sortedIntel.map(x => `
+                <div class="glass p-4 relative group">
+                    <div class="text-[10px] text-blue-500 font-bold">${x.category}</div>
+                    <h4 class="font-medium">${x.title}</h4>
+                    <p class="text-[10px] text-slate-400 mb-2">${x.date||''}</p>
+                    <p class="text-sm text-slate-600 line-clamp-3 mb-2">${x.desc}</p>
+                    ${x.fileData ? `<a href="${x.fileData}" target="_blank" class="text-xs text-blue-500 hover:underline"><i class="fas fa-paperclip mr-1"></i>Ek Dosya</a>` : ''}
+                    <div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100">
+                        <button onclick="openModal('intelModal','${x.id}','intel')" class="text-blue-500"><i class="fas fa-edit"></i></button>
+                        <button onclick="delItem('intel','${x.id}')" class="text-red-400"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join(''); 
         }
         
         function renderPriceLists() { 
@@ -1147,9 +1242,57 @@
         function allowDrop(ev) { ev.preventDefault(); } 
         function dropProp(ev, st) { ev.preventDefault(); const item=appData.proposals.find(p=>p.id===ev.dataTransfer.getData("text")); if(item){item.status=st;saveData('proposals');} }
         
-        function renderNotes() { document.getElementById('gridNotes').innerHTML=appData.notes.map(n=>`<div class="glass p-4 relative group border-t-4 border-slate-800"><div class="text-[10px] text-slate-400">${n.date||''}</div><h4 class="font-medium text-sm">${n.title}</h4><p class="text-xs text-slate-600 mt-1">${n.content}</p><div class="absolute bottom-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('noteModal','${n.id}','notes')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('notes','${n.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
-        function updateFinCategories() { const t=document.getElementById('finType').value, c=document.getElementById('finCategory'); c.innerHTML=''; if(t==='gelir') ['Maaş','Yemek','Ek','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); else if(t==='kk') ['Akbank','Yapı Kredi','Garanti','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); else if(t==='kredi') ['Akbank Kredi','Nurçehre','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); document.getElementById('finCatWrapper').style.display=t==='yatirim'?'none':'block'; document.getElementById('finInvWrapper').style.display=t==='yatirim'?'block':'none'; }
-        function saveFinanceRecord(e) { e.preventDefault(); const t=document.getElementById('finType').value, c=document.getElementById('finCategory').value, a=document.getElementById('finAmount').value; let n=c; if(t==='yatirim'){n=`${document.getElementById('finInvType').value} (${document.getElementById('finInvQty').value})`;} appData.finance.push({id:Date.now().toString(), month:currentFinMonth, type:t, name:n, amount:a}); saveData('finance'); closeModal('financeModal'); }
+        function renderNotes() { 
+            document.getElementById('gridNotes').innerHTML=appData.notes.map(n=>`
+                <div class="glass p-4 relative group border-t-4 border-slate-800">
+                    <div class="text-[10px] text-slate-400">${n.date||''}</div>
+                    <h4 class="font-medium text-sm">${n.title}</h4>
+                    <p class="text-xs text-slate-600 mt-1 mb-2">${n.content}</p>
+                    ${n.fileData ? `<a href="${n.fileData}" target="_blank" class="text-xs text-blue-500 hover:underline"><i class="fas fa-paperclip mr-1"></i>Ek Dosya</a>` : ''}
+                    <div class="absolute bottom-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100">
+                        <button onclick="openModal('noteModal','${n.id}','notes')" class="text-blue-500"><i class="fas fa-edit"></i></button>
+                        <button onclick="delItem('notes','${n.id}')" class="text-red-400"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join(''); 
+        }
+        
+        function updateFinCategories() { 
+            const t = document.getElementById('finType').value;
+            const c = document.getElementById('finCategory'); 
+            c.innerHTML = ''; 
+            
+            if(t === 'gelir') {
+                ['Maaş','Yemek','Ek','Diğer'].forEach(x => c.innerHTML += `<option>${x}</option>`); 
+            } else if(t === 'kk') {
+                ['Akbank','Yapı Kredi','Garanti','Diğer'].forEach(x => c.innerHTML += `<option>${x}</option>`); 
+            } else if(t === 'kredi') {
+                ['Akbank Kredi','Nurçehre','Diğer'].forEach(x => c.innerHTML += `<option>${x}</option>`); 
+            } else if(t === 'yatirim') {
+                // Hata çözümü: Yatırım seçildiğinde boş kalıp kaydetmede sorun yaşatmaması için yedek değer eklendi
+                c.innerHTML = '<option value="yatirim">Yatırım</option>';
+            }
+            
+            document.getElementById('finCatWrapper').style.display = t === 'yatirim' ? 'none' : 'block'; 
+            document.getElementById('finInvWrapper').style.display = t === 'yatirim' ? 'block' : 'none'; 
+        }
+        
+        function saveFinanceRecord(e) { 
+            e.preventDefault(); 
+            const t = document.getElementById('finType').value;
+            const c = document.getElementById('finCategory').value;
+            const a = document.getElementById('finAmount').value; 
+            
+            let n = c; 
+            if(t === 'yatirim'){
+                n = `${document.getElementById('finInvType').value} (${document.getElementById('finInvQty').value})`;
+            } 
+            
+            appData.finance.push({id:Date.now().toString(), month:currentFinMonth, type:t, name:n, amount:a}); 
+            saveData('finance'); 
+            closeModal('financeModal'); 
+        }
+        
         function renderFinance() { const r=appData.finance.filter(x=>x.month===currentFinMonth); let g=0,k=0,kr=0,y=0; ['gelir','kk','kredi','yatirim'].forEach(t=>{ const l=r.filter(x=>x.type===t); document.getElementById('fin-list-'+t).innerHTML=l.map(i=>`<div class="flex justify-between p-2 border-b border-slate-100 text-sm"><span>${i.name}</span><span class="font-mono">${i.amount} ₺ <i onclick="delItem('finance','${i.id}')" class="fas fa-times text-red-400 cursor-pointer ml-2"></i></span></div>`).join(''); let tot=l.reduce((s,i)=>s+parseFloat(i.amount),0); if(t==='gelir')g=tot; if(t==='kk')k=tot; if(t==='kredi')kr=tot; if(t==='yatirim')y=tot; }); document.getElementById('fin-tot-gelir').innerText=g+' ₺'; document.getElementById('fin-tot-gider').innerText=(k+kr)+' ₺'; document.getElementById('fin-tot-yatirim').innerText=y+' ₺'; }
         function changeFinMonth(m) { currentFinMonth=m; renderFinance(); }
         function delItem(m,id) { if(confirm('Sil?')){appData[m]=appData[m].filter(x=>x.id!==id); saveData(m);} }
