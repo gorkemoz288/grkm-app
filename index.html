@@ -52,7 +52,8 @@
 
         /* Print Styles */
         @media print {
-            @page { size: A4 landscape; margin: 10mm; }
+            /* Renk Onay formu için tam sayfa dikey yapılandırma */
+            @page { size: A4 portrait; margin: 5mm; }
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
             #printArea { position: absolute; left: 0; top: 0; width: 100%; }
@@ -75,6 +76,9 @@
         .progress-bar { height: 6px; border-radius: 10px; background: #e2e8f0; overflow: hidden; margin-top: 4px; }
         .dark .progress-bar { background: #334155; }
         .progress-fill { height: 100%; transition: width 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
     </style>
 </head>
 
@@ -121,35 +125,38 @@
                 <div>
                     <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">İŞ YÖNETİMİ</h3>
                     <div class="space-y-1">
-                        <button onclick="nav('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition active-nav">
+                        <button onclick="nav('welcome')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition active-nav">
+                            <i class="fas fa-home w-5 text-center text-emerald-400"></i> Anasayfa
+                        </button>
+                        <button onclick="nav('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
                             <i class="fas fa-chart-pie w-5 text-center text-indigo-400"></i> Dashboard (Analiz)
                         </button>
                         <button onclick="nav('orders')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-box w-5 text-center"></i> Siparişler
+                            <i class="fas fa-box w-5 text-center text-blue-400"></i> Siparişler
                         </button>
                         <button onclick="nav('shipping')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-truck-fast w-5 text-center"></i> Sevkiyat
+                            <i class="fas fa-truck-fast w-5 text-center text-teal-400"></i> Sevkiyat
                         </button>
                         <button onclick="nav('production')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
                             <i class="fas fa-industry w-5 text-center text-orange-400"></i> Üretim Takip
                         </button>
-                        <button onclick="nav('biota')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 transition">
-                            <i class="fas fa-leaf w-5 text-center"></i> Biota Sipariş
+                        <button onclick="nav('biota')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
+                            <i class="fas fa-leaf w-5 text-center text-emerald-500"></i> Biota Sipariş
                         </button>
                         <button onclick="window.open('https://gemini.google.com/gem/17YM1pqwRfgxt1ddA1yl8rZ2u55xyCpoY?usp=sharing', '_blank')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-cube w-5 text-center"></i> CAD Çevirici
+                            <i class="fas fa-cube w-5 text-center text-purple-400"></i> CAD Çevirici
                         </button>
                         <button onclick="nav('color')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-palette w-5 text-center"></i> Renk Onay
+                            <i class="fas fa-palette w-5 text-center text-pink-400"></i> Renk Onay
                         </button>
                         <button onclick="nav('intel')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-user-secret w-5 text-center"></i> Pazar İstihbaratı
+                            <i class="fas fa-user-secret w-5 text-center text-red-400"></i> Pazar İstihbaratı
                         </button>
                         <button onclick="nav('prices')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-tags w-5 text-center"></i> Fiyat Listesi
+                            <i class="fas fa-tags w-5 text-center text-yellow-400"></i> Fiyat Listesi
                         </button>
                         <button onclick="nav('proposals')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-handshake w-5 text-center"></i> Teklif Takip
+                            <i class="fas fa-handshake w-5 text-center text-cyan-400"></i> Teklif Takip
                         </button>
                     </div>
                 </div>
@@ -157,8 +164,8 @@
                 <div>
                     <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">KİŞİSEL</h3>
                     <div class="space-y-1">
-                        <button onclick="nav('notes')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition"><i class="fas fa-sticky-note w-5 text-center"></i> Not Defteri</button>
-                        <button onclick="nav('finance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 text-yellow-400 hover:text-yellow-300 transition"><i class="fas fa-wallet w-5 text-center"></i> Finansal Kayıt</button>
+                        <button onclick="nav('notes')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition"><i class="fas fa-sticky-note w-5 text-center text-amber-400"></i> Not Defteri</button>
+                        <button onclick="nav('finance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition"><i class="fas fa-wallet w-5 text-center text-yellow-500"></i> Finansal Kayıt</button>
                     </div>
                 </div>
             </div>
@@ -173,7 +180,7 @@
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 z-10 no-print flex-shrink-0">
                 <div class="flex items-center gap-4">
                     <button class="md:hidden text-slate-500 hover:text-slate-800 dark:text-slate-400" onclick="document.getElementById('sidebar').classList.toggle('hidden')"><i class="fas fa-bars text-xl"></i></button>
-                    <h2 id="pageTitle" class="text-lg font-medium text-slate-800 dark:text-white tracking-tight">Dashboard (Analiz)</h2>
+                    <h2 id="pageTitle" class="text-lg font-medium text-slate-800 dark:text-white tracking-tight">Anasayfa</h2>
                 </div>
                 <div class="flex items-center gap-6">
                     <div class="text-right hidden sm:block">
@@ -185,7 +192,88 @@
 
             <div class="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-900 relative" id="mainContent">
                 
-                <div id="view-dashboard" class="view-section w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5 animate-fade-in">
+                <div id="view-welcome" class="view-section w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-4 animate-fade-in">
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                        
+                        <div class="glass p-6 lg:col-span-3 rounded-2xl flex flex-col justify-center bg-gradient-to-r from-slate-50 to-blue-50/30 dark:from-slate-800 dark:to-slate-800/50 border-l-4 border-blue-500 relative overflow-hidden">
+                            <i class="fas fa-robot absolute right-[-20px] bottom-[-20px] text-8xl text-slate-200 dark:text-slate-700 opacity-30"></i>
+                            <h2 id="welcomeGreeting" class="text-2xl font-bold text-slate-800 dark:text-white mb-2 z-10">Günaydın!</h2>
+                            <p id="welcomeSummary" class="text-sm text-slate-600 dark:text-slate-300 z-10 leading-relaxed">
+                                Asistan Yükleniyor...
+                            </p>
+                        </div>
+
+                        <div class="glass p-2 lg:col-span-1 rounded-2xl flex flex-col items-center justify-center relative group cursor-pointer border-dashed border-2 border-slate-200 dark:border-slate-700 min-h-[120px]" onclick="document.getElementById('motivationImgInput').click()">
+                            <input type="file" id="motivationImgInput" hidden accept="image/*" onchange="previewMotivation(event)">
+                            <span id="motivationPlaceholder" class="text-slate-400 text-xs text-center group-hover:text-blue-500 transition">
+                                <i class="fas fa-image text-2xl mb-1 block"></i>Motivasyon Görseli
+                            </span>
+                            <img id="motivationImg" class="absolute inset-0 w-full h-full object-cover rounded-xl hidden p-1">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        
+                        <div class="glass p-5 lg:col-span-2 rounded-2xl h-fit">
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-4"><i class="fas fa-bolt text-amber-500 mr-1"></i> Hızlı Aksiyonlar</h4>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button onclick="openModal('orderModal')" class="flex flex-col items-center justify-center p-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-xl transition shadow-sm">
+                                    <i class="fas fa-box-open text-xl mb-1"></i><span class="text-[10px] font-medium uppercase mt-1">Sipariş</span>
+                                </button>
+                                <button onclick="openModal('shippingModal')" class="flex flex-col items-center justify-center p-3 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-xl transition shadow-sm">
+                                    <i class="fas fa-truck text-xl mb-1"></i><span class="text-[10px] font-medium uppercase mt-1">Sevkiyat</span>
+                                </button>
+                                <button onclick="openModal('noteModal')" class="flex flex-col items-center justify-center p-3 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-xl transition shadow-sm">
+                                    <i class="fas fa-sticky-note text-xl mb-1"></i><span class="text-[10px] font-medium uppercase mt-1">Not Ekle</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="glass p-5 lg:col-span-1 lg:row-span-2 rounded-2xl flex flex-col max-h-[500px]">
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3 shrink-0"><i class="fas fa-calendar-alt text-blue-500 mr-1"></i> Takvim & Terminler</h4>
+                            
+                            <div class="shrink-0 mb-3 border-b border-slate-100 dark:border-slate-700 pb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-[10px] font-bold text-slate-500">HAFTA <span id="currentIsoWeek">0</span></span>
+                                </div>
+                                <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 mb-2">
+                                    <div>Pt</div><div>Sa</div><div>Ça</div><div>Pe</div><div>Cu</div><div>Ct</div><div>Pz</div>
+                                </div>
+                                <div id="miniCalendarGrid" class="grid grid-cols-7 gap-1 text-center text-xs"></div>
+                            </div>
+                            
+                            <div class="flex-1 overflow-y-auto custom-scrollbar pr-1" id="welcomeUpcomingList">
+                                </div>
+                        </div>
+
+                        <div class="glass p-5 lg:col-span-1 lg:row-span-2 rounded-2xl flex flex-col max-h-[500px]">
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3 shrink-0"><i class="fas fa-history text-slate-400 mr-1"></i> Son Hareketler</h4>
+                            <div id="welcomeTimeline" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 relative before:absolute before:inset-0 before:ml-1.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                                </div>
+                        </div>
+
+                        <div class="glass p-5 lg:col-span-2 rounded-2xl flex flex-col h-full min-h-[250px]">
+                            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">
+                                <h4 class="text-xs font-semibold text-slate-500 uppercase"><i class="fas fa-check-square text-indigo-500 mr-1"></i> Görevler</h4>
+                                <span id="todoProgressText" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full">%0</span>
+                            </div>
+                            <form id="formTodoAdd" onsubmit="addTodo(event)" class="flex gap-2 mb-3 shrink-0">
+                                <input type="text" id="todoInput" required placeholder="Yeni görev..." class="flex-1 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-indigo-500 dark:text-slate-200">
+                                <select id="todoPri" class="border border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-lg px-2 text-xs outline-none focus:border-indigo-500">
+                                    <option value="high">🔴</option>
+                                    <option value="med" selected>🟡</option>
+                                    <option value="low">🟢</option>
+                                </select>
+                                <button type="submit" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-500 transition shadow-sm"><i class="fas fa-plus"></i></button>
+                            </form>
+                            <div id="todoListCont" class="flex-1 overflow-y-auto custom-scrollbar space-y-1 pr-1"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="view-dashboard" class="view-section hidden w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5">
                     
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div class="glass p-4 border-t-4 border-blue-500">
@@ -405,7 +493,7 @@
 
                 <div id="view-color" class="view-section hidden w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6">
                     <div class="flex justify-end mb-4 no-print"><button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium"><i class="fas fa-print mr-1"></i> PDF/Yazdır</button></div>
-                    <div class="bg-white w-[210mm] min-h-[297mm] mx-auto p-[15mm] border border-gray-200 text-black shadow-sm"><header class="flex justify-between border-b-4 border-slate-800 pb-4 mb-6"><div><img src="https://www.unison.com.tr/wp-content/uploads/2024/11/cropped-logo_unison-300x70.png" class="h-12"></div><div class="text-right"><h1 class="text-2xl font-bold uppercase text-slate-800">Renk Onay Formu</h1><p class="text-xs text-slate-500 mt-1">COLOR APPROVAL FORM</p></div></header><div class="grid grid-cols-2 gap-y-4 gap-x-8 mb-6"><div><label class="block text-xs font-bold text-slate-500">DÜZENLEYEN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">TARİH</label><input type="date" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">FİRMA</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">İLGİLİ KİŞİ</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">ÜRÜN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">RENK TANIMI</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div></div><div class="border-2 border-dashed border-gray-300 h-64 flex items-center justify-center relative group cursor-pointer" onclick="document.getElementById('colorImg').click()"><input type="file" id="colorImg" hidden accept="image/*" onchange="previewImage(event, 'previewColorImg', 'phColorImg')"><span id="phColorImg" class="text-gray-400 group-hover:text-blue-500"><i class="fas fa-image text-3xl mb-2 block text-center"></i>Görsel Eklemek İçin Tıklayın</span><img id="previewColorImg" class="absolute inset-0 w-full h-full object-contain hidden p-2"></div><div class="mt-4"><label class="block text-xs font-bold text-slate-500">NOTLAR</label><textarea class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent resize-none" rows="2"></textarea></div><div class="mt-12 pt-6 border-t border-gray-300 flex justify-between items-end"><div><p class="font-bold text-sm">Unison Dış Ticaret A.Ş.</p><p class="text-xs text-gray-500 mt-1">Onay (Kaşe/İmza)</p></div><div class="border border-gray-400 w-48 h-24 p-2 relative"><span class="absolute top-2 text-xs font-bold text-gray-500">MÜŞTERİ ONAYI</span><span class="absolute bottom-2 right-2 text-[10px] text-gray-400">Tarih: ___/___/20___</span></div></div></div>
+                    <div class="bg-white w-[210mm] min-h-[297mm] mx-auto p-[15mm] border border-gray-200 text-black shadow-sm relative"><header class="flex justify-between border-b-4 border-slate-800 pb-4 mb-6"><div><img src="https://www.unison.com.tr/wp-content/uploads/2024/11/cropped-logo_unison-300x70.png" class="h-12"></div><div class="text-right"><h1 class="text-2xl font-bold uppercase text-slate-800">Renk Onay Formu</h1><p class="text-xs text-slate-500 mt-1">COLOR APPROVAL FORM</p></div></header><div class="grid grid-cols-2 gap-y-4 gap-x-8 mb-6"><div><label class="block text-xs font-bold text-slate-500">DÜZENLEYEN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">TARİH</label><input type="date" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">FİRMA</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">İLGİLİ KİŞİ</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">ÜRÜN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">RENK TANIMI</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div></div><div class="border-2 border-dashed border-gray-300 h-64 flex items-center justify-center relative group cursor-pointer" onclick="document.getElementById('colorImg').click()"><input type="file" id="colorImg" hidden accept="image/*" onchange="previewImage(event, 'previewColorImg', 'phColorImg')"><span id="phColorImg" class="text-gray-400 group-hover:text-blue-500"><i class="fas fa-image text-3xl mb-2 block text-center"></i>Görsel Eklemek İçin Tıklayın</span><img id="previewColorImg" class="absolute inset-0 w-full h-full object-contain hidden p-2"></div><div class="mt-4"><label class="block text-xs font-bold text-slate-500">NOTLAR</label><textarea class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent resize-none" rows="2"></textarea></div><div class="mt-12 pt-6 border-t border-gray-300 flex justify-between items-end"><div><p class="font-bold text-sm">Unison Dış Ticaret A.Ş.</p><p class="text-xs text-gray-500 mt-1">Onay (Kaşe/İmza)</p></div><div class="border border-gray-400 w-48 h-24 p-2 relative"><span class="absolute top-2 text-xs font-bold text-gray-500">MÜŞTERİ ONAYI</span><span class="absolute bottom-2 right-2 text-[10px] text-gray-400">Tarih: ___/___/20___</span></div></div></div>
                 </div>
 
                 <div id="view-intel" class="view-section hidden w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-4">
@@ -495,7 +583,7 @@
         // --- GLOBAL STATE ---
         let db, auth;
         let currentUser = null;
-        let currentTab = 'dashboard';
+        let currentTab = 'welcome';
         let currentFinMonth = new Date().toISOString().slice(0, 7);
         let selectedItems = { orders: [], shipping: [], biota: [] };
         let activePriceCustomer = null;
@@ -504,7 +592,7 @@
         let appData = {
             orders: [], shipping: [], biota: [], intel: [],
             prices: [], proposals: [], notes: [], finance: [], production: [],
-            todos: { todos: [], notes: [] }
+            todos: []
         };
 
         // YENİ: Makine Listesi
@@ -561,7 +649,7 @@
                 document.getElementById('userEmail').innerHTML = `<i class="fas fa-circle text-[8px] mr-1"></i>${user.email.split('@')[0]}`;
                 initDataListeners();
                 document.getElementById('finMonthPicker').value = currentFinMonth;
-                nav('dashboard');
+                nav('welcome'); // Doğrudan karşılama sayfasından başlatıyoruz
                 setInterval(updateClock, 60000); updateClock();
             } else {
                 document.getElementById('loginScreen').classList.remove('hidden');
@@ -581,8 +669,8 @@
         function initDataListeners() {
             if(!currentUser) return;
             const ref = db.collection('users').doc(currentUser.uid).collection('data');
-            // Üretim modülü (production) eklendi
-            const modules = ['orders', 'shipping', 'biota', 'intel', 'prices', 'proposals', 'notes', 'finance', 'production'];
+            // Yeni Karşılama sayfası to-do modülü de eklendi
+            const modules = ['orders', 'shipping', 'biota', 'intel', 'prices', 'proposals', 'notes', 'finance', 'production', 'todos'];
             modules.forEach(mod => {
                 ref.doc(mod).onSnapshot(doc => {
                     if(doc.exists) appData[mod] = doc.data().items || [];
@@ -623,13 +711,16 @@
             const btn = document.querySelector(`button[onclick="nav('${tab}')"]`);
             if(btn) btn.classList.add('bg-slate-800', 'text-white');
 
-            const titles = { dashboard: 'Dashboard (Analiz)', orders: 'Siparişler Listesi', shipping: 'Lojistik & Sevkiyat Planı', production: 'Üretim Takip & Planlama', biota: 'Biota Özel', color: 'Renk Onay', intel: 'İstihbarat', prices: 'Fiyatlar', proposals: 'Teklif & Satış', notes: 'Notlar', finance: 'Finans' };
+            const titles = { welcome: 'Anasayfa', dashboard: 'Dashboard (Analiz)', orders: 'Siparişler Listesi', shipping: 'Lojistik & Sevkiyat Planı', production: 'Üretim Takip & Planlama', biota: 'Biota Özel', color: 'Renk Onay', intel: 'İstihbarat', prices: 'Fiyatlar', proposals: 'Teklif & Satış', notes: 'Notlar', finance: 'Finans' };
             document.getElementById('pageTitle').innerText = titles[tab] || '';
             refreshUI(tab);
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
         }
 
         function refreshUI(mod) {
+            if(mod === 'welcome' || mod === 'orders' || mod === 'shipping' || mod === 'intel' || mod === 'finance' || mod === 'todos') {
+                if(currentTab === 'welcome') renderWelcome(); // Karşılama verilerini güncelle
+            }
             if(mod === 'orders' || mod === 'dashboard') { renderOrders(); calcDashboard(); }
             if(mod === 'shipping') renderShipping();
             if(mod === 'biota') renderBiota();
@@ -638,17 +729,230 @@
             if(mod === 'proposals') renderProposals();
             if(mod === 'notes') renderNotes();
             if(mod === 'finance') renderFinance();
-            if(mod === 'production') renderProduction(); // Yeni Üretim Modülü
+            if(mod === 'production') renderProduction();
         }
 
-        // --- YENİ: ÜRETİM TAKİP MODÜLÜ ---
+        // --- YENİ: KARŞILAMA SAYFASI FONKSİYONLARI ---
+        function renderWelcome() {
+            const d = new Date();
+            const hour = d.getHours();
+            
+            // 1. Dinamik Selamlama ve Özet
+            let greet = hour < 12 ? 'Günaydın' : (hour < 18 ? 'İyi Çalışmalar' : 'İyi Akşamlar');
+            document.getElementById('welcomeGreeting').innerText = `${greet}, Görkem!`;
+
+            const activeOrders = appData.orders.filter(o => o.status !== 'Tamamlandı');
+            
+            // Bugün objesini saat 00:00:00 ayarlayarak gün farkı bulmak için hazırlayalım
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            // Yaklaşan veya geciken terminleri bulup hesapla
+            let upcoming = activeOrders.filter(o => o.deadline).map(o => {
+                let dDate = new Date(o.deadline);
+                let diffDays = Math.ceil((dDate - today) / (1000 * 60 * 60 * 24));
+                return { ...o, diffDays };
+            }).filter(o => o.diffDays <= 15).sort((a,b) => a.diffDays - b.diffDays);
+            
+            let approachingCount = upcoming.filter(o => o.diffDays >= 0 && o.diffDays <= 7).length;
+            const criticalShipping = appData.shipping.filter(s => s.isImportant).length;
+            
+            let summaryText = `Bugün sistemde aktif <b>${activeOrders.length}</b> siparişin var. `;
+            if(criticalShipping > 0 || approachingCount > 0) {
+                summaryText += `Özellikle <span class="text-red-500 font-medium">${criticalShipping} kritik sevkiyat</span> ve <span class="text-orange-500 font-medium">${approachingCount} yaklaşan termin</span> dikkatini bekliyor.`;
+            } else {
+                summaryText += `Şu an için her şey yolunda ve planlandığı gibi gidiyor gibi görünüyor.`;
+            }
+            document.getElementById('welcomeSummary').innerHTML = summaryText;
+
+            // 2. Takvim ve ISO Hafta
+            renderMiniCalendar(d);
+
+            // Yaklaşan Terminler Listesini Takvimin Altına Bas
+            let upcomingHtml = '';
+            if(upcoming.length === 0) {
+                upcomingHtml = '<p class="text-[10px] text-slate-400 text-center py-2">Yaklaşan termin yok.</p>';
+            } else {
+                upcomingHtml = upcoming.map(o => {
+                    let color = o.diffDays < 0 ? 'text-red-500' : (o.diffDays <= 3 ? 'text-orange-500' : 'text-emerald-500');
+                    let dayText = o.diffDays < 0 ? `${Math.abs(o.diffDays)} gün gecikti` : (o.diffDays === 0 ? 'Bugün' : `${o.diffDays} gün kaldı`);
+                    let remQty = Math.max(0, (parseInt(o.totalQty)||0) - (parseInt(o.deliveredQty)||0));
+                    
+                    return `<div class="flex justify-between items-center p-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700 mb-1.5 transition cursor-default">
+                        <div class="flex flex-col overflow-hidden mr-2">
+                            <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200 truncate" title="${o.customer || ''}">${o.customer || 'Müşteri Yok'}</span>
+                            <span class="text-[9px] text-slate-500">${remQty.toLocaleString('tr-TR')} Adet</span>
+                        </div>
+                        <span class="text-[10px] font-semibold ${color} shrink-0 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded shadow-sm border border-slate-100 dark:border-slate-700">${dayText}</span>
+                    </div>`;
+                }).join('');
+            }
+            document.getElementById('welcomeUpcomingList').innerHTML = upcomingHtml;
+
+            // 3. To-Do List Render
+            renderTodos();
+
+            // 4. Zaman Çizelgesi
+            renderTimeline();
+
+            // Motivasyon Görseli (Tarayıcı hafızasından çekme)
+            const savedImg = localStorage.getItem('gorkapp_motiv_img');
+            if(savedImg) {
+                const imgEl = document.getElementById('motivationImg');
+                imgEl.src = savedImg;
+                imgEl.classList.remove('hidden');
+                document.getElementById('motivationPlaceholder').classList.add('hidden');
+            }
+        }
+
+        function previewMotivation(e) {
+            const r = new FileReader(); 
+            r.onload = function() { 
+                const el = document.getElementById('motivationImg'); 
+                el.src = r.result; 
+                el.classList.remove('hidden'); 
+                document.getElementById('motivationPlaceholder').classList.add('hidden'); 
+                localStorage.setItem('gorkapp_motiv_img', r.result);
+            }; 
+            if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
+        }
+
+        function getISOWeek(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        }
+
+        function renderMiniCalendar(d) {
+            document.getElementById('currentIsoWeek').innerText = getISOWeek(d);
+            
+            const year = d.getFullYear();
+            const month = d.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+            const deadLineDates = appData.orders.map(o => o.deadline).filter(Boolean);
+            
+            let html = '';
+            for(let i = 0; i < startOffset; i++) html += `<div></div>`;
+            
+            for(let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const hasDeadline = deadLineDates.includes(dateStr);
+                const isToday = day === d.getDate();
+                
+                let classes = "w-6 h-6 mx-auto flex items-center justify-center rounded-full relative ";
+                if(isToday) classes += "bg-blue-600 text-white font-bold ";
+                else classes += "text-slate-600 dark:text-slate-300 ";
+                
+                html += `<div class="${classes}">${day}
+                    ${hasDeadline ? '<span class="absolute bottom-0 w-1 h-1 bg-red-500 rounded-full"></span>' : ''}
+                </div>`;
+            }
+            document.getElementById('miniCalendarGrid').innerHTML = html;
+        }
+
+        function addTodo(e) {
+            e.preventDefault();
+            if(!appData.todos) appData.todos = [];
+            
+            const text = document.getElementById('todoInput').value;
+            const pri = document.getElementById('todoPri').value;
+            
+            appData.todos.push({
+                id: Date.now().toString(),
+                text: text,
+                priority: pri,
+                done: false
+            });
+            
+            saveData('todos');
+            document.getElementById('todoInput').value = '';
+            renderTodos();
+        }
+
+        function toggleTodo(id) {
+            const todo = appData.todos.find(t => t.id === id);
+            if(todo) {
+                todo.done = !todo.done;
+                saveData('todos');
+                renderTodos();
+            }
+        }
+
+        function delTodo(id) {
+            appData.todos = appData.todos.filter(t => t.id !== id);
+            saveData('todos');
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const cont = document.getElementById('todoListCont');
+            if(!appData.todos || appData.todos.length === 0) {
+                cont.innerHTML = '<p class="text-[10px] text-slate-400 text-center py-2">Henüz görev eklenmemiş.</p>';
+                document.getElementById('todoProgressText').innerText = '%0';
+                return;
+            }
+            
+            const list = [...appData.todos].sort((a,b) => a.done - b.done);
+            const doneCount = list.filter(t => t.done).length;
+            const perc = Math.round((doneCount / list.length) * 100);
+            
+            document.getElementById('todoProgressText').innerText = `%${perc}`;
+            
+            cont.innerHTML = list.map(t => {
+                let icon = t.priority === 'high' ? '🔴' : (t.priority === 'low' ? '🟢' : '🟡');
+                return `
+                <div class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg group transition border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+                    <div class="flex items-center gap-2 cursor-pointer flex-1 overflow-hidden" onclick="toggleTodo('${t.id}')">
+                        <i class="fas ${t.done ? 'fa-check-square text-indigo-500' : 'fa-square text-slate-300'} text-base"></i>
+                        <span class="text-xs truncate ${t.done ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-300'}">${icon} ${t.text}</span>
+                    </div>
+                    <button onclick="delTodo('${t.id}')" class="text-red-400 opacity-0 group-hover:opacity-100 px-1"><i class="fas fa-trash text-xs"></i></button>
+                </div>`;
+            }).join('');
+        }
+
+        function renderTimeline() {
+            let timelineData = [];
+            appData.orders.slice(-3).forEach(o => timelineData.push({ id: o.id, type: 'Sipariş', text: `${o.customer || 'Bilinmiyor'} siparişi eklendi.`, icon: 'fa-box', color: 'text-blue-500' }));
+            appData.intel.slice(-2).forEach(i => timelineData.push({ id: i.id, type: 'Intel', text: `${i.title || 'Bilgi'} sisteme girildi.`, icon: 'fa-user-secret', color: 'text-purple-500' }));
+            appData.shipping.slice(-2).forEach(s => timelineData.push({ id: s.id, type: 'Sevkiyat', text: `${s.customer || 'Müşteri'} sevkiyat planı yapıldı.`, icon: 'fa-truck', color: 'text-emerald-500' }));
+            
+            timelineData.sort((a,b) => b.id - a.id);
+            // Ekstra alanımız olduğu için gösterilecek eleman sayısını 8'e çıkardım
+            timelineData = timelineData.slice(0, 8);
+            
+            const cont = document.getElementById('welcomeTimeline');
+            if(timelineData.length === 0) {
+                cont.innerHTML = '<p class="text-[10px] text-slate-400 text-center py-2">Sistemde henüz hareket yok.</p>';
+                return;
+            }
+            
+            cont.innerHTML = timelineData.map(item => `
+                <div class="relative flex items-center gap-3">
+                    <div class="w-6 h-6 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 z-10">
+                        <i class="fas ${item.icon} ${item.color} text-[10px]"></i>
+                    </div>
+                    <div class="flex-1 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg text-[11px] text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700 truncate">
+                        ${item.text}
+                    </div>
+                </div>
+            `).join('');
+        }
+        // --- BİTİŞ: KARŞILAMA SAYFASI FONKSİYONLARI ---
+
+
+        // --- ÜRETİM TAKİP MODÜLÜ ---
         function renderProduction() {
             const grid = document.getElementById('gridProduction');
             if(!grid) return;
 
             grid.innerHTML = machineList.map((m, i) => {
                 const machineId = 'machine_' + i;
-                // Firebase'den gelen veriyi bul veya boş yapıyı oluştur
                 const data = appData.production.find(x => x.id === machineId) || { id: machineId, name: m, date: '', note: '' };
 
                 return `
