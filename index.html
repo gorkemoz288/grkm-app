@@ -1690,74 +1690,8 @@
             doc.save(`Coster_Siparisler_${new Date().toISOString().slice(0,10)}.pdf`);
         }
 
-        // Arama ve filtreleme fonksiyonları (Autocomplete)
-        function filterCosterProducts() {
-            const input = document.getElementById('co-costerCode');
-            const val = input.value.toLowerCase();
-            const dropdown = document.getElementById('co-costerDropdown');
-            
-            // Hem koda hem de isme göre ara
-            const filtered = appData.costerProducts.filter(p => 
-                (p.costerCode && p.costerCode.toLowerCase().includes(val)) || 
-                (p.unisonName && p.unisonName.toLowerCase().includes(val))
-            );
-
-            if(filtered.length === 0) {
-                dropdown.innerHTML = '<li class="p-3 text-sm text-slate-500 text-center">Eşleşen ürün bulunamadı.</li>';
-            } else {
-                dropdown.innerHTML = filtered.map(p => 
-                    `<li onclick="selectCosterProduct('${p.costerCode}')" class="p-2 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer transition">
-                        <div class="font-bold text-slate-800 dark:text-slate-200 text-sm">${p.costerCode}</div>
-                        <div class="text-[11px] text-slate-500 truncate" title="${p.unisonName}">${p.unisonName}</div>
-                    </li>`
-                ).join('');
-            }
-            dropdown.classList.remove('hidden');
-        }
-
-        function selectCosterProduct(code) {
-            const input = document.getElementById('co-costerCode');
-            input.value = code; // Kodu input'a yaz
-            document.getElementById('co-costerDropdown').classList.add('hidden'); // Listeyi kapat
-            costerAutoFill(); // İlgili alanları (isim, fiyat vs.) otomatik doldur
-        }
-
-        // Dışarıya tıklayınca dropdown'ı kapat
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('co-costerDropdown');
-            const input = document.getElementById('co-costerCode');
-            if (dropdown && !dropdown.contains(e.target) && e.target !== input) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        // ÖNEMLİ DÜZELTME: Düzenleme yaparken Select menüsü artık doluyor
         function openCosterOrderModal(id = null) {
-            document.getElementById('co-costerDropdown').classList.add('hidden');
-            
-            // Genel modal açma (ve veri doldurma) fonksiyonunu çağır
             openModal('costerOrderModal', id, 'costerOrders');
-            
-            if(id) {
-                // Eğer düzenleme modundaysa (id varsa), bilgilerin otomatik dolması için ufak bir gecikme ile çağır
-                setTimeout(costerAutoFill, 50);
-            }
-        }
-
-        function costerAutoFill() {
-            const code = document.getElementById('co-costerCode').value;
-            const prod = appData.costerProducts.find(p => p.costerCode === code);
-            const nameInput = document.getElementById('co-unisonName');
-            const priceInput = document.getElementById('co-price');
-            const currSelect = document.getElementById('co-currency');
-            
-            if(prod) {
-                nameInput.value = prod.unisonName || '';
-                priceInput.value = prod.price || '';
-                if(prod.currency) currSelect.value = prod.currency;
-            } else {
-                nameInput.value = ''; priceInput.value = '';
-            }
         }
 
         function updateCosterOrderStatus(id, newStatus) {
@@ -1765,22 +1699,6 @@
             if(order) {
                 order.status = newStatus;
                 saveData('costerOrders');
-            }
-        }
-
-        function openCosterStockModal(uName = null, currQty = 0, stockId = null) {
-            let uniqueNames = [...new Set(appData.costerProducts.map(p => p.unisonName))];
-            
-            const sel = document.getElementById('cs-unisonName');
-            sel.innerHTML = '<option value="">Lütfen Ürün Seçin...</option>' + uniqueNames.map(n => `<option value="${n}">${n}</option>`).join('');
-            
-            openModal('costerStockModal', stockId, 'costerStocks');
-            
-            if(uName) {
-                setTimeout(() => {
-                    document.getElementById('cs-unisonName').value = uName;
-                    document.querySelector('#formCosterStock [name="qty"]').value = currQty;
-                }, 50);
             }
         }
         
