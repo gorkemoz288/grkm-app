@@ -53,17 +53,29 @@
         /* Login Background - Soft Gradient */
         .login-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
 
-        /* Print Styles */
+        /* Print Styles - YENİDEN DÜZENLENDİ */
         @media print {
-            @page { size: A4 landscape; margin: 10mm; }
+            @page { size: A4 portrait; margin: 0; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
             body * { visibility: hidden; }
-            #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+            
+            /* Sadece view-color görünür olacak */
+            #view-color, #view-color * { visibility: visible; }
+            #view-color { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; display: block !important; }
+            
             .no-print { display: none !important; }
-            .glass { box-shadow: none; border: 1px solid #000; }
-            #appLayout, main, #mainContent, .view-section, .overflow-y-auto, .overflow-hidden, .custom-scrollbar {
-                height: auto !important;
-                overflow: visible !important;
+            
+            /* A4 kağıda tam oturması için */
+            .color-form-print { 
+                width: 210mm !important;
+                height: 297mm !important;
+                min-height: 297mm !important;
+                margin: 0 auto !important;
+                padding: 15mm !important;
+                border: none !important;
+                box-shadow: none !important;
+                page-break-after: avoid;
+                page-break-inside: avoid;
             }
         }
 
@@ -84,7 +96,7 @@
 <body class="h-screen flex overflow-hidden selection:bg-blue-500 selection:text-white text-sm">
 
     <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="fixed inset-0 z-[100] flex items-center justify-center login-bg p-4 transition-opacity">
+    <div id="loginScreen" class="fixed inset-0 z-[100] hidden items-center justify-center login-bg p-4 transition-opacity">
         <div class="glass p-10 shadow-2xl w-full max-w-md text-center relative overflow-hidden bg-slate-800 border-slate-700">
             <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
             
@@ -168,7 +180,7 @@
             </div>
 
             <div class="p-4 border-t border-slate-800/50">
-                <button onclick="auth.signOut()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-slate-800 hover:bg-red-500/20 hover:text-red-400 transition text-sm"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+                <button onclick="auth.signOut()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-slate-800 hover:bg-red-500/20 hover:text-red-400 transition text-sm"><i class="fas fa-sync-alt"></i> Oturumu Yenile</button>
             </div>
         </aside>
 
@@ -465,6 +477,10 @@
                             </div>
                             <div class="flex gap-2">
                                 <button onclick="deleteSelected('costerOrders')" class="text-red-500 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-slate-800 transition"><i class="fas fa-trash"></i></button>
+                                <!-- İçe Aktar -->
+                                <input type="file" id="costerExcelInput" class="hidden" accept=".xlsx, .xls, .csv" onchange="importCosterExcel(event)">
+                                <button onclick="document.getElementById('costerExcelInput').click()" class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-2 rounded-lg text-sm transition font-medium hover:bg-indigo-100"><i class="fas fa-file-import mr-1"></i> İçe Aktar</button>
+                                <button onclick="exportCosterOrdersPDF()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i class="fas fa-file-pdf mr-1"></i> PDF Çıktı</button>
                                 <button onclick="exportExcel('Coster_Siparisler', appData.costerOrders)" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i class="fas fa-file-excel mr-1"></i> Excel</button>
                                 <button onclick="openCosterOrderModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-plus mr-1"></i> Yeni Sipariş</button>
                             </div>
@@ -483,6 +499,7 @@
                                             <th class="p-3">Sipariş / Termin Trh.</th>
                                             <th class="p-3">FIFO Stok Durumu</th>
                                             <th class="p-3">Aşama</th>
+                                            <th class="p-3">Notlar</th>
                                             <th class="p-3 w-14">İşlem</th>
                                         </tr>
                                     </thead>
@@ -498,6 +515,7 @@
                             <h3 class="font-bold text-slate-700 dark:text-slate-300">Coster ↔ Unison Eşleştirme Sözlüğü</h3>
                             <div class="flex gap-2">
                                 <button onclick="deleteSelected('costerProducts')" class="text-red-500 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-slate-800 transition"><i class="fas fa-trash"></i></button>
+                                <button onclick="exportExcel('Coster_Urunler', appData.costerProducts)" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-100 transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
                                 <button onclick="openModal('costerProductModal', null, 'costerProducts')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-plus mr-1"></i> Yeni Ürün Ekle</button>
                             </div>
                         </div>
@@ -512,6 +530,7 @@
                             <h3 class="font-bold text-slate-700 dark:text-slate-300">Fiziksel Stok ve Rezervasyon Tablosu</h3>
                             <div class="flex gap-2">
                                 <button onclick="deleteSelected('costerStocks')" class="text-red-500 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-slate-800 transition"><i class="fas fa-trash mr-1"></i> Seçili Olanları Sil</button>
+                                <button onclick="exportExcel('Coster_Stoklar', appData.costerStocks)" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-100 transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
                                 <button onclick="openCosterStockModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-plus mr-1"></i> Fiziksel Stok Güncelle</button>
                             </div>
                         </div>
@@ -539,7 +558,7 @@
                 <!-- 5. RENK ONAY -->
                 <div id="view-color" class="view-section hidden w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6">
                     <div class="flex justify-end mb-4 no-print"><button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium"><i class="fas fa-print mr-1"></i> PDF/Yazdır</button></div>
-                    <div class="bg-white w-[210mm] min-h-[297mm] mx-auto p-[15mm] border border-gray-200 text-black shadow-sm"><header class="flex justify-between border-b-4 border-slate-800 pb-4 mb-6"><div><img src="https://www.unison.com.tr/wp-content/uploads/2024/11/cropped-logo_unison-300x70.png" class="h-12"></div><div class="text-right"><h1 class="text-2xl font-bold uppercase text-slate-800">Renk Onay Formu</h1><p class="text-xs text-slate-500 mt-1">COLOR APPROVAL FORM</p></div></header><div class="grid grid-cols-2 gap-y-4 gap-x-8 mb-6"><div><label class="block text-xs font-bold text-slate-500">DÜZENLEYEN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">TARİH</label><input type="date" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">FİRMA</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">İLGİLİ KİŞİ</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">ÜRÜN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">RENK TANIMI</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div></div><div class="border-2 border-dashed border-gray-300 h-64 flex items-center justify-center relative group cursor-pointer" onclick="document.getElementById('colorImg').click()"><input type="file" id="colorImg" hidden accept="image/*" onchange="previewImage(event, 'previewColorImg', 'phColorImg')"><span id="phColorImg" class="text-gray-400 group-hover:text-blue-500"><i class="fas fa-image text-3xl mb-2 block text-center"></i>Görsel Eklemek İçin Tıklayın</span><img id="previewColorImg" class="absolute inset-0 w-full h-full object-contain hidden p-2"></div><div class="mt-4"><label class="block text-xs font-bold text-slate-500">NOTLAR</label><textarea class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent resize-none" rows="2"></textarea></div><div class="mt-12 pt-6 border-t border-gray-300 flex justify-between items-end"><div><p class="font-bold text-sm">Unison Dış Ticaret A.Ş.</p><p class="text-xs text-gray-500 mt-1">Onay (Kaşe/İmza)</p></div><div class="border border-gray-400 w-48 h-24 p-2 relative"><span class="absolute top-2 text-xs font-bold text-gray-500">MÜŞTERİ ONAYI</span><span class="absolute bottom-2 right-2 text-[10px] text-gray-400">Tarih: ___/___/20___</span></div></div></div>
+                    <div class="bg-white w-[210mm] min-h-[297mm] mx-auto p-[15mm] border border-gray-200 text-black shadow-sm color-form-print"><header class="flex justify-between border-b-4 border-slate-800 pb-4 mb-6"><div><img src="https://www.unison.com.tr/wp-content/uploads/2024/11/cropped-logo_unison-300x70.png" class="h-12"></div><div class="text-right"><h1 class="text-2xl font-bold uppercase text-slate-800">Renk Onay Formu</h1><p class="text-xs text-slate-500 mt-1">COLOR APPROVAL FORM</p></div></header><div class="grid grid-cols-2 gap-y-4 gap-x-8 mb-6"><div><label class="block text-xs font-bold text-slate-500">DÜZENLEYEN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">TARİH</label><input type="date" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">FİRMA</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div><label class="block text-xs font-bold text-slate-500">İLGİLİ KİŞİ</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">ÜRÜN</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div><div class="col-span-2"><label class="block text-xs font-bold text-slate-500">RENK TANIMI</label><input type="text" class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent"></div></div><div class="border-2 border-dashed border-gray-300 h-64 flex items-center justify-center relative group cursor-pointer" onclick="document.getElementById('colorImg').click()"><input type="file" id="colorImg" hidden accept="image/*" onchange="previewImage(event, 'previewColorImg', 'phColorImg')"><span id="phColorImg" class="text-gray-400 group-hover:text-blue-500"><i class="fas fa-image text-3xl mb-2 block text-center"></i>Görsel Eklemek İçin Tıklayın</span><img id="previewColorImg" class="absolute inset-0 w-full h-full object-contain hidden p-2"></div><div class="mt-4"><label class="block text-xs font-bold text-slate-500">NOTLAR</label><textarea class="w-full border-b border-gray-300 py-1 outline-none text-sm bg-transparent resize-none" rows="2"></textarea></div><div class="mt-12 pt-6 border-t border-gray-300 flex justify-between items-end"><div><p class="font-bold text-sm">Unison Dış Ticaret A.Ş.</p><p class="text-xs text-gray-500 mt-1">Onay (Kaşe/İmza)</p></div><div class="border border-gray-400 w-48 h-24 p-2 relative"><span class="absolute top-2 text-xs font-bold text-gray-500">MÜŞTERİ ONAYI</span><span class="absolute bottom-2 right-2 text-[10px] text-gray-400">Tarih: ___/___/20___</span></div></div></div>
                 </div>
 
                 <!-- 6. PAZAR İSTİHBARATI -->
@@ -709,6 +728,28 @@
         </div>
     </div>
 
+    <!-- Pazar İstihbaratı Tam Ekran Okuma Modalı -->
+    <div id="intelViewModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 z-[160]">
+        <div class="bg-white dark:bg-slate-900 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <span id="intelViewCat" class="text-[10px] font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-2 py-1 rounded"></span>
+                        <h3 id="intelViewTitle" class="text-lg font-bold text-slate-800 mt-2"></h3>
+                        <p id="intelViewDate" class="text-xs text-slate-400 mt-1"><i class="fas fa-calendar-alt mr-1"></i><span></span></p>
+                    </div>
+                    <button onclick="closeModal('intelViewModal')" class="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="overflow-y-auto max-h-[60vh] custom-scrollbar">
+                    <p id="intelViewDesc" class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap mb-4"></p>
+                    <div id="intelViewImgContainer" class="hidden">
+                        <img id="intelViewImg" src="" class="w-full rounded-lg border border-slate-200 object-contain max-h-64">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- OTHER MODALS -->
     <div id="shippingModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl border border-slate-200"><h3 class="text-lg font-medium mb-4 border-b border-slate-100 pb-2">Sevkiyat Planı</h3><form id="formShipping" onsubmit="saveForm(event, 'shipping')" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><input type="hidden" name="id"><div class="md:col-span-2 flex items-center gap-2 bg-amber-50 p-2.5 rounded border border-amber-200"><input type="checkbox" name="isImportant" id="isImportant" class="w-4 h-4"><label for="isImportant" class="font-medium text-amber-700">Önemli/Kritik Sevkiyat!</label></div><div><label class="text-xs text-slate-500">Başlangıç</label><input type="date" name="startDate" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Bitiş</label><input type="date" name="endDate" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Firma / Müşteri</label><input type="text" name="customer" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Ürün</label><input type="text" name="product" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Toplam Adet</label><input type="number" name="totalQty" id="shpQty" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Koli İçi</label><input type="number" name="boxQty" id="shpBox" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2 bg-slate-50 p-2.5 rounded text-center text-sm font-medium text-slate-600 border border-slate-100">Hesaplanan Toplam Koli: <span id="shpRes" class="font-bold">0</span></div><div><label class="text-xs text-slate-500">Çıkış Adresi</label><input type="text" name="fromAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Varış Adresi</label><input type="text" name="toAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2"><label class="text-xs text-slate-500">Açıklama / Notlar</label><textarea name="notes" rows="2" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></textarea></div><div class="md:col-span-2 flex justify-end gap-2 mt-2 pt-4 border-t border-slate-100"><button type="button" onclick="closeModal('shippingModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600">İptal</button><button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg">Kaydet</button></div></form></div></div>
     <div id="biotaModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formBiota" onsubmit="saveForm(event, 'biota')" class="space-y-3"><input type="hidden" name="id"><div><label class="text-xs text-slate-500">Sipariş No</label><input type="text" name="orderNo" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Malzeme No</label><input type="text" name="materialNo" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Açıklama</label><input type="text" name="materialDesc" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Tarih</label><input type="text" name="date" class="w-full border p-2 rounded" placeholder="gg.aa.yyyy"></div><div class="grid grid-cols-2 gap-2"><div><label class="text-xs text-slate-500">Sipariş Adet</label><input type="number" name="qty" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-emerald-600 font-medium">Yeni Teslimat Ekle</label><input type="number" name="newDelivered" value="0" class="w-full border border-emerald-300 bg-emerald-50 p-2 rounded"></div><input type="hidden" name="deliveredQty" value="0"></div><div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal('biotaModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Kaydet</button></div></form></div></div>
@@ -782,28 +823,24 @@
         }
 
         // --- AUTH ---
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             if (user) {
                 currentUser = user;
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('appLayout').classList.remove('hidden');
-                document.getElementById('userEmail').innerHTML = `<i class="fas fa-circle text-[8px] mr-1"></i>${user.email.split('@')[0]}`;
+                document.getElementById('userEmail').innerHTML = `<i class="fas fa-circle text-[8px] mr-1"></i>Çevrimiçi`;
                 initDataListeners();
                 document.getElementById('finMonthPicker').value = currentFinMonth;
                 nav('dashboard');
                 setInterval(updateClock, 60000); updateClock();
             } else {
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('appLayout').classList.add('hidden');
+                try {
+                    // Kullanıcı girişi yoksa form sormadan otomatik anonim giriş yap
+                    await auth.signInAnonymously();
+                } catch (error) {
+                    console.error("Otomatik giriş başarısız:", error);
+                }
             }
-        });
-
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const eIn = document.getElementById('email').value, pIn = document.getElementById('password').value;
-            const err = document.getElementById('authError'); err.classList.add('hidden');
-            try { await auth.signInWithEmailAndPassword(eIn, pIn); } 
-            catch (error) { err.innerText = "Giriş Başarısız: Şifre hatalı."; err.classList.remove('hidden'); }
         });
 
         // --- DATA SYNC ---
@@ -985,16 +1022,18 @@
         function openModal(id, dataId = null, mod = null) {
             const modal = document.getElementById(id);
             const form = modal.querySelector('form');
-            form.reset();
+            if(form) form.reset();
             if(id === 'financeModal') updateFinCategories();
             
-            const hdnFields = form.querySelectorAll('input[type="hidden"]');
-            hdnFields.forEach(f => { if(f.name === 'fileData' || f.name === 'fileName') f.value = ''; });
+            if(form) {
+                const hdnFields = form.querySelectorAll('input[type="hidden"]');
+                hdnFields.forEach(f => { if(f.name === 'fileData' || f.name === 'fileName') f.value = ''; });
+            }
 
-            if(dataId && mod) {
+            if(dataId && mod && form) {
                 const item = appData[mod].find(x => x.id === dataId);
                 if(item) Object.keys(item).forEach(k => { if(form.elements[k]) form.elements[k].value = item[k]; });
-            } else {
+            } else if(form) {
                 if(form.elements['id']) form.elements['id'].value = '';
                 if(id === 'intelModal') document.getElementById('intelDate').valueAsDate = new Date();
                 if(id === 'noteModal') document.getElementById('sysDateNote').value = new Date().toLocaleDateString('tr-TR');
@@ -1244,6 +1283,100 @@
         }
         function updateClock() { const d = new Date(); document.getElementById('topTime').innerText = d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}); document.getElementById('topDate').innerText = d.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'}); }
         
+        function parseDateSafely(dStr) {
+            if(!dStr) return 0;
+            let d = new Date(dStr);
+            if(!isNaN(d)) return d.getTime();
+            let parts = String(dStr).split(/[.-/]/);
+            if(parts.length === 3) {
+                if (parts[0].length <= 2 && parts[2].length === 4) {
+                    return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
+                }
+            }
+            return 0;
+        }
+
+        function importCosterExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
+                    
+                    let addedCount = 0;
+                    jsonData.forEach(row => {
+                        const getVal = (keys) => {
+                            const rowKeys = Object.keys(row);
+                            for(let k of keys) {
+                                let target = k.toLowerCase().replace(/\s+/g, '');
+                                let foundKey = rowKeys.find(x => x.toLowerCase().replace(/\s+/g, '') === target);
+                                if(foundKey) return row[foundKey];
+                            }
+                            return '';
+                        };
+
+                        const orderNo = getVal(['SİPARİŞ NO', 'Sipariş No', 'Siparis No', 'Order No']);
+                        const unisonName = getVal(['Ürün Adı', 'Urun Adi', 'Unison İsim', 'Unison Name']);
+                        const costerCode = getVal(['Coster Kodu', 'Coster Code', 'Malzeme No', 'Urun Kodu']);
+                        const qtyRaw = getVal(['Sipariş Adet', 'Siparis Adet', 'Miktar', 'Qty']);
+                        const dateStr = getVal(['Tarih', 'Sipariş Tarihi', 'Date']);
+                        const deadlineStr = getVal(['Termin', 'Termin Tarihi', 'Deadline']);
+                        const statusStr = getVal(['Durum', 'Aşama', 'Status']);
+                        
+                        if (orderNo || costerCode || unisonName) {
+                            let parsedQty = parseInt(qtyRaw.toString().replace(/[^0-9]/g, '')) || 0;
+                            let status = "Teyit Bekliyor";
+                            if(statusStr) {
+                                const s = statusStr.toLowerCase();
+                                if(s.includes("üretim")) status = "Üretimde";
+                                else if(s.includes("yol")) status = "Yolda";
+                                else if(s.includes("gümrük")) status = "Gümrükte";
+                                else if(s.includes("tamam")) status = "Tamamlandı";
+                                else if(s.includes("iptal")) status = "İptal";
+                            }
+
+                            appData.costerOrders.push({
+                                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                                orderNo: String(orderNo).trim(),
+                                unisonName: String(unisonName).trim(),
+                                costerCode: String(costerCode).trim(),
+                                qty: String(parsedQty),
+                                deliveredQty: "0",
+                                date: String(dateStr).trim(),
+                                deadline: String(deadlineStr).trim(),
+                                status: status,
+                                notes: "",
+                                price: "",
+                                currency: ""
+                            });
+                            addedCount++;
+                        }
+                    });
+
+                    if (addedCount > 0) {
+                        saveData('costerOrders');
+                        renderCosterOrders();
+                        calcCosterDashboard();
+                        alert(`${addedCount} adet sipariş başarıyla Coster listesine eklendi.`);
+                    } else {
+                        alert("Dosyada uygun kayıt bulunamadı. Lütfen doğru dosyayı seçtiğinizden emin olun.");
+                    }
+                } catch (error) {
+                    console.error("Excel okuma hatası:", error);
+                    alert("Excel/CSV dosyası okunurken bir hata oluştu.");
+                }
+                event.target.value = ''; // Inputu sıfırla
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
         // --- BİOTA İÇE AKTAR VE RENDER ---
         function importBiotaExcel(event) {
             const file = event.target.files[0];
@@ -1261,21 +1394,40 @@
                     
                     let addedCount = 0;
                     jsonData.forEach(row => {
-                        const orderNo = row['Sipariş No'] || '';
-                        const materialNo = row['Malzeme No'] || '';
-                        const materialDesc = row['Açıklama'] || '';
-                        const dateStr = row['Tarih'] || '';
-                        const qty = row['Sipariş Adet'] || 0;
-                        const deliveredQty = 0;
+                        // Sütun başlıklarındaki büyük/küçük harf ve gizli boşluk hatalarını tolere eden akıllı okuyucu
+                        const getVal = (keys) => {
+                            const rowKeys = Object.keys(row);
+                            for(let k of keys) {
+                                let target = k.toLowerCase().replace(/\s+/g, '');
+                                let foundKey = rowKeys.find(x => x.toLowerCase().replace(/\s+/g, '') === target);
+                                if(foundKey) return row[foundKey];
+                            }
+                            return '';
+                        };
+
+                        const orderNo = getVal(['SİPARİŞ NO', 'Sipariş No', 'Siparis No']);
+                        const materialNo = getVal(['MALZEME NO', 'Malzeme No']);
+                        const materialDesc = getVal(['Açıklama', 'Aciklama', 'Malzeme Tanımı']);
+                        const dateStr = getVal(['Tarih', 'Sipariş Tarihi']);
+                        const qtyRaw = getVal(['Sipariş Adet', 'Siparis Adet', 'Miktar']);
+                        const remainQtyRaw = getVal(['KALAN SİPARİŞ MİKTARI', 'Kalan Siparis Miktari', 'Kalan']);
 
                         if (orderNo || materialNo) {
+                            // Rakam dışındaki sembolleri temizle
+                            let parsedQty = parseInt(qtyRaw.toString().replace(/[^0-9]/g, '')) || 0;
+                            let parsedRemain = remainQtyRaw !== '' ? parseInt(remainQtyRaw.toString().replace(/[^0-9]/g, '')) : parsedQty;
+                            
+                            // Teslim edilen miktar otomatik hesabı (Sipariş Adedi - Kalan Miktar)
+                            let deliveredQty = parsedQty - parsedRemain;
+                            if(deliveredQty < 0) deliveredQty = 0;
+
                             appData.biota.push({
                                 id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
                                 orderNo: String(orderNo).trim(),
                                 materialNo: String(materialNo).trim(),
                                 materialDesc: String(materialDesc).trim(),
                                 date: String(dateStr).trim(),
-                                qty: String(qty).trim(),
+                                qty: String(parsedQty),
                                 deliveredQty: String(deliveredQty)
                             });
                             addedCount++;
@@ -1285,13 +1437,13 @@
                     if (addedCount > 0) {
                         saveData('biota');
                         renderBiota();
-                        alert(`${addedCount} adet kayıt başarıyla içe aktarıldı.`);
+                        alert(`${addedCount} adet sipariş başarıyla listeye eklendi.`);
                     } else {
-                        alert("Dosyada uygun kayıt bulunamadı.");
+                        alert("Dosyada uygun kayıt bulunamadı. Lütfen doğru dosyayı seçtiğinizden emin olun.");
                     }
                 } catch (error) {
                     console.error("Excel okuma hatası:", error);
-                    alert("Excel dosyası okunurken bir hata oluştu.");
+                    alert("Excel/CSV dosyası okunurken bir hata oluştu.");
                 }
                 event.target.value = ''; // Inputu sıfırla
             };
@@ -1333,7 +1485,7 @@
                 alert("Kopyalanacak düzenlenmiş sipariş bulunamadı. Lütfen önce yeni teslimat ekleyin.");
                 return;
             }
-            const t = `Merhaba Fatma Hanım,\n\nDüzenlenen sipariş numaraları;\n${editedBiotaOrders.join('\n')}\n\nTeşekkürler.`; 
+            const t = `Merhaba Müge Hanım,\n\nDüzenlenen sipariş numaraları;\n${editedBiotaOrders.join('\n')}\n\nTeşekkürler.`; 
             
             navigator.clipboard.writeText(t).then(() => {
                 alert("Mail şablonu kopyalandı!");
@@ -1374,7 +1526,7 @@
             
             // Sadece açık siparişler, FIFO için tarihe göre eskiden yeniye sıralı
             let activeOrders = appData.costerOrders.filter(o => o.status !== 'Tamamlandı' && o.status !== 'İptal');
-            activeOrders.sort((a, b) => new Date(a.deadline || a.date) - new Date(b.deadline || b.date));
+            activeOrders.sort((a, b) => parseDateSafely(a.deadline || a.date) - parseDateSafely(b.deadline || b.date));
             
             let statusMap = {};
             let reservedMap = {}; 
@@ -1459,10 +1611,10 @@
             );
 
             // FIFO Taraması için sıralama (En acil en üstte)
-            list.sort((a, b) => new Date(a.deadline || a.date) - new Date(b.deadline || b.date));
+            list.sort((a, b) => parseDateSafely(a.deadline || a.date) - parseDateSafely(b.deadline || b.date));
 
             if(list.length === 0) {
-                tb.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Gösterilecek sipariş yok.</td></tr>`;
+                tb.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400">Gösterilecek sipariş yok.</td></tr>`;
                 return;
             }
 
@@ -1504,6 +1656,9 @@
                             <option value="Tamamlandı" ${o.status==='Tamamlandı'?'selected':''}>Tamamlandı</option>
                             <option value="İptal" ${o.status==='İptal'?'selected':''}>İptal</option>
                         </select>
+                    </td>
+                    <td class="p-3 text-[11px] text-slate-500 max-w-[150px] truncate" title="${o.notes || ''}">
+                        ${o.notes || '-'}
                     </td>
                     <td class="p-3 w-14 text-center">
                         <button onclick="openCosterOrderModal('${o.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded transition"><i class="fas fa-pen"></i></button>
@@ -1608,6 +1763,50 @@
 
         // Coster - Helper Functions
         
+        async function exportCosterOrdersPDF() {
+            let fontB64 = null;
+            if(typeof getPdfFont === "function") fontB64 = await getPdfFont();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            
+            if(fontB64) {
+                doc.addFileToVFS("Roboto-Regular.ttf", fontB64);
+                doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+                doc.setFont("Roboto");
+            }
+            doc.text('Coster Siparis Listesi', 14, 15);
+            const head = [['Siparis No', 'Urun (Unison)', 'Coster Kodu', 'Siparis', 'Kalan', 'Durum', 'Sip/Ter Trh.', 'Aciklama']];
+            
+            const { statusMap } = calcCosterFIFO();
+            let exp = appData.costerOrders;
+            
+            if(selectedItems.costerOrders && selectedItems.costerOrders.length > 0) {
+                exp = exp.filter(x => selectedItems.costerOrders.includes(x.id));
+            }
+            exp.sort((a, b) => parseDateSafely(a.deadline || a.date) - parseDateSafely(b.deadline || b.date));
+
+            const body = exp.map(o => {
+                const total = parseInt(o.qty) || 0;
+                const delv = parseInt(o.deliveredQty) || 0;
+                const remain = Math.max(0, total - delv);
+                let fifoStatus = statusMap[o.id] ? statusMap[o.id].replace(/<[^>]*>?/gm, '') : '-';
+
+                return [
+                    o.orderNo || '', 
+                    o.unisonName || '', 
+                    o.costerCode || '',
+                    String(total), 
+                    String(remain), 
+                    `${o.status||''}\nFIFO: ${fifoStatus}`, 
+                    `Sip: ${o.date||''}\nTer: ${o.deadline||''}`, 
+                    o.notes || ''
+                ];
+            });
+
+            doc.autoTable({ head: head, body: body, startY: 20, styles: { font: fontB64 ? 'Roboto' : 'helvetica', fontSize: 7, cellPadding: 2 }, columnStyles: { 7: { cellWidth: 50 } } });
+            doc.save(`Coster_Siparisler_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+
         // Arama ve filtreleme fonksiyonları (Autocomplete)
         function filterCosterProducts() {
             const input = document.getElementById('co-costerCode');
@@ -1703,7 +1902,44 @@
         }
         
         function renderIntel() { 
-            document.getElementById('gridIntel').innerHTML = [...appData.intel].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(x => `<div class="glass p-4 relative group"><div class="text-[10px] text-blue-500 font-bold">${x.category}</div><h4 class="font-medium">${x.title}</h4><p class="text-[10px] text-slate-400 mb-2">${x.date||''}</p><p class="text-sm text-slate-600 line-clamp-3">${x.desc}</p><div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('intelModal','${x.id}','intel')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('intel','${x.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); 
+            document.getElementById('gridIntel').innerHTML = [...appData.intel].sort((a,b)=>parseDateSafely(b.date)-parseDateSafely(a.date)).map(x => 
+                `<div class="glass p-4 relative group cursor-pointer hover:border-blue-400 hover:shadow-md transition" onclick="openIntelView('${x.id}')">
+                    <div class="flex items-center gap-2 mb-2">
+                        ${x.isImportant ? '<i class="fas fa-exclamation-circle text-red-500 text-xs"></i>' : ''}
+                        <div class="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-100">${x.category}</div>
+                    </div>
+                    <h4 class="font-semibold text-slate-800 dark:text-slate-200 text-[15px] leading-tight mb-1">${x.title}</h4>
+                    <p class="text-[10px] text-slate-400 mb-2"><i class="fas fa-calendar-alt mr-1"></i>${x.date||''}</p>
+                    <p class="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-3">${x.desc}</p>
+                    ${x.fileData ? '<div class="mt-3 text-[10px] text-emerald-600 font-medium bg-emerald-50 inline-block px-2 py-1 rounded"><i class="fas fa-image mr-1"></i>Görsel Ekli</div>' : ''}
+                    <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition z-10">
+                        <button onclick="event.stopPropagation(); openModal('intelModal','${x.id}','intel')" class="bg-white border border-slate-200 text-blue-500 w-8 h-8 rounded-lg hover:bg-blue-50 transition flex items-center justify-center shadow-sm"><i class="fas fa-pen text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); delItem('intel','${x.id}')" class="bg-white border border-slate-200 text-red-500 w-8 h-8 rounded-lg hover:bg-red-50 transition flex items-center justify-center shadow-sm"><i class="fas fa-trash text-xs"></i></button>
+                    </div>
+                </div>`
+            ).join(''); 
+        }
+
+        // Pazar İstihbaratı Tam Ekran Görünüm
+        function openIntelView(id) {
+            const item = appData.intel.find(x => x.id === id);
+            if(!item) return;
+            document.getElementById('intelViewCat').innerText = item.category || '';
+            document.getElementById('intelViewTitle').innerText = item.title || '';
+            document.getElementById('intelViewDate').querySelector('span').innerText = item.date || '-';
+            document.getElementById('intelViewDesc').innerText = item.desc || '';
+            
+            const imgCont = document.getElementById('intelViewImgContainer');
+            const img = document.getElementById('intelViewImg');
+            if(item.fileData) {
+                img.src = item.fileData;
+                imgCont.classList.remove('hidden');
+            } else {
+                imgCont.classList.add('hidden');
+            }
+            
+            document.getElementById('intelViewModal').classList.remove('hidden');
+            document.getElementById('intelViewModal').classList.add('flex');
         }
         
         function renderPriceLists() { 
