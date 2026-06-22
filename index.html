@@ -440,24 +440,13 @@
                 <!-- 4.5. COSTER TAKİP MODÜLÜ (Master Prompt'a Uygun) -->
                 <div id="view-coster" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
                     
-                    <!-- Üst Navigasyon -->
-                    <div class="glass p-2 flex gap-2 overflow-x-auto no-scrollbar shrink-0 shadow-sm border border-slate-200 dark:border-slate-700">
-                        <button onclick="switchCosterTab('dashboard')" id="btn-coster-dashboard" class="px-5 py-2.5 rounded-lg text-sm font-medium bg-blue-600 text-white transition whitespace-nowrap"><i class="fas fa-layer-group mr-2"></i>Siparişler & KPI</button>
-                        <button onclick="switchCosterTab('products')" id="btn-coster-products" class="px-5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition whitespace-nowrap"><i class="fas fa-boxes-packing mr-2"></i>Ürün Kütüphanesi</button>
-                        <button onclick="switchCosterTab('stocks')" id="btn-coster-stocks" class="px-5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition whitespace-nowrap"><i class="fas fa-cubes mr-2"></i>Stok Yönetimi</button>
-                    </div>
-
                     <!-- TAB 1: DASHBOARD & SİPARİŞLER -->
-                    <div id="coster-tab-dashboard" class="coster-tab-content flex-1 flex flex-col space-y-4 min-h-0">
+                    <div id="coster-tab-dashboard" class="flex-1 flex flex-col space-y-4 min-h-0">
                         <!-- KPI Row -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 shrink-0">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0">
                             <div class="glass p-4 border-t-4 border-blue-500">
                                 <p class="text-[10px] text-slate-500 uppercase font-semibold">Açık Sipariş Adedi</p>
                                 <h3 class="text-2xl font-bold dark:text-white mt-1" id="coster-kpi-active">0</h3>
-                            </div>
-                            <div class="glass p-4 border-t-4 border-red-500">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Kritik / Stok Yetersiz</p>
-                                <h3 class="text-2xl font-bold text-red-500 mt-1" id="coster-kpi-critical">0</h3>
                             </div>
                             <div class="glass p-4 border-t-4 border-emerald-500">
                                 <p class="text-[10px] text-slate-500 uppercase font-semibold">Bekleyen Ciro (EUR)</p>
@@ -497,7 +486,6 @@
                                             <th class="p-3">Ürün (Unison İsim)</th>
                                             <th class="p-3 text-center">Sipariş / Kalan</th>
                                             <th class="p-3">Sipariş / Termin Trh.</th>
-                                            <th class="p-3">FIFO Stok Durumu</th>
                                             <th class="p-3">Aşama</th>
                                             <th class="p-3">Notlar</th>
                                             <th class="p-3 w-14">İşlem</th>
@@ -509,48 +497,6 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: ÜRÜN KÜTÜPHANESİ -->
-                    <div id="coster-tab-products" class="coster-tab-content hidden flex-1 flex flex-col space-y-4 min-h-0">
-                        <div class="flex justify-between items-center no-print shrink-0">
-                            <h3 class="font-bold text-slate-700 dark:text-slate-300">Coster ↔ Unison Eşleştirme Sözlüğü</h3>
-                            <div class="flex gap-2">
-                                <button onclick="deleteSelected('costerProducts')" class="text-red-500 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-slate-800 transition"><i class="fas fa-trash"></i></button>
-                                <button onclick="exportExcel('Coster_Urunler', appData.costerProducts)" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-100 transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
-                                <button onclick="openModal('costerProductModal', null, 'costerProducts')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-plus mr-1"></i> Yeni Ürün Ekle</button>
-                            </div>
-                        </div>
-                        <div class="flex-1 overflow-y-auto custom-scrollbar p-1 min-h-0">
-                            <div id="gridCosterProducts" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 lg:gap-6 gap-4 pb-10 content-start"></div>
-                        </div>
-                    </div>
-
-                    <!-- TAB 3: STOK YÖNETİMİ -->
-                    <div id="coster-tab-stocks" class="coster-tab-content hidden flex-1 flex flex-col space-y-4 min-h-0">
-                        <div class="flex justify-between items-center no-print shrink-0">
-                            <h3 class="font-bold text-slate-700 dark:text-slate-300">Fiziksel Stok ve Rezervasyon Tablosu</h3>
-                            <div class="flex gap-2">
-                                <button onclick="deleteSelected('costerStocks')" class="text-red-500 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-slate-800 transition"><i class="fas fa-trash mr-1"></i> Seçili Olanları Sil</button>
-                                <button onclick="exportExcel('Coster_Stoklar', appData.costerStocks)" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-100 transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
-                                <button onclick="openCosterStockModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-plus mr-1"></i> Fiziksel Stok Güncelle</button>
-                            </div>
-                        </div>
-                        <div class="glass rounded-xl overflow-hidden flex-1 flex flex-col shadow-sm min-h-0">
-                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
-                                <table class="w-full text-sm text-left border-collapse">
-                                    <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 text-xs uppercase tracking-wide">
-                                        <tr>
-                                            <th class="p-3 w-10"><input type="checkbox" onchange="toggleSelectAll('costerStocks', this.checked)" class="rounded border-slate-300"></th>
-                                            <th class="p-4">Unison İsim (Ürün)</th>
-                                            <th class="p-4 text-right">Mevcut Fiziksel Stok</th>
-                                            <th class="p-4 text-right">Ayrılan (Rezerve)</th>
-                                            <th class="p-4 text-right border-l border-slate-200 dark:border-slate-700">Net Serbest Stok</th>
-                                            <th class="p-4 w-24 text-center">İşlem</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbodyCosterStocks" class="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900/40"></tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
 
                 </div>
@@ -667,17 +613,16 @@
             <form id="formCosterOrder" onsubmit="saveForm(event, 'costerOrders')" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <input type="hidden" name="id">
                 <div><label class="text-xs text-slate-500">Sipariş Numarası</label><input type="text" name="orderNo" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Aşama</label><select name="status" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 font-medium"><option>Teyit Bekliyor</option><option>Üretimde</option><option>Yolda</option><option>Gümrükte</option><option>Tamamlandı</option></select></div>
+                <div><label class="text-xs text-slate-500">Aşama</label><select name="status" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 font-medium"><option>Teyit Bekliyor</option><option>Üretimde</option><option>Yolda</option><option>Gümrükte</option><option>Yurt Dışı Sipariş</option><option>Tamamlandı</option></select></div>
                 
                 <div class="md:col-span-2 bg-blue-50/50 p-3 rounded-lg border border-blue-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="relative">
-                        <label class="text-xs font-bold text-blue-600">Coster Ürün Ara (Kütüphaneden)</label>
-                        <input type="text" name="costerCode" id="co-costerCode" required autocomplete="off" onkeyup="filterCosterProducts()" onfocus="filterCosterProducts()" placeholder="İsim veya Kod yazın..." class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 font-medium">
-                        <ul id="co-costerDropdown" class="absolute z-50 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mt-1 rounded-md shadow-lg max-h-48 overflow-y-auto hidden divide-y divide-slate-100 dark:divide-slate-700 custom-scrollbar"></ul>
+                    <div>
+                        <label class="text-xs font-bold text-blue-600">Coster Ürün Kodu</label>
+                        <input type="text" name="costerCode" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 font-medium">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-emerald-600">Unison İsmi (Otomatik Gelir)</label>
-                        <input type="text" name="unisonName" id="co-unisonName" readonly class="w-full border border-emerald-200 bg-emerald-50 text-emerald-700 p-2.5 rounded-md mt-1 outline-none font-medium">
+                        <label class="text-xs font-bold text-emerald-600">Unison İsmi</label>
+                        <input type="text" name="unisonName" required class="w-full border border-emerald-200 p-2.5 rounded-md mt-1 outline-none focus:border-emerald-500 font-medium">
                     </div>
                 </div>
 
@@ -1500,89 +1445,30 @@
         // ==========================================
 
         function switchCosterTab(tab) {
-            document.querySelectorAll('.coster-tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('[id^="btn-coster-"]').forEach(el => {
-                el.classList.remove('bg-blue-600', 'text-white');
-                el.classList.add('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-300', 'dark:hover:bg-slate-800');
-            });
-            
-            document.getElementById(`coster-tab-${tab}`).classList.remove('hidden');
-            const btn = document.getElementById(`btn-coster-${tab}`);
-            btn.classList.remove('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-300', 'dark:hover:bg-slate-800');
-            btn.classList.add('bg-blue-600', 'text-white');
-            
-            if(tab === 'dashboard') calcCosterDashboard(), renderCosterOrders();
-            if(tab === 'products') renderCosterProducts();
-            if(tab === 'stocks') renderCosterStocks();
-        }
-
-        // FIFO Stok Algoritması (Akış diyagramındaki Mercan bölge)
-        function calcCosterFIFO() {
-            let pStock = {}; // Fiziksel stok kopyası
-            appData.costerStocks.forEach(s => pStock[s.unisonName] = parseInt(s.qty) || 0);
-            
-            let prodMap = {};
-            appData.costerProducts.forEach(p => prodMap[p.costerCode] = p.unisonName);
-            
-            // Sadece açık siparişler, FIFO için tarihe göre eskiden yeniye sıralı
-            let activeOrders = appData.costerOrders.filter(o => o.status !== 'Tamamlandı' && o.status !== 'İptal');
-            activeOrders.sort((a, b) => parseDateSafely(a.deadline || a.date) - parseDateSafely(b.deadline || b.date));
-            
-            let statusMap = {};
-            let reservedMap = {}; 
-            
-            activeOrders.forEach(o => {
-                let uName = prodMap[o.costerCode] || o.unisonName;
-                let rem = Math.max(0, (parseInt(o.qty)||0) - (parseInt(o.deliveredQty)||0));
-                
-                if(!reservedMap[uName]) reservedMap[uName] = 0;
-                
-                if(rem > 0) {
-                    let avail = pStock[uName] || 0;
-                    if(avail >= rem) {
-                        statusMap[o.id] = `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fas fa-check-circle mr-1"></i>Stok Yeterli</span>`;
-                        pStock[uName] -= rem;
-                        reservedMap[uName] += rem;
-                    } else if(avail > 0) {
-                        statusMap[o.id] = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fas fa-adjust mr-1"></i>Kısmi (${avail} Ad.)</span>`;
-                        reservedMap[uName] += avail;
-                        pStock[uName] = 0;
-                    } else {
-                        statusMap[o.id] = `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold"><i class="fas fa-times-circle mr-1"></i>Yetersiz (Eksik: ${rem})</span>`;
-                    }
-                } else {
-                    statusMap[o.id] = `<span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-bold">Bekleyen Yok</span>`;
-                }
-            });
-            
-            return { statusMap, reservedMap };
+            calcCosterDashboard();
+            renderCosterOrders();
         }
 
         function calcCosterDashboard() {
             let activeCount = 0;
-            let critCount = 0;
             let eur = 0, usd = 0;
-
-            const { statusMap } = calcCosterFIFO();
 
             appData.costerOrders.forEach(o => {
                 if (o.status !== 'Tamamlandı' && o.status !== 'İptal') {
                     activeCount++;
                     let rem = Math.max(0, (parseInt(o.qty)||0) - (parseInt(o.deliveredQty)||0));
-                    let p = parseFloat(o.price) || 0;
+                    
+                    let pStr = String(o.price || '0').replace(',', '.');
+                    let p = parseFloat(pStr) || 0;
                     
                     if(o.currency === 'EUR') eur += (p * rem);
                     if(o.currency === 'USD') usd += (p * rem);
-
-                    if (statusMap[o.id] && statusMap[o.id].includes('Yetersiz')) critCount++;
                 }
             });
 
             // Coster Tablosu KPI'ları
             const kpiActive = document.getElementById('coster-kpi-active');
             if(kpiActive) kpiActive.innerText = activeCount;
-            const kpiCritical = document.getElementById('coster-kpi-critical');
-            if(kpiCritical) kpiCritical.innerText = critCount;
             const kpiEur = document.getElementById('coster-kpi-eur');
             if(kpiEur) kpiEur.innerText = eur.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' €';
             const kpiUsd = document.getElementById('coster-kpi-usd');
@@ -1592,7 +1478,7 @@
             const mainActive = document.getElementById('main-coster-active');
             if(mainActive) mainActive.innerText = activeCount;
             const mainCritical = document.getElementById('main-coster-critical');
-            if(mainCritical) mainCritical.innerText = critCount;
+            if(mainCritical) mainCritical.innerText = 0;
             const mainEur = document.getElementById('main-coster-eur');
             if(mainEur) mainEur.innerText = eur.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' €';
             const mainUsd = document.getElementById('main-coster-usd');
@@ -1604,7 +1490,6 @@
             const tb = document.getElementById('tbodyCosterOrders');
             if(!tb) return;
             const search = (document.getElementById('searchCosterOrders')?.value || '').toLowerCase();
-            const { statusMap } = calcCosterFIFO();
 
             let list = appData.costerOrders.filter(o => 
                 (o.orderNo?.toLowerCase().includes(search) || o.unisonName?.toLowerCase().includes(search) || o.costerCode?.toLowerCase().includes(search))
@@ -1614,7 +1499,7 @@
             list.sort((a, b) => parseDateSafely(a.deadline || a.date) - parseDateSafely(b.deadline || b.date));
 
             if(list.length === 0) {
-                tb.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400">Gösterilecek sipariş yok.</td></tr>`;
+                tb.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Gösterilecek sipariş yok.</td></tr>`;
                 return;
             }
 
@@ -1627,7 +1512,7 @@
                 let sColor = 'text-slate-600 bg-slate-100';
                 if(o.status === 'Teyit Bekliyor') sColor = 'text-amber-700 bg-amber-100';
                 if(o.status === 'Üretimde') sColor = 'text-blue-700 bg-blue-100';
-                if(o.status === 'Yolda' || o.status === 'Gümrükte') sColor = 'text-purple-700 bg-purple-100';
+                if(o.status === 'Yolda' || o.status === 'Gümrükte' || o.status === 'Yurt Dışı Sipariş') sColor = 'text-purple-700 bg-purple-100';
                 if(o.status === 'Tamamlandı') sColor = 'text-emerald-700 bg-emerald-100';
 
                 return `
@@ -1646,13 +1531,13 @@
                         <div class="text-slate-400">Sip: ${o.date || '-'}</div>
                         <div class="font-bold text-slate-700 dark:text-slate-300">Ter: ${o.deadline || '-'}</div>
                     </td>
-                    <td class="p-3">${statusMap[o.id] || '-'}</td>
                     <td class="p-3">
                         <select onchange="updateCosterOrderStatus('${o.id}', this.value)" class="text-[11px] font-bold px-2 py-1 rounded outline-none cursor-pointer ${sColor} border-0">
                             <option value="Teyit Bekliyor" ${o.status==='Teyit Bekliyor'?'selected':''}>Teyit Bekliyor</option>
                             <option value="Üretimde" ${o.status==='Üretimde'?'selected':''}>Üretimde</option>
                             <option value="Yolda" ${o.status==='Yolda'?'selected':''}>Yolda</option>
                             <option value="Gümrükte" ${o.status==='Gümrükte'?'selected':''}>Gümrükte</option>
+                            <option value="Yurt Dışı Sipariş" ${o.status==='Yurt Dışı Sipariş'?'selected':''}>Yurt Dışı Sipariş</option>
                             <option value="Tamamlandı" ${o.status==='Tamamlandı'?'selected':''}>Tamamlandı</option>
                             <option value="İptal" ${o.status==='İptal'?'selected':''}>İptal</option>
                         </select>
@@ -1777,7 +1662,6 @@
             doc.text('Coster Siparis Listesi', 14, 15);
             const head = [['Siparis No', 'Urun (Unison)', 'Coster Kodu', 'Siparis', 'Kalan', 'Durum', 'Sip/Ter Trh.', 'Aciklama']];
             
-            const { statusMap } = calcCosterFIFO();
             let exp = appData.costerOrders;
             
             if(selectedItems.costerOrders && selectedItems.costerOrders.length > 0) {
@@ -1789,7 +1673,6 @@
                 const total = parseInt(o.qty) || 0;
                 const delv = parseInt(o.deliveredQty) || 0;
                 const remain = Math.max(0, total - delv);
-                let fifoStatus = statusMap[o.id] ? statusMap[o.id].replace(/<[^>]*>?/gm, '') : '-';
 
                 return [
                     o.orderNo || '', 
@@ -1797,7 +1680,7 @@
                     o.costerCode || '',
                     String(total), 
                     String(remain), 
-                    `${o.status||''}\nFIFO: ${fifoStatus}`, 
+                    `${o.status||''}`, 
                     `Sip: ${o.date||''}\nTer: ${o.deadline||''}`, 
                     o.notes || ''
                 ];
