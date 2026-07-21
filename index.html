@@ -1,10 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="tr" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GorkAPP | İş ve Kişisel Yönetim Paneli</title>
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -53,29 +53,75 @@
         /* Login Background - Soft Gradient */
         .login-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
 
-        /* Print Styles - YENİDEN DÜZENLENDİ */
+        /* Print Styles */
         @media print {
             @page { size: A4 portrait; margin: 0; }
+            html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
+            #loginScreen, #sidebar, header.no-print, .no-print, #mainContent > .view-section:not(#view-color) { display: none !important; }
+            #appLayout, main, #mainContent { display: block !important; width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
             body * { visibility: hidden; }
             
-            /* Sadece view-color görünür olacak */
             #view-color, #view-color * { visibility: visible; }
-            #view-color { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; display: block !important; }
+            #view-color { position: fixed !important; left: 0; top: 0; width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; display: block !important; background: white !important; }
             
-            .no-print { display: none !important; }
-            
-            /* A4 kağıda tam oturması için */
             .color-form-print { 
+                box-sizing: border-box !important;
                 width: 210mm !important;
                 height: 297mm !important;
-                min-height: 297mm !important;
-                margin: 0 auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
                 padding: 15mm !important;
                 border: none !important;
                 box-shadow: none !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
                 page-break-after: avoid;
                 page-break-inside: avoid;
+            }
+
+            .color-form-print > header {
+                position: relative !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-height: 20mm !important;
+                margin-bottom: 7mm !important;
+                padding-bottom: 4mm !important;
+            }
+            .color-form-print > header > div:first-child {
+                position: absolute !important;
+                left: 0 !important;
+                top: 50% !important;
+                transform: translateY(-50%) !important;
+            }
+            .color-form-print > header > div:last-child {
+                width: 100% !important;
+                text-align: center !important;
+            }
+            .color-form-print > .grid {
+                flex: 0 0 auto !important;
+                row-gap: 4mm !important;
+                column-gap: 8mm !important;
+                margin-bottom: 6mm !important;
+            }
+            .color-form-print > .border-2 {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                height: 82mm !important;
+                min-height: 82mm !important;
+                margin: 0 auto !important;
+                flex: 0 0 82mm !important;
+            }
+            .color-form-print > .mt-4 {
+                flex: 0 0 auto !important;
+                margin-top: 4mm !important;
+            }
+            .color-form-print > .mt-12 {
+                margin-top: auto !important;
+                padding-top: 4mm !important;
+                flex: 0 0 auto !important;
             }
         }
 
@@ -111,7 +157,7 @@
                 <input type="email" id="email" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg py-3 px-4 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm" placeholder="E-Posta">
                 <input type="password" id="password" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg py-3 px-4 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm" placeholder="Şifre">
                 <div id="authError" class="hidden text-red-400 text-xs bg-red-900/20 p-3 rounded border border-red-500/30"></div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-lg transition shadow-md">Sisteme Giriş Yap</button>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-lg transition shadow-md">Sisteme Giriş Yap / Kayıt Ol</button>
             </form>
         </div>
     </div>
@@ -148,9 +194,6 @@
                         <button onclick="nav('biota')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 transition">
                             <i class="fas fa-leaf w-5 text-center"></i> Biota Sipariş
                         </button>
-                        <button onclick="nav('coster')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 text-blue-400 hover:text-blue-300 transition">
-                            <i class="fas fa-spray-can w-5 text-center"></i> Coster Operasyon
-                        </button>
                         <button onclick="window.open('https://gemini.google.com/gem/17YM1pqwRfgxt1ddA1yl8rZ2u55xyCpoY?usp=sharing', '_blank')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
                             <i class="fas fa-cube w-5 text-center"></i> CAD Çevirici
                         </button>
@@ -160,11 +203,11 @@
                         <button onclick="nav('intel')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
                             <i class="fas fa-user-secret w-5 text-center"></i> Pazar İstihbaratı
                         </button>
-                        <button onclick="nav('prices')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
-                            <i class="fas fa-tags w-5 text-center"></i> Fiyat Listesi
-                        </button>
                         <button onclick="nav('proposals')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
                             <i class="fas fa-handshake w-5 text-center"></i> Teklif Takip
+                        </button>
+                        <button onclick="nav('production')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition">
+                            <i class="fas fa-industry w-5 text-center text-orange-400"></i> Üretim Programı
                         </button>
                     </div>
                 </div>
@@ -173,6 +216,7 @@
                 <div>
                     <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">KİŞİSEL</h3>
                     <div class="space-y-1">
+                        <button onclick="nav('todos')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition"><i class="fas fa-check-double w-5 text-center text-blue-400"></i> Görevler (To-Do)</button>
                         <button onclick="nav('notes')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 transition"><i class="fas fa-sticky-note w-5 text-center"></i> Not Defteri</button>
                         <button onclick="nav('finance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-slate-800 text-yellow-400 hover:text-yellow-300 transition"><i class="fas fa-wallet w-5 text-center"></i> Finansal Kayıt</button>
                     </div>
@@ -180,7 +224,7 @@
             </div>
 
             <div class="p-4 border-t border-slate-800/50">
-                <button onclick="auth.signOut()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-slate-800 hover:bg-red-500/20 hover:text-red-400 transition text-sm"><i class="fas fa-sync-alt"></i> Oturumu Yenile</button>
+                <button onclick="auth.signOut()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-slate-800 hover:bg-red-500/20 hover:text-red-400 transition text-sm"><i class="fas fa-sign-out-alt"></i> Oturumu Kapat</button>
             </div>
         </aside>
 
@@ -206,7 +250,6 @@
                 
                 <!-- 1. DASHBOARD -->
                 <div id="view-dashboard" class="view-section w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5 animate-fade-in pb-12">
-                    
                     <!-- Satır 1: Ana KPI'lar -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div class="glass p-4 border-t-4 border-blue-500">
@@ -301,32 +344,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Satır 5: Coster Dashboard Özeti (YENİ) -->
-                    <div class="mt-8 pt-4 border-t border-slate-200 dark:border-slate-800">
-                        <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 flex items-center">
-                            <i class="fas fa-spray-can text-blue-500 mr-2"></i> Coster Operasyon Özeti
-                        </h4>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="glass p-4 border-l-4 border-blue-500 bg-blue-50/20 dark:bg-blue-900/10">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Coster Açık Sipariş</p>
-                                <h3 class="text-2xl font-bold dark:text-white mt-1" id="main-coster-active">0</h3>
-                            </div>
-                            <div class="glass p-4 border-l-4 border-red-500 bg-red-50/20 dark:bg-red-900/10">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Coster Kritik / Yetersiz</p>
-                                <h3 class="text-2xl font-bold text-red-500 mt-1" id="main-coster-critical">0</h3>
-                            </div>
-                            <div class="glass p-4 border-l-4 border-emerald-500 bg-emerald-50/20 dark:bg-emerald-900/10">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Coster Bekleyen (EUR)</p>
-                                <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="main-coster-eur">0 €</h3>
-                            </div>
-                            <div class="glass p-4 border-l-4 border-indigo-500 bg-indigo-50/20 dark:bg-indigo-900/10">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Coster Bekleyen (USD)</p>
-                                <h3 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1" id="main-coster-usd">0 $</h3>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
                 <!-- 2. SİPARİŞLER (YENİ GRID / KART GÖRÜNÜMÜ) -->
@@ -360,7 +377,6 @@
 
                     <div class="flex-1 overflow-y-auto custom-scrollbar p-1">
                         <div id="gridOrders" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 pb-10 content-start">
-                            <!-- JS renderOrders buraya kartları basacak -->
                         </div>
                     </div>
                 </div>
@@ -375,6 +391,7 @@
                         <div class="flex gap-2">
                             <button onclick="exportExcel('Sevkiyat', appData.shipping)" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i class="fas fa-file-excel mr-1"></i> Excel</button>
                             <button onclick="exportShippingPDF()" id="btnShippingPdf" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i class="fas fa-file-pdf mr-1"></i> PDF Çıktı</button>
+                            <button onclick="openOrderImportModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-file-import mr-1"></i> Siparişlerden Veri Çek</button>
                             <button onclick="openModal('shippingModal')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-plus mr-1"></i> Yeni Plan</button>
                         </div>
                     </div>
@@ -419,7 +436,7 @@
                             <input type="file" id="biotaExcelInput" class="hidden" accept=".xlsx, .xls, .csv" onchange="importBiotaExcel(event)">
                             <button onclick="document.getElementById('biotaExcelInput').click()" class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100 transition"><i class="fas fa-file-import mr-1"></i> İçe Aktar</button>
                             
-                            <button onclick="exportExcel('Biota', appData.biota)" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-100 transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
+                            <button onclick="exportBiotaExcel()" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-100 transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
                             <button onclick="openModal('biotaModal')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-500 transition"><i class="fas fa-plus mr-1"></i> Sipariş Ekle</button>
                         </div>
                     </div>
@@ -437,70 +454,6 @@
                     </div>
                 </div>
 
-                <!-- 4.5. COSTER TAKİP MODÜLÜ (Master Prompt'a Uygun) -->
-                <div id="view-coster" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
-                    
-                    <!-- TAB 1: DASHBOARD & SİPARİŞLER -->
-                    <div id="coster-tab-dashboard" class="flex-1 flex flex-col space-y-4 min-h-0">
-                        <!-- KPI Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0">
-                            <div class="glass p-4 border-t-4 border-blue-500">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Açık Sipariş Adedi</p>
-                                <h3 class="text-2xl font-bold dark:text-white mt-1" id="coster-kpi-active">0</h3>
-                            </div>
-                            <div class="glass p-4 border-t-4 border-emerald-500">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Bekleyen Ciro (EUR)</p>
-                                <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="coster-kpi-eur">0 €</h3>
-                            </div>
-                            <div class="glass p-4 border-t-4 border-indigo-500">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold">Bekleyen Ciro (USD)</p>
-                                <h3 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1" id="coster-kpi-usd">0 $</h3>
-                            </div>
-                        </div>
-
-                        <!-- Orders Toolbar -->
-                        <div class="flex flex-wrap justify-between items-center gap-2 no-print shrink-0">
-                            <div class="relative">
-                                <i class="fas fa-search absolute left-3 top-2.5 text-slate-400"></i>
-                                <input type="text" id="searchCosterOrders" placeholder="Sipariş No, Unison İsim..." class="pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 focus:border-blue-500 outline-none transition" onkeyup="renderCosterOrders()">
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="deleteSelected('costerOrders')" class="text-red-500 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-slate-800 transition"><i class="fas fa-trash"></i></button>
-                                <!-- İçe Aktar -->
-                                <input type="file" id="costerExcelInput" class="hidden" accept=".xlsx, .xls, .csv" onchange="importCosterExcel(event)">
-                                <button onclick="document.getElementById('costerExcelInput').click()" class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-2 rounded-lg text-sm transition font-medium hover:bg-indigo-100"><i class="fas fa-file-import mr-1"></i> İçe Aktar</button>
-                                <button onclick="exportCosterOrdersPDF()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i class="fas fa-file-pdf mr-1"></i> PDF Çıktı</button>
-                                <button onclick="exportExcel('Coster_Siparisler', appData.costerOrders)" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm transition font-medium"><i class="fas fa-file-excel mr-1"></i> Excel</button>
-                                <button onclick="openCosterOrderModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"><i class="fas fa-plus mr-1"></i> Yeni Sipariş</button>
-                            </div>
-                        </div>
-
-                        <!-- Orders Table -->
-                        <div class="glass rounded-xl overflow-hidden flex-1 flex flex-col shadow-sm min-h-0">
-                            <div class="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
-                                <table class="w-full text-sm text-left border-collapse">
-                                    <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700 text-[11px] uppercase tracking-wide">
-                                        <tr>
-                                            <th class="p-3 w-10"><input type="checkbox" onchange="toggleSelectAll('costerOrders', this.checked)" class="rounded border-slate-300"></th>
-                                            <th class="p-3">Sipariş No</th>
-                                            <th class="p-3">Ürün (Unison İsim)</th>
-                                            <th class="p-3 text-center">Sipariş / Kalan</th>
-                                            <th class="p-3">Sipariş / Termin Trh.</th>
-                                            <th class="p-3">Aşama</th>
-                                            <th class="p-3">Notlar</th>
-                                            <th class="p-3 w-14">İşlem</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbodyCosterOrders" class="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900/40"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    </div>
-
-                </div>
-
                 <!-- 5. RENK ONAY -->
                 <div id="view-color" class="view-section hidden w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6">
                     <div class="flex justify-end mb-4 no-print"><button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-medium"><i class="fas fa-print mr-1"></i> PDF/Yazdır</button></div>
@@ -513,15 +466,7 @@
                     <div id="gridIntel" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4"></div>
                 </div>
                 
-                <!-- 7. FİYAT LİSTESİ -->
-                <div id="view-prices" class="view-section hidden w-full h-full p-4 md:p-6">
-                    <div class="flex h-full gap-4">
-                        <div class="w-1/3 glass flex flex-col overflow-hidden"><div class="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center"><input type="text" id="searchPriceCust" placeholder="Müşteri Ara..." class="px-3 py-1.5 text-sm border rounded-md w-full mr-2 outline-none" onkeyup="renderPriceLists()"><button onclick="addPriceCustomer()" class="bg-blue-600 text-white w-8 h-8 rounded-md shrink-0"><i class="fas fa-plus"></i></button></div><ul id="listPriceCustomers" class="flex-1 overflow-y-auto custom-scrollbar divide-y divide-slate-100"></ul></div>
-                        <div class="w-2/3 glass flex flex-col overflow-hidden"><div class="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center"><h3 id="selectedPriceCustomerName" class="font-medium">Lütfen Müşteri Seçin</h3><button onclick="addPriceProduct()" id="btnAddPriceProd" class="hidden bg-emerald-600 text-white px-3 py-1.5 rounded-md text-sm"><i class="fas fa-plus mr-1"></i> Ürün Ekle</button></div><div class="flex-1 overflow-y-auto custom-scrollbar p-0"><table class="w-full text-sm text-left"><thead class="bg-white border-b border-slate-100 text-slate-500 text-xs uppercase sticky top-0 z-10"><tr><th class="p-3">Unison Ürün Adı</th><th class="p-3">Müşteri Ürün Adı</th><th class="p-3">Fiyat</th><th class="p-3">Geçerlilik</th><th class="p-3 w-10"></th></tr></thead><tbody id="tbodyPriceProducts" class="divide-y divide-slate-100 bg-white"></tbody></table></div></div>
-                    </div>
-                </div>
-                
-                <!-- 8. TEKLİF TAKİP -->
+                <!-- 7. TEKLİF TAKİP -->
                 <div id="view-proposals" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
                     <div class="flex justify-between items-center mb-4 shrink-0"><h3 class="text-base font-medium">Satış Süreçleri</h3><button onclick="openModal('proposalModal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium"><i class="fas fa-plus mr-1"></i> Yeni Teklif</button></div>
                     <div class="kanban-board flex-1 custom-scrollbar">
@@ -531,11 +476,42 @@
                         <div class="kanban-col flex flex-col" ondrop="dropProp(event, 'Tamamlandı')" ondragover="allowDrop(event)"><h4 class="font-medium text-slate-700 border-b-2 border-emerald-500 pb-2 mb-3">Tamamlandı/Arşiv <span id="cnt-Tamamlandı" class="text-xs bg-white text-slate-500 px-2 py-0.5 rounded-full float-right border border-slate-200">0</span></h4><div id="kb-Tamamlandı" class="space-y-2 flex-1 overflow-y-auto custom-scrollbar pr-1"></div></div>
                     </div>
                 </div>
+
+                <!-- 8. GÖREVLER (TO-DO) -->
+                <div id="view-todos" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
+                    <div class="flex justify-between items-center mb-4 shrink-0">
+                        <h3 class="text-base font-medium text-slate-800 dark:text-white">Yapılacaklar Listesi</h3>
+                        <button onclick="openModal('todoModal')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium"><i class="fas fa-plus mr-1"></i> Yeni Görev</button>
+                    </div>
+                    <div class="kanban-board flex-1 custom-scrollbar">
+                        <div class="kanban-col flex flex-col border-t-4 border-blue-500" ondrop="dropTodo(event, 'todo')" ondragover="allowDrop(event)">
+                            <h4 class="font-bold text-slate-700 dark:text-slate-200 pb-2 mb-3 border-b border-slate-200 dark:border-slate-700">To-Do <span id="cnt-todo" class="text-xs bg-white dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full float-right border border-slate-200 dark:border-slate-700">0</span></h4>
+                            <div id="kb-todo" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-1"></div>
+                        </div>
+                        <div class="kanban-col flex flex-col border-t-4 border-emerald-500" ondrop="dropTodo(event, 'done')" ondragover="allowDrop(event)">
+                            <h4 class="font-bold text-slate-700 dark:text-slate-200 pb-2 mb-3 border-b border-slate-200 dark:border-slate-700">Tamamlandı <span id="cnt-done" class="text-xs bg-white dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full float-right border border-slate-200 dark:border-slate-700">0</span></h4>
+                            <div id="kb-done" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar pr-1"></div>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- 9. NOTLAR -->
                 <div id="view-notes" class="view-section hidden w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-4">
                     <div class="flex justify-between items-center mb-4"><h3 class="text-base font-medium">Kişisel Notlarım</h3><button onclick="openModal('noteModal')" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium"><i class="fas fa-plus mr-1"></i> Not Ekle</button></div>
                     <div id="gridNotes" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+                </div>
+                
+                <!-- 11. ÜRETİM PROGRAMI -->
+                <div id="view-production" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4 overflow-y-auto custom-scrollbar">
+                    <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">Makine Parkuru & Program Takibi</h3>
+                            <p class="text-xs text-slate-500">Makinelerin müsaitlik tarihlerini ve haftalık üretim notlarını güncelleyin.</p>
+                        </div>
+                    </div>
+                    <div id="gridProduction" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-10">
+                        <!-- JS ile doldurulacak -->
+                    </div>
                 </div>
                 
                 <!-- 10. FİNANS -->
@@ -546,7 +522,6 @@
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4"><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-emerald-600 mb-3 border-b border-slate-100 pb-2">GELİRLER</h4><div id="fin-list-gelir" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-red-500 mb-3 border-b border-slate-100 pb-2">KREDİ KARTLARI</h4><div id="fin-list-kk" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-red-600 mb-3 border-b border-slate-100 pb-2">KREDİ & BORÇ</h4><div id="fin-list-kredi" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div><div class="glass p-4 flex flex-col max-h-[500px]"><h4 class="text-xs font-semibold text-amber-500 mb-3 border-b border-slate-100 pb-2">YATIRIMLAR</h4><div id="fin-list-yatirim" class="flex-1 overflow-y-auto custom-scrollbar space-y-2"></div></div></div>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
@@ -581,98 +556,6 @@
         </div>
     </div>
 
-    <!-- COSTER MODALS -->
-    <div id="costerProductModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-lg shadow-2xl border border-slate-200">
-            <h3 class="text-lg font-medium mb-4 text-slate-800 border-b border-slate-100 pb-2">Kütüphaneye Ürün Ekle</h3>
-            <form id="formCosterProduct" onsubmit="saveForm(event, 'costerProducts')" class="space-y-3 text-sm">
-                <input type="hidden" name="id">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="col-span-2"><label class="text-xs font-bold text-blue-600">Coster Ürün Kodu / İsmi</label><input type="text" name="costerCode" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 bg-blue-50/50"></div>
-                    <div class="col-span-2"><label class="text-xs font-bold text-emerald-600">Eşleşen Unison İsmi</label><input type="text" name="unisonName" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-emerald-500 bg-emerald-50/50"></div>
-                    <div><label class="text-xs text-slate-500">Birim Fiyat</label><input type="number" step="0.001" name="price" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                    <div><label class="text-xs text-slate-500">Döviz</label><select name="currency" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"><option>EUR</option><option>USD</option></select></div>
-                </div>
-                <div>
-                    <label class="text-xs text-slate-500">Ürün Görseli Ekle (Max 500KB)</label>
-                    <input type="file" onchange="handleFileConvert(event, 'costerProdFileData', 'costerProdFileName')" accept="image/*" class="w-full border border-slate-200 p-2 rounded-md mt-1 text-xs outline-none">
-                    <input type="hidden" name="fileData" id="costerProdFileData">
-                    <input type="hidden" name="fileName" id="costerProdFileName">
-                </div>
-                <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('costerProductModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition font-medium">İptal</button>
-                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition shadow-sm">Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="costerOrderModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-2xl shadow-2xl border border-slate-200">
-            <h3 class="text-lg font-medium mb-4 text-slate-800 border-b border-slate-100 pb-2">Yeni Coster Siparişi</h3>
-            <form id="formCosterOrder" onsubmit="saveForm(event, 'costerOrders')" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <input type="hidden" name="id">
-                <div><label class="text-xs text-slate-500">Sipariş Numarası</label><input type="text" name="orderNo" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Aşama</label><select name="status" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 font-medium"><option>Teyit Bekliyor</option><option>Üretimde</option><option>Yolda</option><option>Gümrükte</option><option>Yurt Dışı Sipariş</option><option>Tamamlandı</option></select></div>
-                
-                <div class="md:col-span-2 bg-blue-50/50 p-3 rounded-lg border border-blue-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-bold text-blue-600">Coster Ürün Kodu</label>
-                        <input type="text" name="costerCode" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 font-medium">
-                    </div>
-                    <div>
-                        <label class="text-xs font-bold text-emerald-600">Unison İsmi</label>
-                        <input type="text" name="unisonName" required class="w-full border border-emerald-200 p-2.5 rounded-md mt-1 outline-none focus:border-emerald-500 font-medium">
-                    </div>
-                </div>
-
-                <div><label class="text-xs text-slate-500">Sipariş Adedi</label><input type="number" name="qty" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Teslim Edilen (Kısmi)</label><input type="number" name="deliveredQty" value="0" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                
-                <div><label class="text-xs text-slate-500">Sipariş Tarihi</label><input type="date" name="date" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs font-bold text-orange-500">Termin (Hedef) Tarihi</label><input type="date" name="deadline" required class="w-full border border-orange-200 p-2.5 rounded-md mt-1 outline-none focus:border-orange-500 bg-orange-50/50"></div>
-                
-                <div class="flex gap-2">
-                    <div class="flex-1">
-                        <label class="text-xs text-slate-500">Birim Fiyat <span class="text-[9px] text-blue-500">(Manuel Düzenlenebilir)</span></label>
-                        <input type="number" step="0.001" name="price" id="co-price" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500">
-                    </div>
-                    <div class="w-20">
-                        <label class="text-xs text-slate-500">Döviz</label>
-                        <select name="currency" id="co-currency" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"><option>EUR</option><option>USD</option></select>
-                    </div>
-                </div>
-                <div><label class="text-xs text-slate-500">Sipariş Notları</label><input type="text" name="notes" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                
-                <div class="md:col-span-2 flex justify-end gap-2 mt-2 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('costerOrderModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition font-medium">İptal</button>
-                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition shadow-sm">Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="costerStockModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-sm shadow-2xl border border-slate-200">
-            <h3 class="text-lg font-medium mb-4 text-slate-800 border-b border-slate-100 pb-2">Fiziksel Stok Güncelle</h3>
-            <form id="formCosterStock" onsubmit="saveForm(event, 'costerStocks')" class="space-y-4 text-sm">
-                <input type="hidden" name="id">
-                <div>
-                    <label class="text-xs font-bold text-slate-600">Unison Ürün İsmi</label>
-                    <select name="unisonName" id="cs-unisonName" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500 font-medium"></select>
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-emerald-600">Güncel Fiziksel Stok Miktarı</label>
-                    <input type="number" name="qty" required class="w-full border border-emerald-200 p-2.5 rounded-md mt-1 outline-none focus:border-emerald-500 bg-emerald-50 text-emerald-700 font-bold text-lg">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('costerStockModal')" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition font-medium">İptal</button>
-                    <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition shadow-sm">Kaydet</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Pazar İstihbaratı Tam Ekran Okuma Modalı -->
     <div id="intelViewModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 z-[160]">
         <div class="bg-white dark:bg-slate-900 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200">
@@ -696,12 +579,100 @@
     </div>
 
     <!-- OTHER MODALS -->
-    <div id="shippingModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl border border-slate-200"><h3 class="text-lg font-medium mb-4 border-b border-slate-100 pb-2">Sevkiyat Planı</h3><form id="formShipping" onsubmit="saveForm(event, 'shipping')" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><input type="hidden" name="id"><div class="md:col-span-2 flex items-center gap-2 bg-amber-50 p-2.5 rounded border border-amber-200"><input type="checkbox" name="isImportant" id="isImportant" class="w-4 h-4"><label for="isImportant" class="font-medium text-amber-700">Önemli/Kritik Sevkiyat!</label></div><div><label class="text-xs text-slate-500">Başlangıç</label><input type="date" name="startDate" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Bitiş</label><input type="date" name="endDate" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Firma / Müşteri</label><input type="text" name="customer" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Ürün</label><input type="text" name="product" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Toplam Adet</label><input type="number" name="totalQty" id="shpQty" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Koli İçi</label><input type="number" name="boxQty" id="shpBox" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2 bg-slate-50 p-2.5 rounded text-center text-sm font-medium text-slate-600 border border-slate-100">Hesaplanan Toplam Koli: <span id="shpRes" class="font-bold">0</span></div><div><label class="text-xs text-slate-500">Çıkış Adresi</label><input type="text" name="fromAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Varış Adresi</label><input type="text" name="toAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2"><label class="text-xs text-slate-500">Açıklama / Notlar</label><textarea name="notes" rows="2" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></textarea></div><div class="md:col-span-2 flex justify-end gap-2 mt-2 pt-4 border-t border-slate-100"><button type="button" onclick="closeModal('shippingModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600">İptal</button><button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg">Kaydet</button></div></form></div></div>
+    <div id="shippingModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl border border-slate-200"><h3 class="text-lg font-medium mb-4 border-b border-slate-100 pb-2">Sevkiyat Planı</h3><form id="formShipping" onsubmit="saveForm(event, 'shipping')" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><input type="hidden" name="id"><input type="hidden" name="sourceOrderId"><input type="hidden" name="sourceOrderNo"><div id="shippingOrderSourceInfo" class="md:col-span-2 hidden bg-indigo-50 p-2.5 rounded border border-indigo-200 text-xs text-indigo-700"></div><div class="md:col-span-2 flex items-center gap-2 bg-amber-50 p-2.5 rounded border border-amber-200"><input type="checkbox" name="isImportant" id="isImportant" class="w-4 h-4"><label for="isImportant" class="font-medium text-amber-700">Önemli/Kritik Sevkiyat!</label></div><div><label class="text-xs text-slate-500">Başlangıç</label><input type="date" name="startDate" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Bitiş</label><input type="date" name="endDate" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Firma / Müşteri</label><input type="text" name="customer" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Ürün</label><input type="text" name="product" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Toplam Adet</label><input type="number" name="totalQty" id="shpQty" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Koli İçi</label><input type="number" name="boxQty" id="shpBox" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2 bg-slate-50 p-2.5 rounded text-center text-sm font-medium text-slate-600 border border-slate-100">Hesaplanan Toplam Koli: <span id="shpRes" class="font-bold">0</span></div><div><label class="text-xs text-slate-500">Çıkış Adresi</label><input type="text" name="fromAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Varış Adresi</label><input type="text" name="toAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2"><label class="text-xs text-slate-500">Açıklama / Notlar</label><textarea name="notes" rows="2" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></textarea></div><div class="md:col-span-2 flex justify-end gap-2 mt-2 pt-4 border-t border-slate-100"><button type="button" onclick="closeModal('shippingModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600">İptal</button><button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg">Kaydet</button></div></form></div></div>
+    
+    <div id="orderImportModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[160] hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4 mb-4">
+                <div><h3 class="text-lg font-medium text-slate-800 dark:text-white">Siparişlerden Veri Çek</h3><p class="text-xs text-slate-500 mt-1">Siparişi seçin; firma, ürün, toplam adet ve koli içi bilgileri sevkiyat planına aktarılır.</p></div>
+                <button type="button" onclick="closeModal('orderImportModal')" class="text-slate-400 hover:text-slate-700"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="relative mb-3"><i class="fas fa-search absolute left-3 top-2.5 text-slate-400"></i><input type="text" id="searchOrderImport" placeholder="Sipariş no, müşteri veya ürün ara..." class="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-800 dark:border-slate-700 text-sm outline-none focus:border-indigo-500" oninput="renderOrderImportList()"></div>
+            <div id="orderImportList" class="overflow-y-auto custom-scrollbar space-y-2 pr-1"></div>
+            <div class="flex justify-end pt-4 mt-4 border-t border-slate-100 dark:border-slate-700"><button type="button" onclick="closeModal('orderImportModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition font-medium">Vazgeç</button></div>
+        </div>
+    </div>
+    
     <div id="biotaModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formBiota" onsubmit="saveForm(event, 'biota')" class="space-y-3"><input type="hidden" name="id"><div><label class="text-xs text-slate-500">Sipariş No</label><input type="text" name="orderNo" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Malzeme No</label><input type="text" name="materialNo" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Açıklama</label><input type="text" name="materialDesc" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Tarih</label><input type="text" name="date" class="w-full border p-2 rounded" placeholder="gg.aa.yyyy"></div><div class="grid grid-cols-2 gap-2"><div><label class="text-xs text-slate-500">Sipariş Adet</label><input type="number" name="qty" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-emerald-600 font-medium">Yeni Teslimat Ekle</label><input type="number" name="newDelivered" value="0" class="w-full border border-emerald-300 bg-emerald-50 p-2 rounded"></div><input type="hidden" name="deliveredQty" value="0"></div><div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal('biotaModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Kaydet</button></div></form></div></div>
+    
     <div id="intelModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formIntel" onsubmit="saveForm(event, 'intel')" class="space-y-3"><input type="hidden" name="id"><div class="flex gap-2 mb-2"><input type="checkbox" name="isImportant" id="intelImp"><label for="intelImp" class="text-sm font-medium text-red-500">Önemli</label></div><div><select name="category" class="w-full border p-2 rounded"><option>Potansiyel Müşteri</option><option>Ürün Bilgisi</option><option>Sektör Dedikodusu</option></select></div><div><input type="text" name="title" required placeholder="Başlık" class="w-full border p-2 rounded"></div><div><input type="date" name="date" id="intelDate" class="w-full border p-2 rounded"></div><div><textarea name="desc" rows="3" placeholder="Detay" class="w-full border p-2 rounded"></textarea></div><div><input type="file" onchange="handleFileConvert(event, 'intelFileData', 'intelFileName')" class="w-full border p-2 rounded text-xs"><input type="hidden" name="fileData" id="intelFileData"><input type="hidden" name="fileName" id="intelFileName"></div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal('intelModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Kaydet</button></div></form></div></div>
+    
     <div id="proposalModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formProposal" onsubmit="saveForm(event, 'proposals')" class="space-y-3"><input type="hidden" name="id"><input type="hidden" name="status" value="Teklif"><div><input type="text" name="customer" required placeholder="Firma" class="w-full border p-2 rounded"></div><div><input type="text" name="title" required placeholder="Konu" class="w-full border p-2 rounded"></div><div><input type="text" name="amount" placeholder="Tutar" class="w-full border p-2 rounded"></div><div><input type="date" name="date" class="w-full border p-2 rounded"></div><div><textarea name="notes" rows="2" placeholder="Notlar" class="w-full border p-2 rounded"></textarea></div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal('proposalModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Kaydet</button></div></form></div></div>
+    
+    <!-- TO-DO MODAL -->
+    <div id="todoModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]">
+        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl border border-slate-200">
+            <h3 class="text-lg font-medium mb-4 text-slate-800 border-b border-slate-100 pb-2">Görev Formu</h3>
+            <form id="formTodo" onsubmit="saveForm(event, 'todos')" class="space-y-3">
+                <input type="hidden" name="id">
+                <input type="hidden" name="status" value="todo">
+                <div>
+                    <label class="text-xs text-slate-500">Görev / Başlık</label>
+                    <input type="text" name="title" required placeholder="Görev girin..." class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="text-xs text-slate-500 font-medium">Hedef Tarih <span class="text-[10px] opacity-70">(Opsiyonel)</span></label>
+                    <input type="date" name="date" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500">
+                </div>
+                <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('todoModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition font-medium">İptal</button>
+                    <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm hover:bg-blue-500 transition">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="noteModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formNote" onsubmit="saveForm(event, 'notes')" class="space-y-3"><input type="hidden" name="id"><input type="hidden" name="date" id="sysDateNote"><div><input type="text" name="title" required placeholder="Başlık" class="w-full border p-2 rounded"></div><div><textarea name="content" rows="4" placeholder="İçerik" class="w-full border p-2 rounded"></textarea></div><div><input type="file" onchange="handleFileConvert(event, 'noteFileData', 'noteFileName')" class="w-full border p-2 rounded text-xs"><input type="hidden" name="fileData" id="noteFileData"><input type="hidden" name="fileName" id="noteFileName"></div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal('noteModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Kaydet</button></div></form></div></div>
-    <div id="financeModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formFinance" onsubmit="saveFinanceRecord(event)" class="space-y-3"><input type="hidden" name="month" id="finHiddenMonth"><div><select id="finType" onchange="updateFinCategories()" class="w-full border p-2 rounded"><option value="gelir">GELİRLER</option><option value="kk">KREDİ KARTLARI</option><option value="kredi">KREDİLER</option><option value="yatirim">YATIRIMLAR</option></select></div><div id="finCatWrapper"><select id="finCategory" class="w-full border p-2 rounded"></select></div><div id="finInvWrapper" class="hidden space-y-3"><div><input type="text" id="finInvType" placeholder="Tür (Altın vb.)" class="w-full border p-2 rounded"></div><div><input type="number" step="0.01" id="finInvQty" placeholder="Miktar" class="w-full border p-2 rounded"></div></div><div><input type="number" step="0.01" id="finAmount" required placeholder="Tutar (TL)" class="w-full border p-2 rounded font-bold text-blue-600"></div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal('financeModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Kaydet</button></div></form></div></div>
+    
+    <div id="financeModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formFinance" onsubmit="saveFinanceRecord(event)" class="space-y-3"><div><select id="finType" onchange="updateFinCategories()" class="w-full border p-2 rounded"><option value="gelir">GELİRLER</option><option value="kk">KREDİ KARTLARI</option><option value="kredi">KREDİLER</option><option value="yatirim">YATIRIMLAR</option></select></div><div id="finCatWrapper"><select id="finCategory" class="w-full border p-2 rounded"></select></div><div id="finInvWrapper" class="hidden space-y-3"><div><input type="text" id="finInvType" placeholder="Tür (Altın vb.)" class="w-full border p-2 rounded"></div><div><input type="number" step="0.01" id="finInvQty" placeholder="Miktar" class="w-full border p-2 rounded"></div></div><div><input type="number" step="0.01" id="finAmount" required placeholder="Tutar (TL)" class="w-full border p-2 rounded font-bold text-blue-600"></div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal('financeModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Kaydet</button></div></form></div></div>
+
+    <!-- Üretim Programı Modal -->
+    <div id="productionModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3 mb-4 shrink-0">
+                <div>
+                    <h3 id="prodModalTitle" class="text-lg font-bold text-slate-800 dark:text-white">Makine Detayı</h3>
+                    <p class="text-xs text-slate-500">Yeni haftalık durum girin veya geçmiş kayıtları inceleyin.</p>
+                </div>
+                <button onclick="closeModal('productionModal')" class="text-slate-400 hover:text-slate-700"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
+                <!-- Sol: Yeni Kayıt Formu -->
+                <div class="w-full md:w-1/2 flex flex-col">
+                    <form id="formProduction" onsubmit="saveProductionRecord(event)" class="space-y-3">
+                        <input type="hidden" name="id">
+                        <input type="hidden" name="machineId" id="prodMachineId">
+                        
+                        <div>
+                            <label class="text-xs font-semibold text-slate-500 uppercase">Kayıt Tarihi / Hafta</label>
+                            <input type="date" name="recordDate" id="prodRecordDate" required class="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 p-2.5 rounded-md mt-1 outline-none focus:border-orange-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-500 uppercase">Makinenin Müsait Olacağı Tarih</label>
+                            <input type="date" name="availableDate" required class="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 p-2.5 rounded-md mt-1 outline-none focus:border-orange-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-500 uppercase">Üretim Notları & Plan</label>
+                            <textarea name="notes" rows="4" required placeholder="Hangi kalıp çalışıyor? Ne zaman bitecek?" class="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-800 p-2.5 rounded-md mt-1 outline-none focus:border-orange-500 text-sm resize-none"></textarea>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2.5 rounded-lg transition shadow-sm">Kaydı Ekle / Güncelle</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Sağ: Geçmiş Kayıtlar -->
+                <div class="w-full md:w-1/2 flex flex-col border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-700 md:pl-6 pt-4 md:pt-0">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-3"><i class="fas fa-history mr-1"></i> Geçmiş Kayıtlar</h4>
+                    <div id="prodHistoryList" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
+                        <!-- JS ile doldurulacak -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // --- FIREBASE CONFIGURATION ---
@@ -719,15 +690,14 @@
         let currentUser = null;
         let currentTab = 'dashboard';
         let currentFinMonth = new Date().toISOString().slice(0, 7);
-        let selectedItems = { orders: [], shipping: [], biota: [], costerProducts: [], costerStocks: [], costerOrders: [] };
-        let activePriceCustomer = null;
+        let selectedItems = { orders: [], shipping: [], biota: [] };
         let editedBiotaOrders = [];
+        let clockInterval;
 
+        // "todos" dizisi eklendi
         let appData = {
             orders: [], shipping: [], biota: [], intel: [],
-            prices: [], proposals: [], notes: [], finance: [], 
-            costerProducts: [], costerStocks: [], costerOrders: [],
-            todos: { todos: [], notes: [] }
+            proposals: [], notes: [], finance: [], todos: [], production: []
         };
 
         // PDF Font (Türkçe Karakter Desteği)
@@ -768,6 +738,30 @@
         }
 
         // --- AUTH ---
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errDiv = document.getElementById('authError');
+            errDiv.classList.add('hidden');
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    try {
+                        await auth.createUserWithEmailAndPassword(email, password);
+                    } catch (regError) {
+                        errDiv.innerText = "Kayıt Hatası: " + regError.message;
+                        errDiv.classList.remove('hidden');
+                    }
+                } else {
+                    errDiv.innerText = "Hata: " + error.message;
+                    errDiv.classList.remove('hidden');
+                }
+            }
+        });
+
         auth.onAuthStateChanged(async user => {
             if (user) {
                 currentUser = user;
@@ -777,35 +771,41 @@
                 initDataListeners();
                 document.getElementById('finMonthPicker').value = currentFinMonth;
                 nav('dashboard');
-                setInterval(updateClock, 60000); updateClock();
+                
+                if(clockInterval) clearInterval(clockInterval);
+                clockInterval = setInterval(updateClock, 60000); updateClock();
             } else {
-                try {
-                    // Kullanıcı girişi yoksa form sormadan otomatik anonim giriş yap
-                    await auth.signInAnonymously();
-                } catch (error) {
-                    console.error("Otomatik giriş başarısız:", error);
-                }
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('appLayout').classList.add('hidden');
             }
         });
 
         // --- DATA SYNC ---
         function initDataListeners() {
             if(!currentUser) return;
-            const ref = db.collection('users').doc(currentUser.uid).collection('data');
-            // Coster için 3 ayrı yapı dinleniyor
-            const modules = ['orders', 'shipping', 'biota', 'intel', 'prices', 'proposals', 'notes', 'finance', 'costerProducts', 'costerStocks', 'costerOrders'];
+            // Dinlenecek modüllere 'todos' eklendi
+            const modules = ['orders', 'shipping', 'biota', 'intel', 'proposals', 'notes', 'finance', 'todos', 'production'];
+            
             modules.forEach(mod => {
-                ref.doc(mod).onSnapshot(doc => {
-                    if(doc.exists) appData[mod] = doc.data().items || [];
+                const oldRef = db.collection('users').doc(currentUser.uid).collection('data').doc(mod);
+                oldRef.get().then(docSnap => {
+                    if(docSnap.exists && docSnap.data().items && docSnap.data().items.length > 0) {
+                        const items = docSnap.data().items;
+                        const batch = db.batch();
+                        items.forEach(item => {
+                            const itemRef = db.collection('users').doc(currentUser.uid).collection(mod).doc(item.id);
+                            batch.set(itemRef, item);
+                        });
+                        batch.commit().then(() => oldRef.delete());
+                    }
+                }).catch(e => console.error(e));
+
+                db.collection('users').doc(currentUser.uid).collection(mod).onSnapshot(snap => {
+                    appData[mod] = [];
+                    snap.forEach(doc => appData[mod].push(doc.data()));
                     refreshUI(mod);
                 });
             });
-        }
-
-        async function saveData(mod) {
-            if(!currentUser) return;
-            try { await db.collection('users').doc(currentUser.uid).collection('data').doc(mod).set({items: appData[mod]}, {merge:true}); }
-            catch(e) { console.error(e); }
         }
 
         // --- ROUTING ---
@@ -820,27 +820,22 @@
             const btn = document.querySelector(`button[onclick="nav('${tab}')"]`);
             if(btn) btn.classList.add('bg-slate-800', 'text-white');
 
-            const titles = { dashboard: 'Dashboard (Analiz)', orders: 'Siparişler Listesi', shipping: 'Lojistik & Sevkiyat Planı', biota: 'Biota Özel', coster: 'Coster Operasyon Sistemi', color: 'Renk Onay', intel: 'İstihbarat', prices: 'Fiyatlar', proposals: 'Teklif & Satış', notes: 'Notlar', finance: 'Finans' };
+            const titles = { dashboard: 'Dashboard (Analiz)', orders: 'Siparişler Listesi', shipping: 'Lojistik & Sevkiyat Planı', biota: 'Biota Özel', color: 'Renk Onay', intel: 'İstihbarat', proposals: 'Teklif & Satış', todos: 'Görevler (To-Do)', notes: 'Notlar', finance: 'Finans', production: 'Üretim Programı' };
             document.getElementById('pageTitle').innerText = titles[tab] || '';
             refreshUI(tab);
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
-            
-            // Coster sayfasına girilirse her zaman ana tabloyu aç
-            if(tab === 'coster') switchCosterTab('dashboard');
         }
 
         function refreshUI(mod) {
-            if(mod === 'orders' || mod === 'dashboard') { renderOrders(); calcDashboard(); calcCosterDashboard(); }
+            if(mod === 'orders' || mod === 'dashboard') { renderOrders(); calcDashboard(); }
             if(mod === 'shipping') renderShipping();
             if(mod === 'biota') renderBiota();
-            if(mod.startsWith('coster') || currentTab === 'coster') {
-                renderCosterOrders(); renderCosterProducts(); renderCosterStocks(); calcCosterDashboard();
-            }
             if(mod === 'intel') renderIntel();
-            if(mod === 'prices') renderPriceLists();
             if(mod === 'proposals') renderProposals();
+            if(mod === 'todos') renderTodos();
             if(mod === 'notes') renderNotes();
             if(mod === 'finance') renderFinance();
+            if(mod === 'production') renderProduction();
         }
 
         // --- YENİ DASHBOARD HESAPLAMALARI ---
@@ -857,7 +852,6 @@
             let usd = 0, eur = 0, tl = 0;
             let src = { 'Üretim': 0, 'İthal': 0, 'Stok': 0 };
             
-            // Isı haritası ve Aging
             let heat7 = 0, heat15 = 0, heat30 = 0;
             let age10 = 0, age20 = 0, age21 = 0;
 
@@ -886,19 +880,21 @@
 
                 if(o.deadline) {
                     let dDate = new Date(o.deadline);
-                    let diffTime = dDate - today;
-                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    if (!isNaN(dDate.getTime())) { 
+                        let diffTime = dDate - today;
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                    if(diffDays < 0) {
-                        lateCount++;
-                        let absLate = Math.abs(diffDays);
-                        if(absLate <= 10) age10++;
-                        else if(absLate <= 20) age20++;
-                        else age21++;
-                    } else {
-                        if(diffDays <= 7) heat7++;
-                        else if(diffDays <= 15) heat15++;
-                        else if(diffDays <= 30) heat30++;
+                        if(diffDays < 0) {
+                            lateCount++;
+                            let absLate = Math.abs(diffDays);
+                            if(absLate <= 10) age10++;
+                            else if(absLate <= 20) age20++;
+                            else age21++;
+                        } else {
+                            if(diffDays <= 7) heat7++;
+                            else if(diffDays <= 15) heat15++;
+                            else if(diffDays <= 30) heat30++;
+                        }
                     }
                 }
             });
@@ -960,7 +956,8 @@
             const idx = appData[mod].findIndex(x => x.id === obj.id);
             if(idx > -1) appData[mod][idx] = obj; else appData[mod].push(obj);
             
-            saveData(mod);
+            if(currentUser) db.collection('users').doc(currentUser.uid).collection(mod).doc(obj.id).set(obj, {merge:true});
+            refreshUI(mod);
             closeModal(e.target.closest('.fixed').id);
         }
 
@@ -968,6 +965,11 @@
             const modal = document.getElementById(id);
             const form = modal.querySelector('form');
             if(form) form.reset();
+            if(id === 'shippingModal') {
+                const sourceInfo = document.getElementById('shippingOrderSourceInfo');
+                sourceInfo.classList.add('hidden');
+                sourceInfo.innerHTML = '';
+            }
             if(id === 'financeModal') updateFinCategories();
             
             if(form) {
@@ -977,7 +979,15 @@
 
             if(dataId && mod && form) {
                 const item = appData[mod].find(x => x.id === dataId);
-                if(item) Object.keys(item).forEach(k => { if(form.elements[k]) form.elements[k].value = item[k]; });
+                if(item) {
+                    Object.keys(item).forEach(k => { if(form.elements[k]) form.elements[k].value = item[k]; });
+                    if(id === 'shippingModal' && item.sourceOrderNo) {
+                        const sourceInfo = document.getElementById('shippingOrderSourceInfo');
+                        sourceInfo.innerHTML = `<i class="fas fa-link mr-1"></i> Bu sevkiyat <strong>${item.sourceOrderNo}</strong> numaralı siparişten oluşturuldu.`;
+                        sourceInfo.classList.remove('hidden');
+                    }
+                    if(id === 'shippingModal') calcBox();
+                }
             } else if(form) {
                 if(form.elements['id']) form.elements['id'].value = '';
                 if(id === 'intelModal') document.getElementById('intelDate').valueAsDate = new Date();
@@ -1011,9 +1021,19 @@
         function deleteSelected(mod) {
             if(selectedItems[mod].length === 0) return alert('Kayıt seçmediniz.');
             if(confirm('Seçili kayıtları silmek istediğinize emin misiniz?')) {
+                const batch = db.batch();
+                selectedItems[mod].forEach(id => {
+                    if(currentUser) {
+                        const ref = db.collection('users').doc(currentUser.uid).collection(mod).doc(id);
+                        batch.delete(ref);
+                    }
+                });
+                
                 appData[mod] = appData[mod].filter(x => !selectedItems[mod].includes(x.id));
                 selectedItems[mod] = [];
-                saveData(mod);
+                
+                if(currentUser) batch.commit();
+                refreshUI(mod);
             }
         }
 
@@ -1045,7 +1065,14 @@
                 const total = parseInt(o.totalQty) || 0;
                 const delv = parseInt(o.deliveredQty) || 0;
                 const remain = Math.max(0, total - delv);
-                const isLate = new Date(o.deadline) < new Date() && o.status !== 'Tamamlandı';
+                
+                let isLate = false;
+                if(o.deadline) {
+                    let dDate = new Date(o.deadline);
+                    if (!isNaN(dDate.getTime())) {
+                        isLate = dDate < new Date() && o.status !== 'Tamamlandı';
+                    }
+                }
                 
                 let statusColor = 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300';
                 if(o.status === 'Üretim') statusColor = 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400';
@@ -1139,14 +1166,81 @@
             document.getElementById('shpRes').innerText = Math.ceil(q/b);
         }
 
+        function openOrderImportModal() {
+            document.getElementById('searchOrderImport').value = '';
+            renderOrderImportList();
+            const modal = document.getElementById('orderImportModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function renderOrderImportList() {
+            const container = document.getElementById('orderImportList');
+            if(!container) return;
+
+            const search = (document.getElementById('searchOrderImport')?.value || '').toLocaleLowerCase('tr-TR');
+            const orders = (appData.orders || []).filter(order => {
+                const text = [order.orderNo, order.customer, order.productCode, order.unisonCode]
+                    .join(' ').toLocaleLowerCase('tr-TR');
+                return text.includes(search);
+            });
+
+            if(!orders.length) {
+                container.innerHTML = '<div class="py-10 text-center text-slate-400"><i class="fas fa-box-open text-3xl mb-2"></i><p class="text-sm">Eşleşen sipariş bulunamadı.</p></div>';
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                const product = [order.productCode, order.unisonCode].filter(Boolean).join(' · ') || '-';
+                const totalQty = order.totalQty || '0';
+                const boxQty = order.boxQty || '-';
+                return `<button type="button" onclick="loadOrderIntoShipping('${order.id}')" class="w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-slate-800 transition">
+                    <div class="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                        <div><span class="font-semibold text-slate-800 dark:text-white">${order.customer || 'Müşteri belirtilmemiş'}</span><span class="ml-2 text-xs text-slate-500">Sipariş: ${order.orderNo || '-'}</span></div>
+                        <span class="text-xs font-medium ${order.status === 'Tamamlandı' ? 'text-emerald-600' : 'text-indigo-600'}">${order.status || 'Durum yok'}</span>
+                    </div>
+                    <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-600 dark:text-slate-300">
+                        <span><i class="fas fa-cube text-slate-400 mr-1"></i>${product}</span>
+                        <span><i class="fas fa-hashtag text-slate-400 mr-1"></i>Toplam: <strong>${totalQty}</strong></span>
+                        <span><i class="fas fa-box text-slate-400 mr-1"></i>Koli içi: <strong>${boxQty}</strong></span>
+                    </div>
+                </button>`;
+            }).join('');
+        }
+
+        function loadOrderIntoShipping(orderId) {
+            const order = (appData.orders || []).find(item => item.id === orderId);
+            if(!order) return alert('Sipariş kaydı bulunamadı. Listeyi yenileyip tekrar deneyin.');
+
+            closeModal('orderImportModal');
+            openModal('shippingModal');
+
+            const form = document.getElementById('formShipping');
+            const product = [order.productCode, order.unisonCode].filter(Boolean).join(' · ');
+            form.elements.customer.value = order.customer || '';
+            form.elements.product.value = product || '';
+            form.elements.totalQty.value = order.totalQty || '';
+            form.elements.boxQty.value = order.boxQty || '';
+            form.elements.sourceOrderId.value = order.id;
+            form.elements.sourceOrderNo.value = order.orderNo || '';
+            form.elements.startDate.value = order.deadline || new Date().toISOString().slice(0, 10);
+
+            const sourceInfo = document.getElementById('shippingOrderSourceInfo');
+            sourceInfo.innerHTML = `<i class="fas fa-link mr-1"></i> Siparişten aktarıldı: <strong>${order.orderNo || '-'}</strong>. Çıkış ve varış adreslerini aşağıdan düzenleyebilirsiniz.`;
+            sourceInfo.classList.remove('hidden');
+            calcBox();
+        }
+
         function renderShipping() {
             const tb = document.getElementById('tbodyShipping');
             if(!tb) return;
             const s = (document.getElementById('searchShipping')?.value || '').toLowerCase();
             
-            tb.innerHTML = appData.shipping.filter(x => x.customer?.toLowerCase().includes(s) || x.toAddress?.toLowerCase().includes(s) || x.product?.toLowerCase().includes(s)).map(x => `
+            tb.innerHTML = appData.shipping.filter(x => x.customer?.toLowerCase().includes(s) || x.toAddress?.toLowerCase().includes(s) || x.product?.toLowerCase().includes(s)).map(x => {
+                const isChecked = selectedItems.shipping.includes(x.id) ? 'checked' : '';
+                return `
                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition ${x.isImportant ? 'bg-amber-50/30' : ''}">
-                    <td class="p-3 align-top border-b border-slate-100 w-10"><input type="checkbox" class="cb-shipping rounded border-slate-300" value="${x.id}" onchange="toggleSelect('shipping', '${x.id}', this.checked)"></td>
+                    <td class="p-3 align-top border-b border-slate-100 w-10"><input type="checkbox" class="cb-shipping rounded border-slate-300" value="${x.id}" ${isChecked} onchange="toggleSelect('shipping', '${x.id}', this.checked)"></td>
                     <td class="p-3 align-top border-b border-slate-100 w-8">${x.isImportant ? '<i class="fas fa-exclamation-triangle text-amber-500"></i>' : ''}</td>
                     <td class="p-3 align-top border-b border-slate-100 text-[12px] whitespace-nowrap"><span class="text-slate-400">Baş:</span> ${x.startDate} <br> <span class="text-slate-400">Bit:</span> ${x.endDate||'-'}</td>
                     <td class="p-3 align-top border-b border-slate-100 font-medium text-blue-600 dark:text-blue-400 min-w-[150px] whitespace-normal break-words">${x.customer}</td>
@@ -1160,8 +1254,8 @@
                     <td class="p-3 align-top border-b border-slate-100 text-center w-14">
                         <button onclick="openModal('shippingModal', '${x.id}', 'shipping')" class="text-slate-400 hover:text-blue-500 hover:bg-blue-50 p-1.5 rounded transition"><i class="fas fa-pen"></i></button>
                     </td>
-                </tr>
-            `).join('');
+                </tr>`;
+            }).join('');
         }
 
         async function exportShippingPDF() {
@@ -1218,14 +1312,19 @@
         // Kalan yardımcı ve modül fonksiyonları
         function exportExcel(f, d) { if(d.length===0) return; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d), f); XLSX.writeFile(wb, `${f}_${new Date().toISOString().slice(0,10)}.xlsx`); }
         function previewImage(e, id, phId) { const r = new FileReader(); r.onload = function() { const el = document.getElementById(id); el.src = r.result; el.classList.remove('hidden'); document.getElementById(phId).classList.add('hidden'); }; if(e.target.files[0]) r.readAsDataURL(e.target.files[0]); }
+        
         function handleFileConvert(e, dId, nId) { 
             const f = e.target.files[0]; 
             if(!f) return; 
-            if(f.size > 500 * 1024) return alert("Maks 500KB (Veritabanı limiti nedeniyle)!"); 
+            if(f.size > 500 * 1024) {
+                e.target.value = ''; 
+                return alert("Maks 500KB (Veritabanı limiti nedeniyle)!");
+            }
             const r = new FileReader(); 
             r.onload=(ev)=>{document.getElementById(dId).value=ev.target.result; document.getElementById(nId).value=f.name;}; 
             r.readAsDataURL(f); 
         }
+
         function updateClock() { const d = new Date(); document.getElementById('topTime').innerText = d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}); document.getElementById('topDate').innerText = d.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'}); }
         
         function parseDateSafely(dStr) {
@@ -1241,88 +1340,33 @@
             return 0;
         }
 
-        function importCosterExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        function exportBiotaExcel() {
+            if(!appData.biota || appData.biota.length === 0) {
+                return alert('Dışa aktarılacak Biota siparişi bulunamadı.');
+            }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
-                    
-                    let addedCount = 0;
-                    jsonData.forEach(row => {
-                        const getVal = (keys) => {
-                            const rowKeys = Object.keys(row);
-                            for(let k of keys) {
-                                let target = k.toLowerCase().replace(/\s+/g, '');
-                                let foundKey = rowKeys.find(x => x.toLowerCase().replace(/\s+/g, '') === target);
-                                if(foundKey) return row[foundKey];
-                            }
-                            return '';
-                        };
+            const rows = appData.biota.map(item => {
+                const qty = parseInt(item.qty) || 0;
+                const delivered = parseInt(item.deliveredQty) || 0;
+                return {
+                    'Kayıt ID': item.id || '',
+                    'Sipariş No': item.orderNo || '',
+                    'Malzeme No': item.materialNo || '',
+                    'Açıklama': item.materialDesc || '',
+                    'Tarih': item.date || '',
+                    'Sipariş Adedi': qty,
+                    'Teslim Edilen': delivered,
+                    'Kalan': Math.max(0, qty - delivered)
+                };
+            });
 
-                        const orderNo = getVal(['SİPARİŞ NO', 'Sipariş No', 'Siparis No', 'Order No']);
-                        const unisonName = getVal(['Ürün Adı', 'Urun Adi', 'Unison İsim', 'Unison Name']);
-                        const costerCode = getVal(['Coster Kodu', 'Coster Code', 'Malzeme No', 'Urun Kodu']);
-                        const qtyRaw = getVal(['Sipariş Adet', 'Siparis Adet', 'Miktar', 'Qty']);
-                        const dateStr = getVal(['Tarih', 'Sipariş Tarihi', 'Date']);
-                        const deadlineStr = getVal(['Termin', 'Termin Tarihi', 'Deadline']);
-                        const statusStr = getVal(['Durum', 'Aşama', 'Status']);
-                        
-                        if (orderNo || costerCode || unisonName) {
-                            let parsedQty = parseInt(qtyRaw.toString().replace(/[^0-9]/g, '')) || 0;
-                            let status = "Teyit Bekliyor";
-                            if(statusStr) {
-                                const s = statusStr.toLowerCase();
-                                if(s.includes("üretim")) status = "Üretimde";
-                                else if(s.includes("yol")) status = "Yolda";
-                                else if(s.includes("gümrük")) status = "Gümrükte";
-                                else if(s.includes("tamam")) status = "Tamamlandı";
-                                else if(s.includes("iptal")) status = "İptal";
-                            }
-
-                            appData.costerOrders.push({
-                                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                                orderNo: String(orderNo).trim(),
-                                unisonName: String(unisonName).trim(),
-                                costerCode: String(costerCode).trim(),
-                                qty: String(parsedQty),
-                                deliveredQty: "0",
-                                date: String(dateStr).trim(),
-                                deadline: String(deadlineStr).trim(),
-                                status: status,
-                                notes: "",
-                                price: "",
-                                currency: ""
-                            });
-                            addedCount++;
-                        }
-                    });
-
-                    if (addedCount > 0) {
-                        saveData('costerOrders');
-                        renderCosterOrders();
-                        calcCosterDashboard();
-                        alert(`${addedCount} adet sipariş başarıyla Coster listesine eklendi.`);
-                    } else {
-                        alert("Dosyada uygun kayıt bulunamadı. Lütfen doğru dosyayı seçtiğinizden emin olun.");
-                    }
-                } catch (error) {
-                    console.error("Excel okuma hatası:", error);
-                    alert("Excel/CSV dosyası okunurken bir hata oluştu.");
-                }
-                event.target.value = ''; // Inputu sıfırla
-            };
-            reader.readAsArrayBuffer(file);
+            const sheet = XLSX.utils.json_to_sheet(rows, { header: ['Kayıt ID', 'Sipariş No', 'Malzeme No', 'Açıklama', 'Tarih', 'Sipariş Adedi', 'Teslim Edilen', 'Kalan'] });
+            sheet['!cols'] = [{wch: 22}, {wch: 18}, {wch: 18}, {wch: 36}, {wch: 15}, {wch: 16}, {wch: 16}, {wch: 12}];
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, sheet, 'Biota Siparişleri');
+            XLSX.writeFile(workbook, `Biota_Siparisler_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
-        // --- BİOTA İÇE AKTAR VE RENDER ---
         function importBiotaExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1332,65 +1376,78 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
-                    
-                    let addedCount = 0;
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '', raw: false });
+                    let addedCount = 0, updatedCount = 0;
+
+                    const normalizeHeader = value => String(value || '')
+                        .toLocaleLowerCase('tr-TR')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/ı/g, 'i')
+                        .replace(/[^a-z0-9]/g, '');
+                    const toQty = value => parseInt(String(value ?? '').replace(/[^0-9-]/g, ''), 10) || 0;
+
+                    const batch = db.batch();
+
                     jsonData.forEach(row => {
-                        // Sütun başlıklarındaki büyük/küçük harf ve gizli boşluk hatalarını tolere eden akıllı okuyucu
-                        const getVal = (keys) => {
-                            const rowKeys = Object.keys(row);
-                            for(let k of keys) {
-                                let target = k.toLowerCase().replace(/\s+/g, '');
-                                let foundKey = rowKeys.find(x => x.toLowerCase().replace(/\s+/g, '') === target);
-                                if(foundKey) return row[foundKey];
+                        const normalizedRow = Object.fromEntries(Object.entries(row).map(([key, value]) => [normalizeHeader(key), value]));
+                        const getVal = (...keys) => {
+                            for(const key of keys) {
+                                const value = normalizedRow[normalizeHeader(key)];
+                                if(value !== undefined) return value;
                             }
                             return '';
                         };
 
-                        const orderNo = getVal(['SİPARİŞ NO', 'Sipariş No', 'Siparis No']);
-                        const materialNo = getVal(['MALZEME NO', 'Malzeme No']);
-                        const materialDesc = getVal(['Açıklama', 'Aciklama', 'Malzeme Tanımı']);
-                        const dateStr = getVal(['Tarih', 'Sipariş Tarihi']);
-                        const qtyRaw = getVal(['Sipariş Adet', 'Siparis Adet', 'Miktar']);
-                        const remainQtyRaw = getVal(['KALAN SİPARİŞ MİKTARI', 'Kalan Siparis Miktari', 'Kalan']);
+                        const id = String(getVal('Kayıt ID', 'ID', 'id')).trim();
+                        const orderNo = getVal('Sipariş No', 'Siparis No', 'orderNo');
+                        const materialNo = getVal('Malzeme No', 'materialNo');
+                        if(!orderNo && !materialNo) return;
 
-                        if (orderNo || materialNo) {
-                            // Rakam dışındaki sembolleri temizle
-                            let parsedQty = parseInt(qtyRaw.toString().replace(/[^0-9]/g, '')) || 0;
-                            let parsedRemain = remainQtyRaw !== '' ? parseInt(remainQtyRaw.toString().replace(/[^0-9]/g, '')) : parsedQty;
-                            
-                            // Teslim edilen miktar otomatik hesabı (Sipariş Adedi - Kalan Miktar)
-                            let deliveredQty = parsedQty - parsedRemain;
-                            if(deliveredQty < 0) deliveredQty = 0;
+                        const qty = toQty(getVal('Sipariş Adedi', 'Sipariş Adet', 'Siparis Adet', 'Miktar', 'qty'));
+                        const deliveredRaw = getVal('Teslim Edilen', 'deliveredQty');
+                        const remainingRaw = getVal('Kalan', 'Kalan Sipariş Miktarı', 'Kalan Siparis Miktari');
+                        const delivered = deliveredRaw !== '' ? toQty(deliveredRaw) : Math.max(0, qty - toQty(remainingRaw));
+                        
+                        const recordId = id || (Date.now().toString() + Math.random().toString(36).slice(2, 7));
+                        const record = {
+                            id: recordId,
+                            orderNo: String(orderNo).trim(),
+                            materialNo: String(materialNo).trim(),
+                            materialDesc: String(getVal('Açıklama', 'Aciklama', 'Malzeme Tanımı', 'materialDesc')).trim(),
+                            date: String(getVal('Tarih', 'Sipariş Tarihi', 'date')).trim(),
+                            qty: String(qty),
+                            deliveredQty: String(Math.min(qty, Math.max(0, delivered)))
+                        };
 
-                            appData.biota.push({
-                                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                                orderNo: String(orderNo).trim(),
-                                materialNo: String(materialNo).trim(),
-                                materialDesc: String(materialDesc).trim(),
-                                date: String(dateStr).trim(),
-                                qty: String(parsedQty),
-                                deliveredQty: String(deliveredQty)
-                            });
+                        const existingIndex = id ? appData.biota.findIndex(item => item.id === id) : -1;
+                        if(existingIndex > -1) {
+                            appData.biota[existingIndex] = record;
+                            updatedCount++;
+                        } else {
+                            appData.biota.push(record);
                             addedCount++;
+                        }
+                        
+                        if (currentUser) {
+                            const ref = db.collection('users').doc(currentUser.uid).collection('biota').doc(recordId);
+                            batch.set(ref, record, {merge: true});
                         }
                     });
 
-                    if (addedCount > 0) {
-                        saveData('biota');
+                    if (addedCount || updatedCount) {
+                        if (currentUser) batch.commit();
                         renderBiota();
-                        alert(`${addedCount} adet sipariş başarıyla listeye eklendi.`);
+                        alert(`İçe aktarma tamamlandı: ${addedCount} yeni kayıt eklendi, ${updatedCount} kayıt güncellendi.`);
                     } else {
-                        alert("Dosyada uygun kayıt bulunamadı. Lütfen doğru dosyayı seçtiğinizden emin olun.");
+                        alert('Dosyada uygun Biota kaydı bulunamadı.');
                     }
                 } catch (error) {
-                    console.error("Excel okuma hatası:", error);
-                    alert("Excel/CSV dosyası okunurken bir hata oluştu.");
+                    console.error('Excel okuma hatası:', error);
+                    alert('Excel/CSV dosyası okunurken bir hata oluştu.');
                 }
-                event.target.value = ''; // Inputu sıfırla
+                event.target.value = '';
             };
             reader.readAsArrayBuffer(file);
         }
@@ -1399,21 +1456,19 @@
             const tb = document.getElementById('tbodyBiota'); 
             if(!tb) return; 
             
-            // Arama kutusundaki değeri küçük harfe çevirerek al
             const searchTerm = (document.getElementById('searchBiota')?.value || '').toLowerCase();
             
-            // Filtreleme mantığı
             const filteredList = appData.biota.filter(x => 
                 (x.materialNo && x.materialNo.toLowerCase().includes(searchTerm)) ||
                 (x.materialDesc && x.materialDesc.toLowerCase().includes(searchTerm)) ||
                 (x.orderNo && x.orderNo.toLowerCase().includes(searchTerm))
             );
 
-            // Tabloyu filtreli listeye göre çiz
             tb.innerHTML = filteredList.map(x => { 
                 const t = parseInt(x.qty) || 0, d = parseInt(x.deliveredQty) || 0, r = t - d; 
+                const isChecked = selectedItems.biota.includes(x.id) ? 'checked' : '';
                 return `<tr>
-                    <td class="p-3"><input type="checkbox" class="cb-biota rounded border-slate-300" value="${x.id}" onchange="toggleSelect('biota', '${x.id}', this.checked)"></td>
+                    <td class="p-3"><input type="checkbox" class="cb-biota rounded border-slate-300" value="${x.id}" ${isChecked} onchange="toggleSelect('biota', '${x.id}', this.checked)"></td>
                     <td class="p-3 font-mono text-slate-700 dark:text-slate-300">${x.orderNo}</td>
                     <td class="p-3 text-blue-600 dark:text-blue-400 font-medium">${x.materialNo}</td>
                     <td class="p-3 text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title="${x.materialDesc}">${x.materialDesc}</td>
@@ -1434,274 +1489,12 @@
             
             navigator.clipboard.writeText(t).then(() => {
                 alert("Mail şablonu kopyalandı!");
-                editedBiotaOrders = []; // Sıfırla
+                editedBiotaOrders = []; 
             }).catch(() => {
                 alert("Panoya kopyalanamadı.");
             }); 
         }
 
-        // ==========================================
-        // COSTER TAKİP SİSTEMİ (MASTER PROMPT UYUMLU)
-        // ==========================================
-
-        function switchCosterTab(tab) {
-            calcCosterDashboard();
-            renderCosterOrders();
-        }
-
-        function calcCosterDashboard() {
-            let activeCount = 0;
-            let eur = 0, usd = 0;
-
-            appData.costerOrders.forEach(o => {
-                if (o.status !== 'Tamamlandı' && o.status !== 'İptal') {
-                    activeCount++;
-                    let rem = Math.max(0, (parseInt(o.qty)||0) - (parseInt(o.deliveredQty)||0));
-                    
-                    let pStr = String(o.price || '0').replace(',', '.');
-                    let p = parseFloat(pStr) || 0;
-                    
-                    if(o.currency === 'EUR') eur += (p * rem);
-                    if(o.currency === 'USD') usd += (p * rem);
-                }
-            });
-
-            // Coster Tablosu KPI'ları
-            const kpiActive = document.getElementById('coster-kpi-active');
-            if(kpiActive) kpiActive.innerText = activeCount;
-            const kpiEur = document.getElementById('coster-kpi-eur');
-            if(kpiEur) kpiEur.innerText = eur.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' €';
-            const kpiUsd = document.getElementById('coster-kpi-usd');
-            if(kpiUsd) kpiUsd.innerText = usd.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' $';
-
-            // Ana Dashboard Coster KPI'ları
-            const mainActive = document.getElementById('main-coster-active');
-            if(mainActive) mainActive.innerText = activeCount;
-            const mainCritical = document.getElementById('main-coster-critical');
-            if(mainCritical) mainCritical.innerText = 0;
-            const mainEur = document.getElementById('main-coster-eur');
-            if(mainEur) mainEur.innerText = eur.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' €';
-            const mainUsd = document.getElementById('main-coster-usd');
-            if(mainUsd) mainUsd.innerText = usd.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' $';
-        }
-
-        // Coster - Siparişler Render
-        function renderCosterOrders() {
-            const tb = document.getElementById('tbodyCosterOrders');
-            if(!tb) return;
-            const search = (document.getElementById('searchCosterOrders')?.value || '').toLowerCase();
-
-            let list = appData.costerOrders.filter(o => 
-                (o.orderNo?.toLowerCase().includes(search) || o.unisonName?.toLowerCase().includes(search) || o.costerCode?.toLowerCase().includes(search))
-            );
-
-            // FIFO Taraması için sıralama (En acil en üstte)
-            list.sort((a, b) => parseDateSafely(a.deadline || a.date) - parseDateSafely(b.deadline || b.date));
-
-            if(list.length === 0) {
-                tb.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Gösterilecek sipariş yok.</td></tr>`;
-                return;
-            }
-
-            tb.innerHTML = list.map(o => {
-                const total = parseInt(o.qty) || 0;
-                const delv = parseInt(o.deliveredQty) || 0;
-                const remain = Math.max(0, total - delv);
-                const isChecked = selectedItems.costerOrders.includes(o.id) ? 'checked' : '';
-                
-                let sColor = 'text-slate-600 bg-slate-100';
-                if(o.status === 'Teyit Bekliyor') sColor = 'text-amber-700 bg-amber-100';
-                if(o.status === 'Üretimde') sColor = 'text-blue-700 bg-blue-100';
-                if(o.status === 'Yolda' || o.status === 'Gümrükte' || o.status === 'Yurt Dışı Sipariş') sColor = 'text-purple-700 bg-purple-100';
-                if(o.status === 'Tamamlandı') sColor = 'text-emerald-700 bg-emerald-100';
-
-                return `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800">
-                    <td class="p-3 w-10"><input type="checkbox" class="cb-costerOrders rounded border-slate-300" value="${o.id}" ${isChecked} onchange="toggleSelect('costerOrders', '${o.id}', this.checked)"></td>
-                    <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-300">#${o.orderNo}</td>
-                    <td class="p-3">
-                        <div class="font-medium text-blue-600 dark:text-blue-400 truncate max-w-[150px]" title="${o.unisonName}">${o.unisonName}</div>
-                        <div class="text-[10px] text-slate-500 font-mono">${o.costerCode}</div>
-                    </td>
-                    <td class="p-3 text-center">
-                        <div class="font-bold">${total}</div>
-                        <div class="text-[10px] font-bold ${remain > 0 ? 'text-red-500' : 'text-emerald-500'}">Kalan: ${remain}</div>
-                    </td>
-                    <td class="p-3 text-[11px] whitespace-nowrap">
-                        <div class="text-slate-400">Sip: ${o.date || '-'}</div>
-                        <div class="font-bold text-slate-700 dark:text-slate-300">Ter: ${o.deadline || '-'}</div>
-                    </td>
-                    <td class="p-3">
-                        <select onchange="updateCosterOrderStatus('${o.id}', this.value)" class="text-[11px] font-bold px-2 py-1 rounded outline-none cursor-pointer ${sColor} border-0">
-                            <option value="Teyit Bekliyor" ${o.status==='Teyit Bekliyor'?'selected':''}>Teyit Bekliyor</option>
-                            <option value="Üretimde" ${o.status==='Üretimde'?'selected':''}>Üretimde</option>
-                            <option value="Yolda" ${o.status==='Yolda'?'selected':''}>Yolda</option>
-                            <option value="Gümrükte" ${o.status==='Gümrükte'?'selected':''}>Gümrükte</option>
-                            <option value="Yurt Dışı Sipariş" ${o.status==='Yurt Dışı Sipariş'?'selected':''}>Yurt Dışı Sipariş</option>
-                            <option value="Tamamlandı" ${o.status==='Tamamlandı'?'selected':''}>Tamamlandı</option>
-                            <option value="İptal" ${o.status==='İptal'?'selected':''}>İptal</option>
-                        </select>
-                    </td>
-                    <td class="p-3 text-[11px] text-slate-500 max-w-[150px] truncate" title="${o.notes || ''}">
-                        ${o.notes || '-'}
-                    </td>
-                    <td class="p-3 w-14 text-center">
-                        <button onclick="openCosterOrderModal('${o.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded transition"><i class="fas fa-pen"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
-
-        // Coster - Ürünler Render
-        function renderCosterProducts() {
-            const grid = document.getElementById('gridCosterProducts');
-            if(!grid) return;
-            
-            if(appData.costerProducts.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400"><i class="fas fa-boxes-packing text-4xl mb-3 opacity-50"></i><p>Kütüphanede ürün bulunmuyor.</p></div>`;
-                return;
-            }
-
-            grid.innerHTML = appData.costerProducts.map(p => {
-                const isChecked = selectedItems.costerProducts.includes(p.id) ? 'checked' : '';
-                return `
-                <div class="glass p-3 rounded-xl flex flex-col relative group">
-                    <input type="checkbox" class="cb-costerProducts absolute top-3 left-3 rounded border-slate-300 text-blue-600 z-10" value="${p.id}" ${isChecked} onchange="toggleSelect('costerProducts', '${p.id}', this.checked)">
-                    <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition z-10">
-                        <button onclick="openModal('costerProductModal', '${p.id}', 'costerProducts')" class="bg-blue-600 text-white w-7 h-7 rounded shadow-sm hover:bg-blue-500 flex items-center justify-center"><i class="fas fa-pen text-[10px]"></i></button>
-                    </div>
-                    
-                    ${p.fileData ? 
-                        `<div class="w-full h-32 bg-slate-100 dark:bg-slate-800 rounded-lg mb-3 overflow-hidden border border-slate-100 dark:border-slate-700"><img src="${p.fileData}" class="w-full h-full object-contain p-2"></div>` : 
-                        `<div class="w-full h-32 bg-slate-50 dark:bg-slate-800/50 rounded-lg mb-3 flex flex-col items-center justify-center text-slate-300 border border-slate-100 dark:border-slate-700 border-dashed"><i class="fas fa-image text-3xl mb-2 opacity-50"></i><span class="text-[10px] font-medium opacity-50">Görsel Yok</span></div>`
-                    }
-                    <div class="px-1 text-center">
-                        <h4 class="font-bold text-emerald-600 dark:text-emerald-400 line-clamp-1 mb-0.5" title="${p.unisonName}">${p.unisonName}</h4>
-                        <div class="text-[10px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded inline-block mb-2">${p.costerCode}</div>
-                        <div class="font-bold text-slate-800 dark:text-slate-200">${p.price || '0.00'} <span class="text-[10px] text-slate-500">${p.currency||''}</span></div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // Coster - Stoklar Render
-        function renderCosterStocks() {
-            const tb = document.getElementById('tbodyCosterStocks');
-            if(!tb) return;
-            const { reservedMap } = calcCosterFIFO();
-            
-            // Ürün kütüphanesindeki tüm eşsiz Unison isimlerini al
-            let allUnisonNames = [...new Set(appData.costerProducts.map(p => p.unisonName))];
-            
-            // Eğer stoklara manuel eklenmiş ama üründe olmayan isim varsa onları da ekle
-            appData.costerStocks.forEach(s => {
-                if(!allUnisonNames.includes(s.unisonName)) allUnisonNames.push(s.unisonName);
-            });
-
-            if(allUnisonNames.length === 0) {
-                tb.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Stok takibi yapılacak kayıtlı ürün yok. Önce ürün kütüphanesine ürün ekleyin.</td></tr>`;
-                return;
-            }
-
-            // İsimleri alfabetik sırala
-            allUnisonNames.sort();
-
-            tb.innerHTML = allUnisonNames.map(uName => {
-                // Fiziksel stok verisini çek
-                const stockData = appData.costerStocks.find(s => s.unisonName === uName);
-                const physQty = stockData ? parseInt(stockData.qty) : 0;
-                const rsrvQty = reservedMap[uName] || 0;
-                const netFree = physQty - rsrvQty;
-                const stockId = stockData ? stockData.id : null;
-                const isChecked = stockId && selectedItems.costerStocks.includes(stockId) ? 'checked' : '';
-
-                let netColor = netFree > 0 ? 'text-emerald-600 font-bold' : (netFree < 0 ? 'text-red-500 font-bold' : 'text-slate-500');
-
-                return `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800">
-                    <td class="p-3 w-10">
-                        ${stockId ? `<input type="checkbox" class="cb-costerStocks rounded border-slate-300" value="${stockId}" ${isChecked} onchange="toggleSelect('costerStocks', '${stockId}', this.checked)">` : `<input type="checkbox" disabled class="rounded border-slate-300 opacity-30" title="Fiziksel stok kaydı yok">`}
-                    </td>
-                    <td class="p-4 font-medium text-slate-700 dark:text-slate-300"><i class="fas fa-cube text-slate-400 mr-2"></i>${uName}</td>
-                    <td class="p-4 text-right font-mono font-bold text-[15px]">${physQty}</td>
-                    <td class="p-4 text-right font-mono text-amber-600">- ${rsrvQty}</td>
-                    <td class="p-4 text-right font-mono text-[16px] border-l border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 ${netColor}">${netFree}</td>
-                    <td class="p-4 w-24 text-center">
-                        <div class="flex gap-1 justify-center">
-                            <button onclick="openCosterStockModal('${uName}', ${physQty}, '${stockId || ''}')" class="text-blue-500 hover:bg-blue-50 p-2 rounded transition" title="Stok Güncelle"><i class="fas fa-edit"></i></button>
-                            ${stockId ? `<button onclick="deleteCosterStockSingle('${stockId}')" class="text-red-500 hover:bg-red-50 p-2 rounded transition" title="Stok Kaydını Sil (Sıfırla)"><i class="fas fa-trash"></i></button>` : `<div class="w-8"></div>`}
-                        </div>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
-
-        function deleteCosterStockSingle(id) {
-            if(confirm('Bu stok kaydını silmek (miktarı sıfırlamak) istediğinize emin misiniz?')) {
-                appData.costerStocks = appData.costerStocks.filter(x => x.id !== id);
-                // Çoklu seçimde varsa oradan da çıkar
-                selectedItems.costerStocks = selectedItems.costerStocks.filter(x => x !== id);
-                saveData('costerStocks');
-                renderCosterStocks();
-            }
-        }
-
-        // Coster - Helper Functions
-        
-        async function exportCosterOrdersPDF() {
-            let fontB64 = null;
-            if(typeof getPdfFont === "function") fontB64 = await getPdfFont();
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
-            
-            if(fontB64) {
-                doc.addFileToVFS("Roboto-Regular.ttf", fontB64);
-                doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-                doc.setFont("Roboto");
-            }
-            doc.text('Coster Siparis Listesi', 14, 15);
-            const head = [['Siparis No', 'Urun (Unison)', 'Coster Kodu', 'Siparis', 'Kalan', 'Durum', 'Sip/Ter Trh.', 'Aciklama']];
-            
-            let exp = appData.costerOrders;
-            
-            if(selectedItems.costerOrders && selectedItems.costerOrders.length > 0) {
-                exp = exp.filter(x => selectedItems.costerOrders.includes(x.id));
-            }
-            exp.sort((a, b) => parseDateSafely(a.deadline || a.date) - parseDateSafely(b.deadline || b.date));
-
-            const body = exp.map(o => {
-                const total = parseInt(o.qty) || 0;
-                const delv = parseInt(o.deliveredQty) || 0;
-                const remain = Math.max(0, total - delv);
-
-                return [
-                    o.orderNo || '', 
-                    o.unisonName || '', 
-                    o.costerCode || '',
-                    String(total), 
-                    String(remain), 
-                    `${o.status||''}`, 
-                    `Sip: ${o.date||''}\nTer: ${o.deadline||''}`, 
-                    o.notes || ''
-                ];
-            });
-
-            doc.autoTable({ head: head, body: body, startY: 20, styles: { font: fontB64 ? 'Roboto' : 'helvetica', fontSize: 7, cellPadding: 2 }, columnStyles: { 7: { cellWidth: 50 } } });
-            doc.save(`Coster_Siparisler_${new Date().toISOString().slice(0,10)}.pdf`);
-        }
-
-        function openCosterOrderModal(id = null) {
-            openModal('costerOrderModal', id, 'costerOrders');
-        }
-
-        function updateCosterOrderStatus(id, newStatus) {
-            const order = appData.costerOrders.find(o => o.id === id);
-            if(order) {
-                order.status = newStatus;
-                saveData('costerOrders');
-            }
-        }
-        
         function renderIntel() { 
             document.getElementById('gridIntel').innerHTML = [...appData.intel].sort((a,b)=>parseDateSafely(b.date)-parseDateSafely(a.date)).map(x => 
                 `<div class="glass p-4 relative group cursor-pointer hover:border-blue-400 hover:shadow-md transition" onclick="openIntelView('${x.id}')">
@@ -1721,7 +1514,6 @@
             ).join(''); 
         }
 
-        // Pazar İstihbaratı Tam Ekran Görünüm
         function openIntelView(id) {
             const item = appData.intel.find(x => x.id === id);
             if(!item) return;
@@ -1743,45 +1535,225 @@
             document.getElementById('intelViewModal').classList.add('flex');
         }
         
-        function renderPriceLists() { 
-            const c=appData.prices.find(x=>x.id===activePriceCustomer); 
-            document.getElementById('listPriceCustomers').innerHTML=appData.prices.map(x=>`<li onclick="activePriceCustomer='${x.id}';renderPriceLists()" class="p-3 cursor-pointer border-b border-slate-100 hover:bg-slate-50 ${activePriceCustomer===x.id?'bg-blue-50 border-l-4 border-blue-500':''}"><div class="text-sm font-medium">${x.name}</div></li>`).join(''); 
-            if(c){
-                document.getElementById('selectedPriceCustomerName').innerText=c.name; 
-                document.getElementById('btnAddPriceProd').classList.remove('hidden'); 
-                document.getElementById('tbodyPriceProducts').innerHTML=(c.products||[]).map(p=>`<tr><td class="p-3 text-sm">${p.unisonName}</td><td class="p-3 text-sm">${p.custName}</td><td class="p-3 text-sm font-mono">${p.price}</td><td class="p-3 text-xs">${p.validity}</td><td class="p-3"><button onclick="delPriceProduct('${c.id}','${p.id}')" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`).join('');
-            } 
-        }
-        
-        function addPriceCustomer() { const n=prompt("Müşteri Adı:"); if(n){appData.prices.push({id:Date.now().toString(),name:n,products:[]}); saveData('prices'); renderPriceLists();} }
-        function addPriceProduct() { if(!activePriceCustomer)return; const c=appData.prices.find(x=>x.id===activePriceCustomer); const u=prompt("Unison Adı:"), m=prompt("Müşteri Adı:"), f=prompt("Fiyat:"), v=prompt("Geçerlilik:"); if(u){if(!c.products)c.products=[]; c.products.push({id:Date.now().toString(),unisonName:u,custName:m,price:f,validity:v}); saveData('prices'); renderPriceLists();} }
-        
-        function delPriceProduct(custId, prodId) {
-            if(confirm('Ürünü silmek istediğinize emin misiniz?')) {
-                const c = appData.prices.find(x => x.id === custId);
-                if(c) {
-                    c.products = c.products.filter(p => p.id !== prodId);
-                    saveData('prices');
-                    renderPriceLists();
-                }
-            }
-        }
-        
         function renderProposals() { 
             ['Teklif','Takip','Sonuç','Tamamlandı'].forEach(st => { 
                 document.getElementById('cnt-'+st).innerText=appData.proposals.filter(p=>p.status===st).length; 
                 document.getElementById('kb-'+st).innerHTML=appData.proposals.filter(p=>p.status===st).map(p=>`<div id="prop-${p.id}" draggable="true" ondragstart="event.dataTransfer.setData('text','${p.id}')" class="kanban-item relative group"><div class="text-sm font-medium">${p.customer}</div><div class="text-xs text-slate-500">${p.title}</div><button onclick="delItem('proposals','${p.id}')" class="absolute top-2 right-2 text-red-400 opacity-0 group-hover:opacity-100"><i class="fas fa-times"></i></button></div>`).join('');
             }); 
         }
-        function allowDrop(ev) { ev.preventDefault(); } 
-        function dropProp(ev, st) { ev.preventDefault(); const item=appData.proposals.find(p=>p.id===ev.dataTransfer.getData("text")); if(item){item.status=st;saveData('proposals');} }
         
-        function renderNotes() { document.getElementById('gridNotes').innerHTML=appData.notes.map(n=>`<div class="glass p-4 relative group border-t-4 border-slate-800"><div class="text-[10px] text-slate-400">${n.date||''}</div><h4 class="font-medium text-sm">${n.title}</h4><p class="text-xs text-slate-600 mt-1">${n.content}</p><div class="absolute bottom-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('noteModal','${n.id}','notes')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('notes','${n.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
-        function updateFinCategories() { const t=document.getElementById('finType').value, c=document.getElementById('finCategory'); c.innerHTML=''; if(t==='gelir') ['Maaş','Yemek','Ek','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); else if(t==='kk') ['Akbank','Yapı Kredi','Garanti','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); else if(t==='kredi') ['Akbank Kredi','Nurçehre','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); document.getElementById('finCatWrapper').style.display=t==='yatirim'?'none':'block'; document.getElementById('finInvWrapper').style.display=t==='yatirim'?'block':'none'; }
-        function saveFinanceRecord(e) { e.preventDefault(); const t=document.getElementById('finType').value, c=document.getElementById('finCategory').value, a=document.getElementById('finAmount').value; let n=c; if(t==='yatirim'){n=`${document.getElementById('finInvType').value} (${document.getElementById('finInvQty').value})`;} appData.finance.push({id:Date.now().toString(), month:currentFinMonth, type:t, name:n, amount:a}); saveData('finance'); closeModal('financeModal'); }
-        function renderFinance() { const r=appData.finance.filter(x=>x.month===currentFinMonth); let g=0,k=0,kr=0,y=0; ['gelir','kk','kredi','yatirim'].forEach(t=>{ const l=r.filter(x=>x.type===t); document.getElementById('fin-list-'+t).innerHTML=l.map(i=>`<div class="flex justify-between p-2 border-b border-slate-100 text-sm"><span>${i.name}</span><span class="font-mono">${i.amount} ₺ <i onclick="delItem('finance','${i.id}')" class="fas fa-times text-red-400 cursor-pointer ml-2"></i></span></div>`).join(''); let tot=l.reduce((s,i)=>s+parseFloat(i.amount),0); if(t==='gelir')g=tot; if(t==='kk')k=tot; if(t==='kredi')kr=tot; if(t==='yatirim')y=tot; }); document.getElementById('fin-tot-gelir').innerText=g+' ₺'; document.getElementById('fin-tot-gider').innerText=(k+kr)+' ₺'; document.getElementById('fin-tot-yatirim').innerText=y+' ₺'; }
-        function changeFinMonth(m) { currentFinMonth=m; renderFinance(); }
-        function delItem(m,id) { if(confirm('Sil?')){appData[m]=appData[m].filter(x=>x.id!==id); saveData(m);} }
+        function allowDrop(ev) { ev.preventDefault(); } 
+        function dropProp(ev, st) { 
+            ev.preventDefault(); 
+            const item=appData.proposals.find(p=>p.id===ev.dataTransfer.getData("text")); 
+            if(item){
+                item.status=st;
+                if(currentUser) db.collection('users').doc(currentUser.uid).collection('proposals').doc(item.id).set({status: st}, {merge:true});
+                refreshUI('proposals');
+            } 
+        }
+
+        // --- GÖREVLER (TO-DO) YÖNETİMİ ---
+        function renderTodos() { 
+            ['todo', 'done'].forEach(st => { 
+                const list = appData.todos.filter(t => t.status === st);
+                document.getElementById('cnt-' + st).innerText = list.length; 
+                
+                document.getElementById('kb-' + st).innerHTML = list.map(t => {
+                    const borderClass = st === 'todo' ? 'border-blue-400' : 'border-emerald-400';
+                    const textClass = st === 'done' ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-200';
+                    
+                    return `<div id="td-${t.id}" draggable="true" ondragstart="event.dataTransfer.setData('text', '${t.id}')" class="kanban-item relative group border-l-4 ${borderClass}">
+                        <div class="pr-6 font-medium text-[13px] ${textClass}">${t.title}</div>
+                        ${t.date ? `<div class="text-[10px] text-slate-500 mt-1.5"><i class="fas fa-calendar-day mr-1"></i>${t.date}</div>` : ''}
+                        <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition z-10">
+                            <button onclick="openModal('todoModal','${t.id}','todos')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded transition"><i class="fas fa-pen text-[10px]"></i></button>
+                            <button onclick="delItem('todos','${t.id}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded transition"><i class="fas fa-trash text-[10px]"></i></button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }); 
+        }
+        
+        function dropTodo(ev, st) { 
+            ev.preventDefault(); 
+            const id = ev.dataTransfer.getData("text");
+            const item = appData.todos.find(t => t.id === id); 
+            if(item) {
+                item.status = st;
+                if(currentUser) db.collection('users').doc(currentUser.uid).collection('todos').doc(item.id).set({status: st}, {merge:true});
+                refreshUI('todos');
+            } 
+        }
+        
+        function renderNotes() { 
+            document.getElementById('gridNotes').innerHTML=appData.notes.map(n=>`<div class="glass p-4 relative group border-t-4 border-slate-800"><div class="text-[10px] text-slate-400">${n.date||''}</div><h4 class="font-medium text-sm">${n.title}</h4><p class="text-xs text-slate-600 mt-1">${n.content}</p><div class="absolute bottom-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100"><button onclick="openModal('noteModal','${n.id}','notes')" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="delItem('notes','${n.id}')" class="text-red-400"><i class="fas fa-trash"></i></button></div></div>`).join(''); 
+        }
+        
+        function updateFinCategories() { 
+            const t=document.getElementById('finType').value, c=document.getElementById('finCategory'); 
+            c.innerHTML=''; 
+            if(t==='gelir') ['Maaş','Yemek','Ek','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); 
+            else if(t==='kk') ['Akbank','Yapı Kredi','Garanti','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); 
+            else if(t==='kredi') ['Akbank Kredi','Nurçehre','Diğer'].forEach(x=>c.innerHTML+=`<option>${x}</option>`); 
+            document.getElementById('finCatWrapper').style.display=t==='yatirim'?'none':'block'; 
+            document.getElementById('finInvWrapper').style.display=t==='yatirim'?'block':'none'; 
+        }
+        
+        function saveFinanceRecord(e) { 
+            e.preventDefault(); 
+            const t=document.getElementById('finType').value, c=document.getElementById('finCategory').value, a=document.getElementById('finAmount').value; 
+            let n=c; 
+            if(t==='yatirim'){n=`${document.getElementById('finInvType').value} (${document.getElementById('finInvQty').value})`;} 
+            
+            const obj = {id:Date.now().toString(), month:currentFinMonth, type:t, name:n, amount:a};
+            appData.finance.push(obj); 
+            if(currentUser) db.collection('users').doc(currentUser.uid).collection('finance').doc(obj.id).set(obj);
+            
+            refreshUI('finance');
+            closeModal('financeModal'); 
+        }
+        
+        function renderFinance() { 
+            const r=appData.finance.filter(x=>x.month===currentFinMonth); 
+            let g=0,k=0,kr=0,y=0; 
+            ['gelir','kk','kredi','yatirim'].forEach(t=>{ 
+                const l=r.filter(x=>x.type===t); 
+                document.getElementById('fin-list-'+t).innerHTML=l.map(i=>`<div class="flex justify-between p-2 border-b border-slate-100 text-sm"><span>${i.name}</span><span class="font-mono">${i.amount} ₺ <i onclick="delItem('finance','${i.id}')" class="fas fa-times text-red-400 cursor-pointer ml-2"></i></span></div>`).join(''); 
+                let tot=l.reduce((s,i)=>s+parseFloat(i.amount),0); 
+                if(t==='gelir')g=tot; if(t==='kk')k=tot; if(t==='kredi')kr=tot; if(t==='yatirim')y=tot; 
+            }); 
+            document.getElementById('fin-tot-gelir').innerText=g+' ₺'; 
+            document.getElementById('fin-tot-gider').innerText=(k+kr)+' ₺'; 
+            document.getElementById('fin-tot-yatirim').innerText=y+' ₺'; 
+        }
+        
+        function changeFinMonth(m) { 
+            currentFinMonth=m; renderFinance(); 
+        }
+        
+        function delItem(m,id) { 
+            if(confirm('Silmek istediğinize emin misiniz?')){
+                appData[m]=appData[m].filter(x=>x.id!==id); 
+                refreshUI(m);
+                if(currentUser) db.collection('users').doc(currentUser.uid).collection(m).doc(id).delete();
+            } 
+        }
+
+        // --- ÜRETİM PROGRAMI (MAKİNE PARKURU) ---
+        const MACHINE_LIST = [
+            { id: 'UN-01', name: 'BEKUM', color: 'border-cyan-500', bg: 'bg-cyan-50' },
+            { id: 'UN-02', name: 'UNILOY UC-750', color: 'border-pink-400', bg: 'bg-pink-50' },
+            { id: 'UN-03', name: 'UNILOY MSA', color: 'border-amber-400', bg: 'bg-amber-50' },
+            { id: 'UN-04', name: 'UNIBLOW-1', color: 'border-green-500', bg: 'bg-green-50' },
+            { id: 'UN-05', name: 'UNIBLOW-2 (ARNAVUTKÖY)', color: 'border-slate-400', bg: 'bg-slate-100' },
+            { id: 'UN-06', name: 'A I E M M E', color: 'border-yellow-400', bg: 'bg-yellow-50' },
+            { id: 'UN-07', name: 'UNILOY MSC/D (ARNAVUTKÖY)', color: 'border-slate-200', bg: 'bg-white' },
+            { id: 'UN-08', name: 'UNILOY MSC/D III', color: 'border-purple-400', bg: 'bg-purple-50' },
+            { id: 'UN-09', name: 'AUTOMA', color: 'border-orange-200', bg: 'bg-orange-50' },
+            { id: 'UN-10', name: 'UNILOY MSC/D', color: 'border-lime-300', bg: 'bg-lime-50' },
+            { id: 'UN-11', name: 'UNILOY MSC/D', color: 'border-sky-300', bg: 'bg-sky-50' },
+            { id: 'UN-12', name: 'UNILOY MSC/D-V', color: 'border-blue-400', bg: 'bg-blue-50' },
+            { id: 'UN-13', name: 'BEKUM (ARNAVUTKÖY)', color: 'border-teal-500', bg: 'bg-teal-50' },
+            { id: 'UN-14', name: 'STANDART', color: 'border-blue-300', bg: 'bg-blue-50' },
+            { id: 'UN-15', name: 'MSB', color: 'border-cyan-200', bg: 'bg-cyan-50' },
+            { id: 'UN-16', name: 'UNILOY', color: 'border-orange-200', bg: 'bg-orange-50' }
+        ];
+
+        function renderProduction() {
+            const grid = document.getElementById('gridProduction');
+            if(!grid) return;
+
+            grid.innerHTML = MACHINE_LIST.map(machine => {
+                const records = appData.production.filter(p => p.machineId === machine.id)
+                    .sort((a, b) => new Date(b.recordDate) - new Date(a.recordDate));
+                
+                const latest = records[0];
+
+                return `
+                <div class="glass flex flex-col overflow-hidden border-t-4 ${machine.color} hover:-translate-y-1 hover:shadow-lg transition cursor-pointer" onclick="openProductionModal('${machine.id}')">
+                    <div class="${machine.bg} dark:bg-slate-800/50 p-3 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                        <span class="font-black text-slate-800 dark:text-white text-lg tracking-tight">${machine.id}</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase bg-white dark:bg-slate-700 px-2 py-1 rounded shadow-sm">${machine.name}</span>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col">
+                        ${latest ? `
+                            <div class="mb-3">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Müsaitlik Tarihi</p>
+                                <p class="font-semibold text-orange-600 dark:text-orange-400 flex items-center gap-1">
+                                    <i class="fas fa-calendar-check"></i> ${latest.availableDate}
+                                </p>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Güncel Not</p>
+                                <p class="text-xs text-slate-700 dark:text-slate-300 line-clamp-3">${latest.notes}</p>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 text-[9px] text-slate-400 text-right">
+                                Son Güncelleme: ${latest.recordDate}
+                            </div>
+                        ` : `
+                            <div class="flex-1 flex flex-col items-center justify-center text-slate-400 opacity-60 py-4">
+                                <i class="fas fa-clipboard-list text-2xl mb-2"></i>
+                                <p class="text-xs font-medium">Kayıt Bulunmuyor</p>
+                            </div>
+                        `}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function openProductionModal(machineId) {
+            const machine = MACHINE_LIST.find(m => m.id === machineId);
+            if(!machine) return;
+
+            const form = document.getElementById('formProduction');
+            form.reset();
+            form.elements['id'].value = '';
+            form.elements['machineId'].value = machine.id;
+            document.getElementById('prodRecordDate').valueAsDate = new Date();
+
+            document.getElementById('prodModalTitle').innerHTML = `<span class="text-orange-500">${machine.id}</span> - ${machine.name}`;
+
+            const listDiv = document.getElementById('prodHistoryList');
+            const records = appData.production.filter(p => p.machineId === machine.id)
+                .sort((a, b) => new Date(b.recordDate) - new Date(a.recordDate));
+
+            if(records.length === 0) {
+                listDiv.innerHTML = '<p class="text-xs text-slate-400 italic">Bu makine için henüz kayıt girilmemiş.</p>';
+            } else {
+                listDiv.innerHTML = records.map(r => `
+                    <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 relative group">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold bg-white dark:bg-slate-700 px-2 py-0.5 rounded text-slate-500">Kayıt: ${r.recordDate}</span>
+                            <button onclick="delItem('production', '${r.id}')" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition"><i class="fas fa-trash text-xs"></i></button>
+                        </div>
+                        <p class="text-xs font-semibold text-orange-600 mb-1"><i class="fas fa-arrow-right mr-1"></i>Müsaitlik: ${r.availableDate}</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 whitespace-pre-wrap">${r.notes}</p>
+                    </div>
+                `).join('');
+            }
+
+            const modal = document.getElementById('productionModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function saveProductionRecord(e) {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            const obj = Object.fromEntries(fd.entries());
+            
+            if(!obj.id) obj.id = 'PROD_' + Date.now().toString();
+
+            const idx = appData.production.findIndex(x => x.id === obj.id);
+            if(idx > -1) appData.production[idx] = obj; 
+            else appData.production.push(obj);
+            
+            if(currentUser) db.collection('users').doc(currentUser.uid).collection('production').doc(obj.id).set(obj, {merge:true});
+            
+            renderProduction();
+            openProductionModal(obj.machineId); 
+        }
     </script>
 </body>
 </html>
