@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr" class="">
 <head>
@@ -16,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -36,24 +35,19 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        /* Göz yormayan soft renkler */
         body { background-color: #f8fafc; color: #334155; overflow-x: hidden; }
         .dark body { background-color: #0f172a; color: #cbd5e1; }
         
-        /* Clean UI Panel - Soft borders instead of hard shadows */
         .glass { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03); border-radius: 0.75rem; }
         .dark .glass { background: #1e293b; border: 1px solid #334155; box-shadow: none; }
 
-        /* Scrollbar - Zarif ve İnce */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
 
-        /* Login Background - Soft Gradient */
         .login-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
 
-        /* Print Styles */
         @media print {
             @page { size: A4 portrait; margin: 0; }
             html, body { width: 210mm !important; height: 297mm !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
@@ -125,14 +119,12 @@
             }
         }
 
-        /* Kanban */
         .kanban-board { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
         .kanban-col { min-width: 300px; flex: 1; background: #f1f5f9; border-radius: 0.75rem; padding: 1rem; border: 1px solid #e2e8f0; }
         .dark .kanban-col { background: #1e293b; border-color: #334155; }
         .kanban-item { background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; cursor: grab; }
         .dark .kanban-item { background: #0f172a; color: white; border: 1px solid #334155; }
 
-        /* Progress Bar Base */
         .progress-bar { height: 6px; border-radius: 10px; background: #e2e8f0; overflow: hidden; margin-top: 4px; }
         .dark .progress-bar { background: #334155; }
         .progress-fill { height: 100%; transition: width 0.3s ease; }
@@ -250,7 +242,6 @@
                 
                 <!-- 1. DASHBOARD -->
                 <div id="view-dashboard" class="view-section w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5 animate-fade-in pb-12">
-                    <!-- Satır 1: Ana KPI'lar -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div class="glass p-4 border-t-4 border-blue-500">
                             <p class="text-[10px] text-slate-500 uppercase font-semibold">Aktif Siparişler</p>
@@ -274,7 +265,6 @@
                         </div>
                     </div>
 
-                    <!-- Satır 2: Oranlar ve Dağılımlar -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="glass p-4 flex flex-col justify-center">
                             <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">OTIF (Zamanında Teslimat Oranı)</h4>
@@ -295,7 +285,6 @@
                         </div>
                     </div>
 
-                    <!-- Satır 3: Analiz Kartları -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="glass p-4">
                             <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3"><i class="fas fa-fire text-orange-500 mr-1"></i> Termin Isı Haritası</h4>
@@ -323,7 +312,6 @@
                         </div>
                     </div>
 
-                    <!-- Satır 4: Listeler ve Hacimler -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="glass p-4">
                             <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Açık Sipariş Yoğunluğu (Top 5)</h4>
@@ -346,7 +334,7 @@
                     </div>
                 </div>
 
-                <!-- 2. SİPARİŞLER (YENİ GRID / KART GÖRÜNÜMÜ) -->
+                <!-- 2. SİPARİŞLER -->
                 <div id="view-orders" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-2 no-print shrink-0 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
                         <div class="flex items-center gap-3">
@@ -376,8 +364,7 @@
                     </div>
 
                     <div class="flex-1 overflow-y-auto custom-scrollbar p-1">
-                        <div id="gridOrders" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 pb-10 content-start">
-                        </div>
+                        <div id="gridOrders" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 pb-10 content-start"></div>
                     </div>
                 </div>
 
@@ -432,10 +419,8 @@
                     <div class="flex flex-wrap justify-between items-center gap-2 no-print shrink-0">
                         <input type="text" id="searchBiota" placeholder="Malzeme No, Açıklama, Sipariş No..." class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 outline-none focus:border-blue-500 transition" onkeyup="renderBiota()">
                         <div class="flex gap-2">
-                            <!-- Gizli Dosya Seçici -->
                             <input type="file" id="biotaExcelInput" class="hidden" accept=".xlsx, .xls, .csv" onchange="importBiotaExcel(event)">
                             <button onclick="document.getElementById('biotaExcelInput').click()" class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100 transition"><i class="fas fa-file-import mr-1"></i> İçe Aktar</button>
-                            
                             <button onclick="exportBiotaExcel()" class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-100 transition"><i class="fas fa-file-excel mr-1"></i> Excel</button>
                             <button onclick="openModal('biotaModal')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-500 transition"><i class="fas fa-plus mr-1"></i> Sipariş Ekle</button>
                         </div>
@@ -509,9 +494,7 @@
                             <p class="text-xs text-slate-500">Makinelerin müsaitlik tarihlerini ve haftalık üretim notlarını güncelleyin.</p>
                         </div>
                     </div>
-                    <div id="gridProduction" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-10">
-                        <!-- JS ile doldurulacak -->
-                    </div>
+                    <div id="gridProduction" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-10"></div>
                 </div>
                 
                 <!-- 10. FİNANS -->
@@ -527,7 +510,6 @@
     </div>
 
     <!-- MODALS -->
-    <!-- Siparişler Modalı (Genel) -->
     <div id="orderModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl border border-slate-200">
             <h3 class="text-lg font-medium mb-4 text-slate-800 border-b border-slate-100 pb-2">Sipariş Formu</h3>
@@ -556,7 +538,6 @@
         </div>
     </div>
 
-    <!-- Pazar İstihbaratı Tam Ekran Okuma Modalı -->
     <div id="intelViewModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 z-[160]">
         <div class="bg-white dark:bg-slate-900 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200">
             <div class="p-6">
@@ -578,7 +559,6 @@
         </div>
     </div>
 
-    <!-- OTHER MODALS -->
     <div id="shippingModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-2xl shadow-2xl border border-slate-200"><h3 class="text-lg font-medium mb-4 border-b border-slate-100 pb-2">Sevkiyat Planı</h3><form id="formShipping" onsubmit="saveForm(event, 'shipping')" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"><input type="hidden" name="id"><input type="hidden" name="sourceOrderId"><input type="hidden" name="sourceOrderNo"><div id="shippingOrderSourceInfo" class="md:col-span-2 hidden bg-indigo-50 p-2.5 rounded border border-indigo-200 text-xs text-indigo-700"></div><div class="md:col-span-2 flex items-center gap-2 bg-amber-50 p-2.5 rounded border border-amber-200"><input type="checkbox" name="isImportant" id="isImportant" class="w-4 h-4"><label for="isImportant" class="font-medium text-amber-700">Önemli/Kritik Sevkiyat!</label></div><div><label class="text-xs text-slate-500">Başlangıç</label><input type="date" name="startDate" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Bitiş</label><input type="date" name="endDate" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Firma / Müşteri</label><input type="text" name="customer" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Ürün</label><input type="text" name="product" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Toplam Adet</label><input type="number" name="totalQty" id="shpQty" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Koli İçi</label><input type="number" name="boxQty" id="shpBox" oninput="calcBox()" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2 bg-slate-50 p-2.5 rounded text-center text-sm font-medium text-slate-600 border border-slate-100">Hesaplanan Toplam Koli: <span id="shpRes" class="font-bold">0</span></div><div><label class="text-xs text-slate-500">Çıkış Adresi</label><input type="text" name="fromAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div><label class="text-xs text-slate-500">Varış Adresi</label><input type="text" name="toAddress" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></div><div class="md:col-span-2"><label class="text-xs text-slate-500">Açıklama / Notlar</label><textarea name="notes" rows="2" class="w-full border border-slate-200 p-2.5 rounded-md mt-1"></textarea></div><div class="md:col-span-2 flex justify-end gap-2 mt-2 pt-4 border-t border-slate-100"><button type="button" onclick="closeModal('shippingModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600">İptal</button><button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg">Kaydet</button></div></form></div></div>
     
     <div id="orderImportModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[160] hidden items-center justify-center p-4">
@@ -599,7 +579,6 @@
     
     <div id="proposalModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formProposal" onsubmit="saveForm(event, 'proposals')" class="space-y-3"><input type="hidden" name="id"><input type="hidden" name="status" value="Teklif"><div><input type="text" name="customer" required placeholder="Firma" class="w-full border p-2 rounded"></div><div><input type="text" name="title" required placeholder="Konu" class="w-full border p-2 rounded"></div><div><input type="text" name="amount" placeholder="Tutar" class="w-full border p-2 rounded"></div><div><input type="date" name="date" class="w-full border p-2 rounded"></div><div><textarea name="notes" rows="2" placeholder="Notlar" class="w-full border p-2 rounded"></textarea></div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal('proposalModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Kaydet</button></div></form></div></div>
     
-    <!-- TO-DO MODAL -->
     <div id="todoModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]">
         <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl border border-slate-200">
             <h3 class="text-lg font-medium mb-4 text-slate-800 border-b border-slate-100 pb-2">Görev Formu</h3>
@@ -626,7 +605,6 @@
     
     <div id="financeModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formFinance" onsubmit="saveFinanceRecord(event)" class="space-y-3"><div><select id="finType" onchange="updateFinCategories()" class="w-full border p-2 rounded"><option value="gelir">GELİRLER</option><option value="kk">KREDİ KARTLARI</option><option value="kredi">KREDİLER</option><option value="yatirim">YATIRIMLAR</option></select></div><div id="finCatWrapper"><select id="finCategory" class="w-full border p-2 rounded"></select></div><div id="finInvWrapper" class="hidden space-y-3"><div><input type="text" id="finInvType" placeholder="Tür (Altın vb.)" class="w-full border p-2 rounded"></div><div><input type="number" step="0.01" id="finInvQty" placeholder="Miktar" class="w-full border p-2 rounded"></div></div><div><input type="number" step="0.01" id="finAmount" required placeholder="Tutar (TL)" class="w-full border p-2 rounded font-bold text-blue-600"></div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal('financeModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Kaydet</button></div></form></div></div>
 
-    <!-- Üretim Programı Modal -->
     <div id="productionModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-700">
             <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3 mb-4 shrink-0">
@@ -638,7 +616,6 @@
             </div>
             
             <div class="flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
-                <!-- Sol: Yeni Kayıt Formu -->
                 <div class="w-full md:w-1/2 flex flex-col">
                     <form id="formProduction" onsubmit="saveProductionRecord(event)" class="space-y-3">
                         <input type="hidden" name="id">
@@ -663,19 +640,15 @@
                     </form>
                 </div>
                 
-                <!-- Sağ: Geçmiş Kayıtlar -->
                 <div class="w-full md:w-1/2 flex flex-col border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-700 md:pl-6 pt-4 md:pt-0">
                     <h4 class="text-xs font-bold text-slate-400 uppercase mb-3"><i class="fas fa-history mr-1"></i> Geçmiş Kayıtlar</h4>
-                    <div id="prodHistoryList" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
-                        <!-- JS ile doldurulacak -->
-                    </div>
+                    <div id="prodHistoryList" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyApndGw-eVvtsVTwtPitHuQkldHsjJ4QTw",
             authDomain: "unison-kam-grkm.firebaseapp.com",
@@ -685,7 +658,6 @@
             appId: "1:694763291293:web:768b0d4b798d93397b8a74"
         };
 
-        // --- GLOBAL STATE ---
         let db, auth;
         let currentUser = null;
         let currentTab = 'dashboard';
@@ -694,13 +666,11 @@
         let editedBiotaOrders = [];
         let clockInterval;
 
-        // "todos" dizisi eklendi
         let appData = {
             orders: [], shipping: [], biota: [], intel: [],
             proposals: [], notes: [], finance: [], todos: [], production: []
         };
 
-        // PDF Font (Türkçe Karakter Desteği)
         window.pdfFontBase64 = null;
         async function getPdfFont() {
             if(window.pdfFontBase64) return window.pdfFontBase64;
@@ -727,17 +697,16 @@
             }
         }
 
-        // --- INITIALIZATION ---
         try {
             if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
+            db.enablePersistence({ synchronizeTabs: true }).catch(err => console.warn(err));
             auth = firebase.auth();
         } catch (e) {
             document.getElementById('authError').innerText = "Bağlantı Hatası.";
             document.getElementById('authError').classList.remove('hidden');
         }
 
-        // --- AUTH ---
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -780,26 +749,11 @@
             }
         });
 
-        // --- DATA SYNC ---
         function initDataListeners() {
             if(!currentUser) return;
-            // Dinlenecek modüllere 'todos' eklendi
             const modules = ['orders', 'shipping', 'biota', 'intel', 'proposals', 'notes', 'finance', 'todos', 'production'];
             
             modules.forEach(mod => {
-                const oldRef = db.collection('users').doc(currentUser.uid).collection('data').doc(mod);
-                oldRef.get().then(docSnap => {
-                    if(docSnap.exists && docSnap.data().items && docSnap.data().items.length > 0) {
-                        const items = docSnap.data().items;
-                        const batch = db.batch();
-                        items.forEach(item => {
-                            const itemRef = db.collection('users').doc(currentUser.uid).collection(mod).doc(item.id);
-                            batch.set(itemRef, item);
-                        });
-                        batch.commit().then(() => oldRef.delete());
-                    }
-                }).catch(e => console.error(e));
-
                 db.collection('users').doc(currentUser.uid).collection(mod).onSnapshot(snap => {
                     appData[mod] = [];
                     snap.forEach(doc => appData[mod].push(doc.data()));
@@ -808,7 +762,6 @@
             });
         }
 
-        // --- ROUTING ---
         function nav(tab) {
             currentTab = tab;
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
@@ -838,14 +791,12 @@
             if(mod === 'production') renderProduction();
         }
 
-        // --- YENİ DASHBOARD HESAPLAMALARI ---
         function calcDashboard() {
             if(!appData.orders) return;
             const today = new Date();
             today.setHours(0,0,0,0);
 
             const active = appData.orders.filter(o => o.status !== 'Tamamlandı');
-            const completed = appData.orders.filter(o => o.status === 'Tamamlandı');
             
             let lateCount = 0;
             let totalRemQty = 0;
@@ -938,7 +889,6 @@
             document.getElementById('dash-qty-stk').innerText = srcQty['Stok'].toLocaleString('tr-TR') + ' Ad.';
         }
 
-        // --- FORMS & MODALS ---
         function saveForm(e, mod) {
             e.preventDefault();
             const fd = new FormData(e.target);
@@ -1037,7 +987,6 @@
             }
         }
 
-        // --- SİPARİŞLER RENDER (YENİ GRID/KART TASARIMI) ---
         function renderOrders() {
             const grid = document.getElementById('gridOrders');
             if(!grid) return;
@@ -1160,7 +1109,6 @@
             doc.save(`Siparisler_${new Date().toISOString().slice(0,10)}.pdf`);
         }
 
-        // --- SEVKİYAT RENDER ---
         function calcBox() {
             const q = parseInt(document.getElementById('shpQty').value)||0, b = parseInt(document.getElementById('shpBox').value)||1;
             document.getElementById('shpRes').innerText = Math.ceil(q/b);
@@ -1210,7 +1158,7 @@
 
         function loadOrderIntoShipping(orderId) {
             const order = (appData.orders || []).find(item => item.id === orderId);
-            if(!order) return alert('Sipariş kaydı bulunamadı. Listeyi yenileyip tekrar deneyin.');
+            if(!order) return alert('Sipariş kaydı bulunamadı.');
 
             closeModal('orderImportModal');
             openModal('shippingModal');
@@ -1226,7 +1174,7 @@
             form.elements.startDate.value = order.deadline || new Date().toISOString().slice(0, 10);
 
             const sourceInfo = document.getElementById('shippingOrderSourceInfo');
-            sourceInfo.innerHTML = `<i class="fas fa-link mr-1"></i> Siparişten aktarıldı: <strong>${order.orderNo || '-'}</strong>. Çıkış ve varış adreslerini aşağıdan düzenleyebilirsiniz.`;
+            sourceInfo.innerHTML = `<i class="fas fa-link mr-1"></i> Siparişten aktarıldı: <strong>${order.orderNo || '-'}</strong>.`;
             sourceInfo.classList.remove('hidden');
             calcBox();
         }
@@ -1274,7 +1222,7 @@
                 `${x.totalQty||''} / ${Math.ceil((x.totalQty||0)/(x.boxQty||1))||''}`, x.fromAddress||'', x.toAddress||'', x.notes||''
             ]);
 
-            doc.autoTable({ head: head, body: body, startY: 20, styles: { font: fontB64?'Roboto':'helvetica', fontSize: 7, cellPadding: 2 }, columnStyles: { 4: {cellWidth: 35}, 5: {cellWidth: 40}, 6: {cellWidth: 35} } });
+            doc.autoTable({ head: head, body: body, startY: 20, styles: { font: fontB64?'Roboto':'helvetica', fontSize: 7, cellPadding: 2 } });
             doc.save(`Sevkiyat_${new Date().toISOString().slice(0,10)}.pdf`);
         }
 
@@ -1291,35 +1239,20 @@
             
             doc.text('Finansal Kayitlar - ' + currentFinMonth, 14, 15);
             const head = [['Kategori', 'Detay/Isim', 'Tutar (TL)']];
-            
             const exp = appData.finance.filter(x => x.month === currentFinMonth);
-            const body = exp.map(x => [
-                x.type.toUpperCase(), 
-                x.name || '', 
-                parseFloat(x.amount).toLocaleString('tr-TR') + ' TL'
-            ]);
+            const body = exp.map(x => [x.type.toUpperCase(), x.name || '', parseFloat(x.amount).toLocaleString('tr-TR') + ' TL']);
 
-            doc.autoTable({ 
-                head: head, 
-                body: body, 
-                startY: 20, 
-                styles: { font: fontB64 ? 'Roboto' : 'helvetica', fontSize: 9, cellPadding: 3 }
-            });
-            
+            doc.autoTable({ head: head, body: body, startY: 20, styles: { font: fontB64 ? 'Roboto' : 'helvetica', fontSize: 9, cellPadding: 3 } });
             doc.save(`Finans_${currentFinMonth}.pdf`);
         }
 
-        // Kalan yardımcı ve modül fonksiyonları
         function exportExcel(f, d) { if(d.length===0) return; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d), f); XLSX.writeFile(wb, `${f}_${new Date().toISOString().slice(0,10)}.xlsx`); }
         function previewImage(e, id, phId) { const r = new FileReader(); r.onload = function() { const el = document.getElementById(id); el.src = r.result; el.classList.remove('hidden'); document.getElementById(phId).classList.add('hidden'); }; if(e.target.files[0]) r.readAsDataURL(e.target.files[0]); }
         
         function handleFileConvert(e, dId, nId) { 
             const f = e.target.files[0]; 
             if(!f) return; 
-            if(f.size > 500 * 1024) {
-                e.target.value = ''; 
-                return alert("Maks 500KB (Veritabanı limiti nedeniyle)!");
-            }
+            if(f.size > 500 * 1024) { e.target.value = ''; return alert("Maks 500KB!"); }
             const r = new FileReader(); 
             r.onload=(ev)=>{document.getElementById(dId).value=ev.target.result; document.getElementById(nId).value=f.name;}; 
             r.readAsDataURL(f); 
@@ -1331,46 +1264,29 @@
             if(!dStr) return 0;
             let d = new Date(dStr);
             if(!isNaN(d)) return d.getTime();
-            let parts = String(dStr).split(/[.-/]/);
-            if(parts.length === 3) {
-                if (parts[0].length <= 2 && parts[2].length === 4) {
-                    return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
-                }
-            }
             return 0;
         }
 
         function exportBiotaExcel() {
-            if(!appData.biota || appData.biota.length === 0) {
-                return alert('Dışa aktarılacak Biota siparişi bulunamadı.');
-            }
-
-            const rows = appData.biota.map(item => {
-                const qty = parseInt(item.qty) || 0;
-                const delivered = parseInt(item.deliveredQty) || 0;
-                return {
-                    'Kayıt ID': item.id || '',
-                    'Sipariş No': item.orderNo || '',
-                    'Malzeme No': item.materialNo || '',
-                    'Açıklama': item.materialDesc || '',
-                    'Tarih': item.date || '',
-                    'Sipariş Adedi': qty,
-                    'Teslim Edilen': delivered,
-                    'Kalan': Math.max(0, qty - delivered)
-                };
-            });
-
-            const sheet = XLSX.utils.json_to_sheet(rows, { header: ['Kayıt ID', 'Sipariş No', 'Malzeme No', 'Açıklama', 'Tarih', 'Sipariş Adedi', 'Teslim Edilen', 'Kalan'] });
-            sheet['!cols'] = [{wch: 22}, {wch: 18}, {wch: 18}, {wch: 36}, {wch: 15}, {wch: 16}, {wch: 16}, {wch: 12}];
+            if(!appData.biota || appData.biota.length === 0) return alert('Veri yok.');
+            const rows = appData.biota.map(item => ({
+                'Sipariş No': item.orderNo || '',
+                'Malzeme No': item.materialNo || '',
+                'Açıklama': item.materialDesc || '',
+                'Tarih': item.date || '',
+                'Sipariş Adedi': parseInt(item.qty) || 0,
+                'Teslim Edilen': parseInt(item.deliveredQty) || 0,
+                'Kalan': Math.max(0, (parseInt(item.qty)||0) - (parseInt(item.deliveredQty)||0))
+            }));
+            const sheet = XLSX.utils.json_to_sheet(rows);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, sheet, 'Biota Siparişleri');
-            XLSX.writeFile(workbook, `Biota_Siparisler_${new Date().toISOString().slice(0,10)}.xlsx`);
+            XLSX.utils.book_append_sheet(workbook, sheet, 'Biota');
+            XLSX.writeFile(workbook, `Biota_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
         function importBiotaExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -1378,74 +1294,30 @@
                     const workbook = XLSX.read(data, {type: 'array'});
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '', raw: false });
-                    let addedCount = 0, updatedCount = 0;
-
-                    const normalizeHeader = value => String(value || '')
-                        .toLocaleLowerCase('tr-TR')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/ı/g, 'i')
-                        .replace(/[^a-z0-9]/g, '');
-                    const toQty = value => parseInt(String(value ?? '').replace(/[^0-9-]/g, ''), 10) || 0;
-
                     const batch = db.batch();
 
                     jsonData.forEach(row => {
-                        const normalizedRow = Object.fromEntries(Object.entries(row).map(([key, value]) => [normalizeHeader(key), value]));
-                        const getVal = (...keys) => {
-                            for(const key of keys) {
-                                const value = normalizedRow[normalizeHeader(key)];
-                                if(value !== undefined) return value;
-                            }
-                            return '';
-                        };
-
-                        const id = String(getVal('Kayıt ID', 'ID', 'id')).trim();
-                        const orderNo = getVal('Sipariş No', 'Siparis No', 'orderNo');
-                        const materialNo = getVal('Malzeme No', 'materialNo');
-                        if(!orderNo && !materialNo) return;
-
-                        const qty = toQty(getVal('Sipariş Adedi', 'Sipariş Adet', 'Siparis Adet', 'Miktar', 'qty'));
-                        const deliveredRaw = getVal('Teslim Edilen', 'deliveredQty');
-                        const remainingRaw = getVal('Kalan', 'Kalan Sipariş Miktarı', 'Kalan Siparis Miktari');
-                        const delivered = deliveredRaw !== '' ? toQty(deliveredRaw) : Math.max(0, qty - toQty(remainingRaw));
-                        
-                        const recordId = id || (Date.now().toString() + Math.random().toString(36).slice(2, 7));
+                        const recordId = Date.now().toString() + Math.random().toString(36).slice(2, 7);
                         const record = {
                             id: recordId,
-                            orderNo: String(orderNo).trim(),
-                            materialNo: String(materialNo).trim(),
-                            materialDesc: String(getVal('Açıklama', 'Aciklama', 'Malzeme Tanımı', 'materialDesc')).trim(),
-                            date: String(getVal('Tarih', 'Sipariş Tarihi', 'date')).trim(),
-                            qty: String(qty),
-                            deliveredQty: String(Math.min(qty, Math.max(0, delivered)))
+                            orderNo: String(row['Sipariş No'] || row['Siparis No'] || '').trim(),
+                            materialNo: String(row['Malzeme No'] || '').trim(),
+                            materialDesc: String(row['Açıklama'] || row['Aciklama'] || '').trim(),
+                            date: String(row['Tarih'] || '').trim(),
+                            qty: String(row['Sipariş Adedi'] || row['Miktar'] || '0'),
+                            deliveredQty: String(row['Teslim Edilen'] || '0')
                         };
-
-                        const existingIndex = id ? appData.biota.findIndex(item => item.id === id) : -1;
-                        if(existingIndex > -1) {
-                            appData.biota[existingIndex] = record;
-                            updatedCount++;
-                        } else {
-                            appData.biota.push(record);
-                            addedCount++;
-                        }
-                        
+                        appData.biota.push(record);
                         if (currentUser) {
                             const ref = db.collection('users').doc(currentUser.uid).collection('biota').doc(recordId);
-                            batch.set(ref, record, {merge: true});
+                            batch.set(ref, record);
                         }
                     });
-
-                    if (addedCount || updatedCount) {
-                        if (currentUser) batch.commit();
-                        renderBiota();
-                        alert(`İçe aktarma tamamlandı: ${addedCount} yeni kayıt eklendi, ${updatedCount} kayıt güncellendi.`);
-                    } else {
-                        alert('Dosyada uygun Biota kaydı bulunamadı.');
-                    }
-                } catch (error) {
-                    console.error('Excel okuma hatası:', error);
-                    alert('Excel/CSV dosyası okunurken bir hata oluştu.');
+                    if (currentUser) batch.commit();
+                    renderBiota();
+                    alert('İçe aktarıldı.');
+                } catch (err) {
+                    alert('Hata oluştu.');
                 }
                 event.target.value = '';
             };
@@ -1455,16 +1327,13 @@
         function renderBiota() { 
             const tb = document.getElementById('tbodyBiota'); 
             if(!tb) return; 
-            
             const searchTerm = (document.getElementById('searchBiota')?.value || '').toLowerCase();
             
-            const filteredList = appData.biota.filter(x => 
+            tb.innerHTML = appData.biota.filter(x => 
                 (x.materialNo && x.materialNo.toLowerCase().includes(searchTerm)) ||
                 (x.materialDesc && x.materialDesc.toLowerCase().includes(searchTerm)) ||
                 (x.orderNo && x.orderNo.toLowerCase().includes(searchTerm))
-            );
-
-            tb.innerHTML = filteredList.map(x => { 
+            ).map(x => { 
                 const t = parseInt(x.qty) || 0, d = parseInt(x.deliveredQty) || 0, r = t - d; 
                 const isChecked = selectedItems.biota.includes(x.id) ? 'checked' : '';
                 return `<tr>
@@ -1481,18 +1350,9 @@
         }
 
         function copyBiotaMail() { 
-            if(editedBiotaOrders.length === 0) {
-                alert("Kopyalanacak düzenlenmiş sipariş bulunamadı. Lütfen önce yeni teslimat ekleyin.");
-                return;
-            }
+            if(editedBiotaOrders.length === 0) return alert("Düzenlenen sipariş yok.");
             const t = `Merhaba Müge Hanım,\n\nDüzenlenen sipariş numaraları;\n${editedBiotaOrders.join('\n')}\n\nTeşekkürler.`; 
-            
-            navigator.clipboard.writeText(t).then(() => {
-                alert("Mail şablonu kopyalandı!");
-                editedBiotaOrders = []; 
-            }).catch(() => {
-                alert("Panoya kopyalanamadı.");
-            }); 
+            navigator.clipboard.writeText(t).then(() => { alert("Kopyalandı!"); editedBiotaOrders = []; }); 
         }
 
         function renderIntel() { 
@@ -1524,12 +1384,7 @@
             
             const imgCont = document.getElementById('intelViewImgContainer');
             const img = document.getElementById('intelViewImg');
-            if(item.fileData) {
-                img.src = item.fileData;
-                imgCont.classList.remove('hidden');
-            } else {
-                imgCont.classList.add('hidden');
-            }
+            if(item.fileData) { img.src = item.fileData; imgCont.classList.remove('hidden'); } else { imgCont.classList.add('hidden'); }
             
             document.getElementById('intelViewModal').classList.remove('hidden');
             document.getElementById('intelViewModal').classList.add('flex');
@@ -1553,7 +1408,6 @@
             } 
         }
 
-        // --- GÖREVLER (TO-DO) YÖNETİMİ ---
         function renderTodos() { 
             ['todo', 'done'].forEach(st => { 
                 const list = appData.todos.filter(t => t.status === st);
@@ -1609,7 +1463,6 @@
             const obj = {id:Date.now().toString(), month:currentFinMonth, type:t, name:n, amount:a};
             appData.finance.push(obj); 
             if(currentUser) db.collection('users').doc(currentUser.uid).collection('finance').doc(obj.id).set(obj);
-            
             refreshUI('finance');
             closeModal('financeModal'); 
         }
@@ -1628,19 +1481,16 @@
             document.getElementById('fin-tot-yatirim').innerText=y+' ₺'; 
         }
         
-        function changeFinMonth(m) { 
-            currentFinMonth=m; renderFinance(); 
-        }
+        function changeFinMonth(m) { currentFinMonth=m; renderFinance(); }
         
         function delItem(m,id) { 
             if(confirm('Silmek istediğinize emin misiniz?')){
                 appData[m]=appData[m].filter(x=>x.id!==id); 
                 refreshUI(m);
-                if(currentUser) db.collection('users').doc(currentUser.uid).collection(m).doc(id).delete();
+                if(currentUser) db.collection('users').doc(currentUser.uid).collection(m).doc(id).delete().catch(err => console.error(err));
             } 
         }
 
-        // --- ÜRETİM PROGRAMI (MAKİNE PARKURU) ---
         const MACHINE_LIST = [
             { id: 'UN-01', name: 'BEKUM', color: 'border-cyan-500', bg: 'bg-cyan-50' },
             { id: 'UN-02', name: 'UNILOY UC-750', color: 'border-pink-400', bg: 'bg-pink-50' },
@@ -1667,7 +1517,6 @@
             grid.innerHTML = MACHINE_LIST.map(machine => {
                 const records = appData.production.filter(p => p.machineId === machine.id)
                     .sort((a, b) => new Date(b.recordDate) - new Date(a.recordDate));
-                
                 const latest = records[0];
 
                 return `
@@ -1742,7 +1591,6 @@
             e.preventDefault();
             const fd = new FormData(e.target);
             const obj = Object.fromEntries(fd.entries());
-            
             if(!obj.id) obj.id = 'PROD_' + Date.now().toString();
 
             const idx = appData.production.findIndex(x => x.id === obj.id);
@@ -1750,7 +1598,6 @@
             else appData.production.push(obj);
             
             if(currentUser) db.collection('users').doc(currentUser.uid).collection('production').doc(obj.id).set(obj, {merge:true});
-            
             renderProduction();
             openProductionModal(obj.machineId); 
         }
