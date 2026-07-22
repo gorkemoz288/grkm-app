@@ -170,7 +170,6 @@
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
-                <!-- İş Kategorisi -->
                 <div>
                     <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">İŞ YÖNETİMİ</h3>
                     <div class="space-y-1">
@@ -204,7 +203,6 @@
                     </div>
                 </div>
 
-                <!-- Kişisel Kategori -->
                 <div>
                     <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">KİŞİSEL</h3>
                     <div class="space-y-1">
@@ -222,8 +220,6 @@
 
         <!-- CONTENT AREA -->
         <main class="flex-1 flex flex-col h-full overflow-hidden relative" id="printArea">
-            
-            <!-- TOPBAR -->
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 z-10 no-print flex-shrink-0">
                 <div class="flex items-center gap-4">
                     <button class="md:hidden text-slate-500 hover:text-slate-800 dark:text-slate-400" onclick="document.getElementById('sidebar').classList.toggle('hidden')"><i class="fas fa-bars text-xl"></i></button>
@@ -237,7 +233,6 @@
                 </div>
             </header>
 
-            <!-- MAIN CONTENT -->
             <div class="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-900 relative" id="mainContent">
                 
                 <!-- 1. DASHBOARD -->
@@ -700,7 +695,6 @@
         try {
             if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
-            db.enablePersistence({ synchronizeTabs: true }).catch(err => console.warn(err));
             auth = firebase.auth();
         } catch (e) {
             document.getElementById('authError').innerText = "Bağlantı Hatası.";
@@ -756,8 +750,12 @@
             modules.forEach(mod => {
                 db.collection('users').doc(currentUser.uid).collection(mod).onSnapshot(snap => {
                     appData[mod] = [];
-                    snap.forEach(doc => appData[mod].push(doc.data()));
+                    snap.forEach(doc => {
+                        appData[mod].push(doc.data());
+                    });
                     refreshUI(mod);
+                }, error => {
+                    console.error("Firestore Dinleme Hatası (" + mod + "):", error);
                 });
             });
         }
@@ -903,12 +901,18 @@
                 if(addDelv > 0 && !editedBiotaOrders.includes(obj.orderNo)) editedBiotaOrders.push(obj.orderNo);
             }
 
-            const idx = appData[mod].findIndex(x => x.id === obj.id);
-            if(idx > -1) appData[mod][idx] = obj; else appData[mod].push(obj);
-            
-            if(currentUser) db.collection('users').doc(currentUser.uid).collection(mod).doc(obj.id).set(obj, {merge:true});
-            refreshUI(mod);
-            closeModal(e.target.closest('.fixed').id);
+            if(currentUser) {
+                db.collection('users').doc(currentUser.uid).collection(mod).doc(obj.id).set(obj, {merge:true})
+                  .then(() => {
+                      refreshUI(mod);
+                      closeModal(e.target.closest('.fixed').id);
+                  })
+                  .catch(err => {
+                      alert("Kaydedilirken hata oluştu: " + err.message);
+                  });
+            } else {
+                alert("Oturum açık değil.");
+            }
         }
 
         function openModal(id, dataId = null, mod = null) {
@@ -979,11 +983,10 @@
                     }
                 });
                 
-                appData[mod] = appData[mod].filter(x => !selectedItems[mod].includes(x.id));
                 selectedItems[mod] = [];
-                
-                if(currentUser) batch.commit();
-                refreshUI(mod);
+                if(currentUser) {
+                    batch.commit().catch(err => alert("Silme hatası: " + err.message));
+                }
             }
         }
 
@@ -1307,14 +1310,12 @@
                             qty: String(row['Sipariş Adedi'] || row['Miktar'] || '0'),
                             deliveredQty: String(row['Teslim Edilen'] || '0')
                         };
-                        appData.biota.push(record);
                         if (currentUser) {
                             const ref = db.collection('users').doc(currentUser.uid).collection('biota').doc(recordId);
                             batch.set(ref, record);
                         }
                     });
                     if (currentUser) batch.commit();
-                    renderBiota();
                     alert('İçe aktarıldı.');
                 } catch (err) {
                     alert('Hata oluştu.');
@@ -1461,10 +1462,10 @@
             if(t==='yatirim'){n=`${document.getElementById('finInvType').value} (${document.getElementById('finInvQty').value})`;} 
             
             const obj = {id:Date.now().toString(), month:currentFinMonth, type:t, name:n, amount:a};
-            appData.finance.push(obj); 
-            if(currentUser) db.collection('users').doc(currentUser.uid).collection('finance').doc(obj.id).set(obj);
-            refreshUI('finance');
-            closeModal('financeModal'); 
+            if(currentUser) db.collection('users').doc(currentUser.uid).collection('finance').doc(obj.id).set(obj).then(() => {
+                refreshUI('finance');
+                closeModal('financeModal');
+            });
         }
         
         function renderFinance() { 
@@ -1485,9 +1486,9 @@
         
         function delItem(m,id) { 
             if(confirm('Silmek istediğinize emin misiniz?')){
-                appData[m]=appData[m].filter(x=>x.id!==id); 
-                refreshUI(m);
-                if(currentUser) db.collection('users').doc(currentUser.uid).collection(m).doc(id).delete().catch(err => console.error(err));
+                if(currentUser) {
+                    db.collection('users').doc(currentUser.uid).collection(m).doc(id).delete().catch(err => console.error(err));
+                }
             } 
         }
 
@@ -1593,13 +1594,12 @@
             const obj = Object.fromEntries(fd.entries());
             if(!obj.id) obj.id = 'PROD_' + Date.now().toString();
 
-            const idx = appData.production.findIndex(x => x.id === obj.id);
-            if(idx > -1) appData.production[idx] = obj; 
-            else appData.production.push(obj);
-            
-            if(currentUser) db.collection('users').doc(currentUser.uid).collection('production').doc(obj.id).set(obj, {merge:true});
-            renderProduction();
-            openProductionModal(obj.machineId); 
+            if(currentUser) {
+                db.collection('users').doc(currentUser.uid).collection('production').doc(obj.id).set(obj, {merge:true}).then(() => {
+                    renderProduction();
+                    openProductionModal(obj.machineId);
+                });
+            }
         }
     </script>
 </body>
