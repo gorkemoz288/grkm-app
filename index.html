@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr" class="">
 <head>
@@ -170,6 +171,7 @@
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
+                <!-- İş Kategorisi -->
                 <div>
                     <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">İŞ YÖNETİMİ</h3>
                     <div class="space-y-1">
@@ -203,6 +205,7 @@
                     </div>
                 </div>
 
+                <!-- Kişisel Kategori -->
                 <div>
                     <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">KİŞİSEL</h3>
                     <div class="space-y-1">
@@ -220,6 +223,8 @@
 
         <!-- CONTENT AREA -->
         <main class="flex-1 flex flex-col h-full overflow-hidden relative" id="printArea">
+            
+            <!-- TOPBAR -->
             <header class="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 z-10 no-print flex-shrink-0">
                 <div class="flex items-center gap-4">
                     <button class="md:hidden text-slate-500 hover:text-slate-800 dark:text-slate-400" onclick="document.getElementById('sidebar').classList.toggle('hidden')"><i class="fas fa-bars text-xl"></i></button>
@@ -233,6 +238,7 @@
                 </div>
             </header>
 
+            <!-- MAIN CONTENT -->
             <div class="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-900 relative" id="mainContent">
                 
                 <!-- 1. DASHBOARD -->
@@ -660,6 +666,10 @@
         let selectedItems = { orders: [], shipping: [], biota: [] };
         let editedBiotaOrders = [];
         let clockInterval;
+        let dataUnsubscribers = [];
+        let colorApprovalUnsubscribe = null;
+        let colorSaveTimer = null;
+        let isApplyingRemoteColor = false;
 
         let appData = {
             orders: [], shipping: [], biota: [], intel: [],
@@ -699,6 +709,35 @@
         } catch (e) {
             document.getElementById('authError').innerText = "Bağlantı Hatası.";
             document.getElementById('authError').classList.remove('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        function reportError(message) {
+            console.error(message);
+            alert(message);
+        }
+
+        function userCollection(module) {
+            if (!db || !currentUser) throw new Error('Oturum açmadan veri işlemi yapılamaz.');
+            return db.collection('users').doc(currentUser.uid).collection(module);
+        }
+
+        function createRecordId(module) {
+            return userCollection(module).doc().id;
+        }
+
+        function clearDataListeners() {
+            dataUnsubscribers.forEach(unsubscribe => unsubscribe());
+            dataUnsubscribers = [];
+            if (colorApprovalUnsubscribe) colorApprovalUnsubscribe();
+            colorApprovalUnsubscribe = null;
+            clearTimeout(colorSaveTimer);
+        }
+
+        function clearAppData() {
+            Object.keys(appData).forEach(module => { appData[module] = []; });
+            Object.keys(selectedItems).forEach(module => { selectedItems[module] = []; });
+            editedBiotaOrders = [];
         }
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -725,7 +764,9 @@
             }
         });
 
-        auth.onAuthStateChanged(async user => {
+        if (auth) auth.onAuthStateChanged(async user => {
+            clearDataListeners();
+            clearAppData();
             if (user) {
                 currentUser = user;
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -738,6 +779,8 @@
                 if(clockInterval) clearInterval(clockInterval);
                 clockInterval = setInterval(updateClock, 60000); updateClock();
             } else {
+                currentUser = null;
+                if (clockInterval) clearInterval(clockInterval);
                 document.getElementById('loginScreen').classList.remove('hidden');
                 document.getElementById('appLayout').classList.add('hidden');
             }
@@ -748,18 +791,67 @@
             const modules = ['orders', 'shipping', 'biota', 'intel', 'proposals', 'notes', 'finance', 'todos', 'production'];
             
             modules.forEach(mod => {
-                db.collection('users').doc(currentUser.uid).collection(mod).onSnapshot(snap => {
+                const unsubscribe = userCollection(mod).onSnapshot(snap => {
                     appData[mod] = [];
-                    snap.forEach(doc => {
-                        appData[mod].push(doc.data());
-                    });
+                    snap.forEach(doc => appData[mod].push({ id: doc.id, ...doc.data() }));
                     refreshUI(mod);
-                }, error => {
-                    console.error("Firestore Dinleme Hatası (" + mod + "):", error);
-                });
+                }, error => reportError(`${mod} verileri eşzamanlanamadı: ${error.message}`));
+                dataUnsubscribers.push(unsubscribe);
+            });
+
+            initColorApprovalSync();
+            colorApprovalUnsubscribe = db.collection('users').doc(currentUser.uid).collection('settings').doc('colorApproval').onSnapshot(snapshot => {
+                if (snapshot.exists) applyColorApproval(snapshot.data());
+            }, error => reportError(`Renk onay formu eşzamanlanamadı: ${error.message}`));
+        }
+
+        function initColorApprovalSync() {
+            const fields = document.querySelectorAll('#view-color input:not([type="file"]), #view-color textarea');
+            const names = ['preparedBy', 'approvalDate', 'company', 'contact', 'product', 'colorDescription', 'notes'];
+            fields.forEach((field, index) => {
+                field.dataset.colorField = names[index];
+                field.oninput = queueColorApprovalSave;
+                field.onchange = queueColorApprovalSave;
             });
         }
 
+        function getColorApprovalData() {
+            const data = {};
+            document.querySelectorAll('[data-color-field]').forEach(field => { data[field.dataset.colorField] = field.value; });
+            const image = document.getElementById('previewColorImg');
+            if (image && image.dataset.firebaseValue) data.imageData = image.dataset.firebaseValue;
+            return data;
+        }
+
+        function applyColorApproval(data) {
+            isApplyingRemoteColor = true;
+            document.querySelectorAll('[data-color-field]').forEach(field => { field.value = data[field.dataset.colorField] || ''; });
+            const image = document.getElementById('previewColorImg');
+            const placeholder = document.getElementById('phColorImg');
+            if (data.imageData && image) {
+                image.src = data.imageData;
+                image.dataset.firebaseValue = data.imageData;
+                image.classList.remove('hidden');
+                placeholder?.classList.add('hidden');
+            }
+            isApplyingRemoteColor = false;
+        }
+
+        function queueColorApprovalSave() {
+            if (isApplyingRemoteColor || !currentUser) return;
+            const userId = currentUser.uid;
+            clearTimeout(colorSaveTimer);
+            colorSaveTimer = setTimeout(async () => {
+                try {
+                    if (!currentUser || currentUser.uid !== userId) return;
+                    await db.collection('users').doc(userId).collection('settings').doc('colorApproval').set({
+                        ...getColorApprovalData(), updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                } catch (error) {
+                    reportError(`Renk onay formu kaydedilemedi: ${error.message}`);
+                }
+            }, 500);
+        }
         function nav(tab) {
             currentTab = tab;
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
@@ -887,11 +979,12 @@
             document.getElementById('dash-qty-stk').innerText = srcQty['Stok'].toLocaleString('tr-TR') + ' Ad.';
         }
 
-        function saveForm(e, mod) {
+        async function saveForm(e, mod) {
             e.preventDefault();
+            if (!currentUser) return reportError('Kaydetmek için önce oturum açın.');
             const fd = new FormData(e.target);
             const obj = Object.fromEntries(fd.entries());
-            if(!obj.id) obj.id = Date.now().toString();
+            if(!obj.id) obj.id = createRecordId(mod);
 
             if(mod === 'biota' && obj.newDelivered) {
                 let addDelv = parseInt(obj.newDelivered) || 0;
@@ -901,17 +994,11 @@
                 if(addDelv > 0 && !editedBiotaOrders.includes(obj.orderNo)) editedBiotaOrders.push(obj.orderNo);
             }
 
-            if(currentUser) {
-                db.collection('users').doc(currentUser.uid).collection(mod).doc(obj.id).set(obj, {merge:true})
-                  .then(() => {
-                      refreshUI(mod);
-                      closeModal(e.target.closest('.fixed').id);
-                  })
-                  .catch(err => {
-                      alert("Kaydedilirken hata oluştu: " + err.message);
-                  });
-            } else {
-                alert("Oturum açık değil.");
+            try {
+                await userCollection(mod).doc(obj.id).set(obj, {merge:true});
+                closeModal(e.target.closest('.fixed').id);
+            } catch (error) {
+                reportError(`Kayıt kaydedilemedi: ${error.message}`);
             }
         }
 
@@ -972,21 +1059,22 @@
                 if(!allChecked) selectedItems[mod].push(cb.value); 
             });
         }
-        function deleteSelected(mod) {
+        async function deleteSelected(mod) {
             if(selectedItems[mod].length === 0) return alert('Kayıt seçmediniz.');
-            if(confirm('Seçili kayıtları silmek istediğinize emin misiniz?')) {
-                const batch = db.batch();
-                selectedItems[mod].forEach(id => {
-                    if(currentUser) {
-                        const ref = db.collection('users').doc(currentUser.uid).collection(mod).doc(id);
-                        batch.delete(ref);
-                    }
-                });
-                
-                selectedItems[mod] = [];
-                if(currentUser) {
-                    batch.commit().catch(err => alert("Silme hatası: " + err.message));
+            if(!confirm('Seçili kayıtları silmek istediğinize emin misiniz?')) return;
+            if (!currentUser) return reportError('Silmek için önce oturum açın.');
+
+            const ids = [...selectedItems[mod]];
+            try {
+                // Firestore bir batch'te en fazla 500 işlem kabul eder.
+                for (let start = 0; start < ids.length; start += 500) {
+                    const batch = db.batch();
+                    ids.slice(start, start + 500).forEach(id => batch.delete(userCollection(mod).doc(id)));
+                    await batch.commit();
                 }
+                selectedItems[mod] = [];
+            } catch (error) {
+                reportError(`Kayıtlar silinemedi: ${error.message}`);
             }
         }
 
@@ -1250,7 +1338,25 @@
         }
 
         function exportExcel(f, d) { if(d.length===0) return; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d), f); XLSX.writeFile(wb, `${f}_${new Date().toISOString().slice(0,10)}.xlsx`); }
-        function previewImage(e, id, phId) { const r = new FileReader(); r.onload = function() { const el = document.getElementById(id); el.src = r.result; el.classList.remove('hidden'); document.getElementById(phId).classList.add('hidden'); }; if(e.target.files[0]) r.readAsDataURL(e.target.files[0]); }
+        function previewImage(e, id, phId) {
+            const file = e.target.files[0];
+            if (!file) return;
+            // Renk onay görseli Firestore belgesinde tutulur; belge sınırını aşmamak için sınırlıyoruz.
+            if (id === 'previewColorImg' && file.size > 500 * 1024) {
+                e.target.value = '';
+                return alert('Renk onay görseli en fazla 500 KB olabilir.');
+            }
+            const reader = new FileReader();
+            reader.onload = function() {
+                const el = document.getElementById(id);
+                el.src = reader.result;
+                el.dataset.firebaseValue = reader.result;
+                el.classList.remove('hidden');
+                document.getElementById(phId).classList.add('hidden');
+                if (id === 'previewColorImg') queueColorApprovalSave();
+            };
+            reader.readAsDataURL(file);
+        }
         
         function handleFileConvert(e, dId, nId) { 
             const f = e.target.files[0]; 
@@ -1291,16 +1397,15 @@
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
+                    if (!currentUser) throw new Error('İçe aktarmak için önce oturum açın.');
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, {type: 'array'});
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '', raw: false });
-                    const batch = db.batch();
-
-                    jsonData.forEach(row => {
-                        const recordId = Date.now().toString() + Math.random().toString(36).slice(2, 7);
+                    const records = jsonData.map(row => {
+                        const recordId = createRecordId('biota');
                         const record = {
                             id: recordId,
                             orderNo: String(row['Sipariş No'] || row['Siparis No'] || '').trim(),
@@ -1310,15 +1415,17 @@
                             qty: String(row['Sipariş Adedi'] || row['Miktar'] || '0'),
                             deliveredQty: String(row['Teslim Edilen'] || '0')
                         };
-                        if (currentUser) {
-                            const ref = db.collection('users').doc(currentUser.uid).collection('biota').doc(recordId);
-                            batch.set(ref, record);
-                        }
+                        return record;
                     });
-                    if (currentUser) batch.commit();
-                    alert('İçe aktarıldı.');
+
+                    for (let start = 0; start < records.length; start += 500) {
+                        const batch = db.batch();
+                        records.slice(start, start + 500).forEach(record => batch.set(userCollection('biota').doc(record.id), record));
+                        await batch.commit();
+                    }
+                    alert(`${records.length} kayıt içe aktarıldı.`);
                 } catch (err) {
-                    alert('Hata oluştu.');
+                    reportError(`İçe aktarma başarısız: ${err.message}`);
                 }
                 event.target.value = '';
             };
@@ -1399,13 +1506,15 @@
         }
         
         function allowDrop(ev) { ev.preventDefault(); } 
-        function dropProp(ev, st) { 
+        async function dropProp(ev, st) { 
             ev.preventDefault(); 
             const item=appData.proposals.find(p=>p.id===ev.dataTransfer.getData("text")); 
-            if(item){
-                item.status=st;
-                if(currentUser) db.collection('users').doc(currentUser.uid).collection('proposals').doc(item.id).set({status: st}, {merge:true});
-                refreshUI('proposals');
+            if(item && currentUser){
+                try {
+                    await userCollection('proposals').doc(item.id).set({status: st}, {merge:true});
+                } catch (error) {
+                    reportError(`Teklif durumu güncellenemedi: ${error.message}`);
+                }
             } 
         }
 
@@ -1430,14 +1539,16 @@
             }); 
         }
         
-        function dropTodo(ev, st) { 
+        async function dropTodo(ev, st) { 
             ev.preventDefault(); 
             const id = ev.dataTransfer.getData("text");
             const item = appData.todos.find(t => t.id === id); 
-            if(item) {
-                item.status = st;
-                if(currentUser) db.collection('users').doc(currentUser.uid).collection('todos').doc(item.id).set({status: st}, {merge:true});
-                refreshUI('todos');
+            if(item && currentUser) {
+                try {
+                    await userCollection('todos').doc(item.id).set({status: st}, {merge:true});
+                } catch (error) {
+                    reportError(`Görev durumu güncellenemedi: ${error.message}`);
+                }
             } 
         }
         
@@ -1455,17 +1566,20 @@
             document.getElementById('finInvWrapper').style.display=t==='yatirim'?'block':'none'; 
         }
         
-        function saveFinanceRecord(e) { 
+        async function saveFinanceRecord(e) { 
             e.preventDefault(); 
+            if (!currentUser) return reportError('Kaydetmek için önce oturum açın.');
             const t=document.getElementById('finType').value, c=document.getElementById('finCategory').value, a=document.getElementById('finAmount').value; 
             let n=c; 
             if(t==='yatirim'){n=`${document.getElementById('finInvType').value} (${document.getElementById('finInvQty').value})`;} 
             
-            const obj = {id:Date.now().toString(), month:currentFinMonth, type:t, name:n, amount:a};
-            if(currentUser) db.collection('users').doc(currentUser.uid).collection('finance').doc(obj.id).set(obj).then(() => {
-                refreshUI('finance');
+            const obj = {id:createRecordId('finance'), month:currentFinMonth, type:t, name:n, amount:a};
+            try {
+                await userCollection('finance').doc(obj.id).set(obj);
                 closeModal('financeModal');
-            });
+            } catch (error) {
+                reportError(`Finans kaydı kaydedilemedi: ${error.message}`);
+            }
         }
         
         function renderFinance() { 
@@ -1484,10 +1598,13 @@
         
         function changeFinMonth(m) { currentFinMonth=m; renderFinance(); }
         
-        function delItem(m,id) { 
+        async function delItem(m,id) { 
             if(confirm('Silmek istediğinize emin misiniz?')){
-                if(currentUser) {
-                    db.collection('users').doc(currentUser.uid).collection(m).doc(id).delete().catch(err => console.error(err));
+                if (!currentUser) return reportError('Silmek için önce oturum açın.');
+                try {
+                    await userCollection(m).doc(id).delete();
+                } catch (error) {
+                    reportError(`Kayıt silinemedi: ${error.message}`);
                 }
             } 
         }
@@ -1588,17 +1705,18 @@
             modal.classList.add('flex');
         }
 
-        function saveProductionRecord(e) {
+        async function saveProductionRecord(e) {
             e.preventDefault();
+            if (!currentUser) return reportError('Kaydetmek için önce oturum açın.');
             const fd = new FormData(e.target);
             const obj = Object.fromEntries(fd.entries());
-            if(!obj.id) obj.id = 'PROD_' + Date.now().toString();
+            if(!obj.id) obj.id = createRecordId('production');
 
-            if(currentUser) {
-                db.collection('users').doc(currentUser.uid).collection('production').doc(obj.id).set(obj, {merge:true}).then(() => {
-                    renderProduction();
-                    openProductionModal(obj.machineId);
-                });
+            try {
+                await userCollection('production').doc(obj.id).set(obj, {merge:true});
+                openProductionModal(obj.machineId);
+            } catch (error) {
+                reportError(`Üretim kaydı kaydedilemedi: ${error.message}`);
             }
         }
     </script>
