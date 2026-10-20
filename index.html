@@ -302,6 +302,9 @@
         .biota-metrics strong {font-size:24px;line-height:1.25;color:var(--ink,#263836);overflow-wrap:anywhere;}
         .biota-metrics section:nth-child(3) strong {color:var(--blue,#23776d);}
         @media(max-width:767px) {.biota-metrics {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}.biota-metrics section {padding:12px;}.biota-metrics strong {font-size:21px;}}
+.orders-workspace,.dashboard-workspace{height:100%;overflow-y:auto;padding:24px;box-sizing:border-box}.orders-workspace>.quote-toolbar,.dashboard-workspace>.section-intro{margin-bottom:20px}.orders-workspace #gridOrders{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}.daily-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:20px 0}.daily-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}.daily-panels>section{padding:20px;min-width:0}.daily-panels h4{margin:0 0 14px}.daily-row{display:flex;flex-direction:column;text-align:left;width:100%;padding:12px 0;border:0;border-bottom:1px solid #e4e9e0;background:transparent;gap:5px;color:var(--ink)}.daily-row small{color:var(--muted);overflow-wrap:anywhere}.daily-value{font-size:30px;color:var(--blue)}#orderModal{z-index:191}#orderDetailModal{z-index:190}#orderActionModal{z-index:194}#backupModal{z-index:210}#orderActionForm label,#backupModal label{display:block;margin:14px 0}#orderFileList .q-file{margin:6px 0}.state-undated{background:#f1eee6;color:#76674d}.state-cancelled{background:#f4e4e1;color:#9b493c}@media(max-width:767px){.orders-workspace,.dashboard-workspace{padding:16px}.orders-workspace #gridOrders,.daily-panels{grid-template-columns:minmax(0,1fr)}.daily-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.daily-grid .metric-card{padding:12px}.portfolio-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+ .dashboard-workspace .portfolio-strip{grid-template-columns:repeat(4,minmax(0,1fr))}.orders-workspace .order-card-footer{flex-wrap:wrap;align-items:flex-start}.orders-workspace .order-card-footer>div{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 180px}@media(max-width:767px){.dashboard-workspace .portfolio-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
     </style>
 </head>
 
@@ -383,6 +386,7 @@
             </div>
 
             <div class="p-4 border-t border-slate-800/50">
+                <button onclick="openBackupCenter()" class="quiet-button" style="width:100%;margin-bottom:10px">Yedekleme / geri yükleme</button>
                 <button onclick="auth.signOut()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-slate-800 hover:bg-red-500/20 hover:text-red-400 transition text-sm"><i class="fas fa-sign-out-alt"></i> Oturumu Kapat</button>
             </div>
         </aside>
@@ -408,102 +412,24 @@
             <div class="flex-1 overflow-hidden bg-slate-50 dark:bg-slate-900 relative" id="mainContent">
                 
                 <!-- 1. DASHBOARD -->
-                <div id="view-dashboard" class="view-section w-full h-full overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5 animate-fade-in pb-12">
-                    <div class="section-intro dashboard-welcome"><div><span class="section-eyebrow">GORKAPP / GENEL BAKIŞ</span><h3>İşlerin bugün nasıl gidiyor?</h3><p>Önceliklerini gör, ilgili siparişlere tek adımda ulaş.</p></div><span class="welcome-mark">İşinin ritmini yakala</span></div>
-                    <div class="metric-grid">
-                        <button type="button" class="metric-card metric-late" onclick="setOrderFilter('late',true)"><span class="metric-label">Geciken siparişler</span><span class="metric-icon"><i class="fas fa-circle-exclamation" aria-hidden="true"></i></span><strong id="dash-late">0</strong><span class="metric-hint">Öncelikli işleri incele <span aria-hidden="true">→</span></span></button>
-                        <button type="button" class="metric-card metric-week" onclick="setOrderFilter('week',true)"><span class="metric-label">Bu hafta teslim edilecek</span><span class="metric-icon"><i class="fas fa-calendar-week" aria-hidden="true"></i></span><strong id="dash-week">0</strong><span class="metric-hint">Bugünden pazar gününe kadar <span aria-hidden="true">→</span></span></button>
-                        <button type="button" class="metric-card" onclick="setOrderFilter('active',true)"><span class="metric-label">Aktif siparişler</span><span class="metric-icon"><i class="fas fa-box" aria-hidden="true"></i></span><strong id="dash-active">0</strong><span class="metric-hint">Tüm açık siparişleri gör <span aria-hidden="true">→</span></span></button>
-                    </div>
-                    <div class="portfolio-strip"><div><p>Toplam kalan adet</p><h3 id="dash-rem-qty">0</h3></div><div><p>Açık sipariş tutarı · USD</p><h3 id="dash-usd">0 $</h3></div><div><p>Açık sipariş tutarı · EUR</p><h3 id="dash-eur">0 €</h3></div></div>
+                <div id="view-dashboard" class="view-section dashboard-workspace">
+ <div class="section-intro"><div><span class="section-eyebrow">GORKAPP / BUGÜN</span><h3>Günün takip ekranı</h3><p>Geciken işleri ve yaklaşan adımları buradan aç.</p></div><button class="quiet-button" onclick="openBackupCenter()">Yedekleme ve geri yükleme</button></div>
+ <div id="dailyMetrics" class="daily-grid"></div>
+ <div class="portfolio-strip"><div><p>Toplam kalan adet</p><h3 id="dash-rem-qty">0</h3></div><div><p>Açık sipariş tutarı · USD</p><h3 id="dash-usd">0 $</h3></div><div><p>Açık sipariş tutarı · EUR</p><h3 id="dash-eur">0 €</h3></div><div><p>Açık sipariş tutarı · TL</p><h3 id="dash-col-tl">0 ₺</h3></div></div><p id="dashboardMoneyHelp" class="quote-help"></p>
+ <div class="daily-panels"><section class="glass"><h4>Siparişlerde öncelik</h4><div id="dailyOrders"></div></section><section class="glass"><h4>Tekliflerde takip</h4><div id="dailyQuotes"></div></section><section class="glass"><h4>İstihbarat kontrol listesi</h4><div id="dailyIntel"></div></section><section class="glass"><h4>Üretim bilgisi güncelliği</h4><p class="quote-help">7 gün önce veya daha eski bilgi güncelleme gerektirir. Müsaitlik tarihi müşteri termini yerine geçmez.</p><div id="dailyProduction"></div></section></div>
+ <div class="daily-panels"><section class="glass"><h4>Termini bilinen açık siparişler</h4><strong class="daily-value" id="dash-otif">—</strong><p id="dashboardTimingHelp" class="quote-help"></p></section><section class="glass"><h4>Tedarik şekline göre kalan adet</h4><div id="dashboardSupply"></div></section></div>
+</div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="glass p-4 flex flex-col justify-center">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Gecikmemiş Aktif Sipariş Oranı</h4>
-                            <div class="flex items-end gap-3">
-                                <span class="text-3xl font-bold text-emerald-500" id="dash-otif">%0</span>
-                                <span class="text-xs text-slate-400 mb-1">Gecikmemiş aktif siparişler</span>
-                            </div>
-                        </div>
-                        <div class="glass p-4 md:col-span-2">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Kaynak Dağılımı (Sipariş Adedi)</h4>
-                            <div class="flex justify-around items-center h-12">
-                                <div class="text-center"><span class="block text-xl font-bold text-blue-500" id="dash-src-prod">0</span><span class="text-[10px] text-slate-500">Üretim</span></div>
-                                <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
-                                <div class="text-center"><span class="block text-xl font-bold text-orange-500" id="dash-src-imp">0</span><span class="text-[10px] text-slate-500">İthal</span></div>
-                                <div class="w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
-                                <div class="text-center"><span class="block text-xl font-bold text-teal-500" id="dash-src-stk">0</span><span class="text-[10px] text-slate-500">Stok</span></div>
-                            </div>
-                        </div>
-                    </div>
+<!-- 2. SİPARİŞLER -->
+                <div id="view-orders" class="view-section hidden orders-workspace">
+ <div class="section-intro"><div><span class="section-eyebrow">MÜŞTERİ / ÜRÜN / TERMİN</span><h3>Sipariş kalemleri</h3><p>Her ürün ayrı izlenir. Aynı sipariş numarasını birden fazla kalemde kullanabilirsin.</p></div><button class="primary-button" onclick="openOrderEditor()">+ Yeni sipariş</button></div>
+ <div class="quote-toolbar"><div class="tool-row"><div class="tool-search"><input id="searchOrders" type="search" aria-label="Sipariş ara" placeholder="Müşteri, sipariş no veya ürün kodu…" oninput="renderOrders()"></div><div class="tool-actions"><button class="quiet-button" onclick="exportOrdersExcel()">Excel</button><button id="btnOrdersPdf" class="quiet-button" onclick="exportOrdersPDF()">PDF</button></div></div>
+ <div class="filter-chips" id="orderFilters"></div><select id="filterOrders" hidden><option value="active">Açık</option><option value="completed">Tamamlanan</option><option value="cancelled">İptal</option><option value="all">Tümü</option><option value="late">Geciken</option><option value="soon">7 gün içinde</option><option value="undated">Termin bekleyen</option><option value="week">Bu hafta</option></select>
+ <div class="quote-selects"><label>İş durumu<select id="orderWorkFilter" onchange="renderOrders()"><option value="">Tümü</option><option>Bekliyor</option><option>Üretimde</option><option>Tedarik bekleniyor</option><option>Hazır</option></select></label><label>Termin<select id="orderTimingFilter" onchange="renderOrders()"><option value="">Tümü</option><option value="late">Geciken</option><option value="soon">7 gün içinde</option><option value="undated">Termin bekleyen</option></select></label><label>Sıralama<select id="orderSort" onchange="renderOrders()"><option value="deadline">Termin</option><option value="date">Sipariş tarihi (yeni önce)</option><option value="customer">Müşteri</option></select></label><div class="view-switch"><button data-order-view="cards" onclick="setOrderView('cards')">Kart</button><button data-order-view="table" onclick="setOrderView('table')">Tablo</button></div><span id="orderCountText" role="status"></span></div></div>
+ <div id="gridOrders"></div><div id="ordersTableWrap" class="q-table-wrap" hidden><table class="q-table"><thead><tr><th>Müşteri / Sipariş</th><th>Ürün kodları</th><th>Toplam / Teslim / Kalan</th><th>Termin</th><th>İş / Teslim durumu</th><th>İşlem</th></tr></thead><tbody id="orderTableBody"></tbody></table></div>
+</div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="glass p-4">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3"><i class="fas fa-fire text-orange-500 mr-1"></i> Termin Isı Haritası</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center text-sm"><span class="text-red-500 font-medium"><i class="fas fa-exclamation-circle mr-1"></i> < 7 Gün</span><span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold" id="dash-heat-7">0</span></div>
-                                <div class="flex justify-between items-center text-sm"><span class="text-orange-500 font-medium"><i class="fas fa-clock mr-1"></i> 7 - 15 Gün</span><span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold" id="dash-heat-15">0</span></div>
-                                <div class="flex justify-between items-center text-sm"><span class="text-blue-500 font-medium"><i class="fas fa-calendar-alt mr-1"></i> 15 - 30 Gün</span><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold" id="dash-heat-30">0</span></div>
-                            </div>
-                        </div>
-                        <div class="glass p-4">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3"><i class="fas fa-hourglass-end text-red-500 mr-1"></i> Gecikme Analizi (Aging)</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-300">1 - 10 Gün Geciken</span><span class="font-bold text-slate-800 dark:text-white" id="dash-age-10">0</span></div>
-                                <div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-300">11 - 20 Gün Geciken</span><span class="font-bold text-slate-800 dark:text-white" id="dash-age-20">0</span></div>
-                                <div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-300">21+ Gün Geciken</span><span class="font-bold text-red-500" id="dash-age-21">0</span></div>
-                            </div>
-                        </div>
-                        <div class="glass p-4">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3"><i class="fas fa-coins text-yellow-500 mr-1"></i> Döviz Bazlı Açık Sipariş Tutarı</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-300">USD Hacmi</span><span class="font-mono font-bold text-indigo-600 dark:text-indigo-400" id="dash-col-usd">0 $</span></div>
-                                <div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-300">EUR Hacmi</span><span class="font-mono font-bold text-purple-600 dark:text-purple-400" id="dash-col-eur">0 €</span></div>
-                                <div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-300">TL Hacmi</span><span class="font-mono font-bold text-emerald-600 dark:text-emerald-400" id="dash-col-tl">0 ₺</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="glass p-4">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Açık Sipariş Yoğunluğu (Top 5)</h4>
-                            <div id="dash-top-customers" class="space-y-3"></div>
-                        </div>
-                        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="glass p-4 border-t-4 border-blue-500 flex flex-col justify-center items-center text-center">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Üretim Siparişleri (Kalan)</p>
-                                <h3 class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2" id="dash-qty-prod">0 Ad.</h3>
-                            </div>
-                            <div class="glass p-4 border-t-4 border-orange-500 flex flex-col justify-center items-center text-center">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">İthal Siparişler (Kalan)</p>
-                                <h3 class="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-2" id="dash-qty-imp">0 Ad.</h3>
-                            </div>
-                            <div class="glass p-4 border-t-4 border-teal-500 flex flex-col justify-center items-center text-center">
-                                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Stok Siparişleri (Kalan)</p>
-                                <h3 class="text-3xl font-bold text-teal-600 dark:text-teal-400 mt-2" id="dash-qty-stk">0 Ad.</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. SİPARİŞLER -->
-                <div id="view-orders" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
-                    <div class="section-intro"><div><span class="section-eyebrow">İŞ YÖNETİMİ</span><h3>Siparişler</h3><p>Müşteri, ürün ve teslimatlarını tek bakışta takip et.</p></div></div>
-                    <div class="order-tools no-print">
-                        <div class="tool-row"><div class="tool-search"><i class="fas fa-search" aria-hidden="true"></i><input type="search" id="searchOrders" aria-label="Sipariş ara" placeholder="Müşteri, sipariş veya ürün ara…"></div>
-                            <div class="tool-actions"><button class="quiet-button" onclick="exportExcel('Siparişler',exportRows('orders',filteredOrders()))"><i class="fas fa-file-excel" aria-hidden="true"></i> Excel</button><button class="quiet-button" id="btnOrdersPdf" onclick="exportOrdersPDF()"><i class="fas fa-file-pdf" aria-hidden="true"></i> PDF</button><button class="primary-button" onclick="openModal('orderModal')"><i class="fas fa-plus" aria-hidden="true"></i> Yeni sipariş</button></div>
-                        </div>
-                        <div class="tool-row"><select id="filterOrders" hidden aria-label="Sipariş filtresi" onchange="renderOrders()"><option value="all">Tümü</option><option value="active" selected>Aktif</option><option value="late">Geciken</option><option value="week">Bu hafta</option><option value="completed">Tamamlanan</option></select>
-                            <div class="filter-chips" role="group" aria-label="Hızlı filtreler"><button type="button" class="filter-chip" data-order-filter="all" aria-pressed="false" onclick="setOrderFilter('all')">Tümü</button><button type="button" class="filter-chip" data-order-filter="active" aria-pressed="true" onclick="setOrderFilter('active')">Aktif</button><button type="button" class="filter-chip" data-order-filter="late" aria-pressed="false" onclick="setOrderFilter('late')">Geciken</button><button type="button" class="filter-chip" data-order-filter="week" aria-pressed="false" onclick="setOrderFilter('week')">Bu hafta</button><button type="button" class="filter-chip" data-order-filter="completed" aria-pressed="false" onclick="setOrderFilter('completed')">Tamamlanan</button></div>
-                            <div class="view-switch" role="group" aria-label="Sipariş görünümü"><button type="button" data-order-view="cards" aria-pressed="true" onclick="setOrderView('cards')"><i class="fas fa-grip" aria-hidden="true"></i> Kart</button><button type="button" data-order-view="table" aria-pressed="false" onclick="setOrderView('table')"><i class="fas fa-list" aria-hidden="true"></i> Tablo</button></div>
-                        </div>
-                    </div>
-                    <div class="order-selection no-print"><span id="orderCountText" role="status" aria-live="polite">0 sipariş</span><div><button class="quiet-button" onclick="selectVisibleOrders()">Görünenleri seç / bırak</button> <button class="quiet-button delete-action" onclick="deleteSelected('orders')"><i class="fas fa-trash" aria-hidden="true"></i> Seçilenleri sil</button></div></div>
-                    <div class="flex-1 overflow-y-auto custom-scrollbar" style="min-height:0"><div id="gridOrders"></div><div id="ordersTableWrap" hidden><table class="order-table"><thead><tr><th><span class="sr-only">Seçim</span></th><th>Müşteri / Sipariş</th><th>Ürün / Unison</th><th>Kalan adet</th><th>Termin</th><th>Durum</th><th>İşlem</th></tr></thead><tbody id="orderTableBody"></tbody></table></div></div>
-                </div>
-
-                <!-- 4. BİOTA SİPARİŞ -->
-                <div id="view-biota" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
+<div id="view-biota" class="view-section hidden w-full h-full flex flex-col p-4 md:p-6 space-y-4">
                     <div class="glass p-4 border-l-4 border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10 flex justify-between items-center shrink-0">
                         <div><h3 class="font-bold text-emerald-700 dark:text-emerald-400">Biota Özel Sipariş Modülü</h3><p class="text-xs text-slate-500">Kısmi teslimatları girerek ana siparişten otomatik düşürün.</p></div>
                         <button onclick="copyBiotaMail()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-500 transition shadow-sm"><i class="fas fa-envelope mr-1"></i> Maile Kopyala</button>
@@ -588,36 +514,23 @@
     </div>
 
     <!-- MODALS -->
-    <div id="orderModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl border border-slate-200">
-            <h3 class="text-lg font-medium mb-4 text-slate-800 border-b border-slate-100 pb-2">Sipariş Formu</h3>
-            <form id="formOrder" onsubmit="saveForm(event, 'orders')" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <input type="hidden" name="id">
-                <div><label class="text-xs text-slate-500">Cari / Müşteri Adı</label><input type="text" name="customer" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Sipariş No</label><input type="text" name="orderNo" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Ürün Kodu</label><input type="text" name="productCode" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Unison Kod</label><input type="text" name="unisonCode" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Toplam Adet</label><input type="number" min="0" name="totalQty" required class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Teslim Edilen</label><input type="number" min="0" name="deliveredQty" value="0" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div class="flex gap-2"><div class="flex-1"><label class="text-xs text-slate-500">Birim Fiyat</label><input type="number" min="0" step="0.001" name="price" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div><div class="w-20"><label class="text-xs text-slate-500">Döviz</label><select name="currency" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"><option>USD</option><option>EUR</option><option>TL</option></select></div></div>
-                <div><label class="text-xs text-slate-500">Koli İçi Adet</label><input type="number" min="1" name="boxQty" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Sipariş Tarihi</label><input type="date" name="orderDate" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Termin Tarihi (isteğe bağlı)</label><input type="date" name="deadline" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Durum</label><select name="status" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"><option>Üretim</option><option>İthal</option><option>Stok</option><option>Tamamlandı</option></select></div>
-                <div><label class="text-xs text-slate-500">Nakliye</label><input type="text" name="transport" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div><label class="text-xs text-slate-500">Konum</label><input type="text" name="location" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></div>
-                <div class="md:col-span-3"><label class="text-xs text-slate-500">Açıklama & Lojistik Notları</label><textarea name="notes" rows="2" class="w-full border border-slate-200 p-2.5 rounded-md mt-1 outline-none focus:border-blue-500"></textarea></div>
-                
-                <div class="md:col-span-3 flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('orderModal')" class="px-5 py-2.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition font-medium">İptal</button>
-                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition shadow-sm">Kaydet</button>
-                </div>
-                
-            </form>
-        </div>
-    </div>
+    <div id="orderModal" class="fixed hidden quote-overlay"><div class="quote-panel quote-panel-wide"><button class="modal-close" type="button" onclick="closeModal('orderModal')" aria-label="Pencereyi kapat">×</button><h3 id="orderEditorTitle">Sipariş kalemi</h3>
+<form id="formOrder" onsubmit="saveOrder(event)" novalidate>
+ <fieldset class="form-section"><legend>Müşteri ve ürün</legend><p class="quote-help">Listeden seçebilir veya yeni müşteri / ürün kodu yazabilirsin. Yeni değerler kaydettiğinde kataloğa eklenir.</p><div class="form-section-grid">
+ <label>Müşteri *<input name="customer" list="orderCustomers" required maxlength="160" oninput="suggestOrderCode()"><datalist id="orderCustomers"></datalist></label>
+ <label>Sipariş no *<input name="orderNo" required maxlength="100"></label>
+ <label>Unison kodu *<input name="unisonCode" list="orderProducts" required maxlength="100" oninput="suggestOrderCode()"><datalist id="orderProducts"></datalist></label>
+ <label>Müşteri ürün kodu<input name="productCode" maxlength="120"><small id="orderCodeHint" class="quote-help"></small></label>
+ </div></fieldset>
+ <fieldset class="form-section"><legend>Miktar ve fiyat</legend><div class="form-section-grid"><label>Toplam adet *<input name="totalQty" type="number" required min="1" step="1"></label><label id="orderInitialWrap">Başlangıçta teslim edilen<input name="initialDelivered" type="number" min="0" step="1" value="0"></label><label>Birim fiyat / 1 adet<input name="price" type="number" min="0" step="any"></label><label>Para birimi<select name="currency"><option>EUR</option><option>USD</option><option>TL</option></select></label><label>Koli içi adet (isteğe bağlı)<input name="boxQty" type="number" min="1" step="1"></label><label>Tedarik şekli<select name="supplyType"><option>Üretim</option><option>İthal</option><option>Stok</option></select></label></div><p id="orderDeliveredHelp" class="quote-help"></p></fieldset>
+ <fieldset class="form-section"><legend>Tarih ve iş durumu</legend><div class="form-section-grid"><label>Sipariş tarihi *<input name="orderDate" type="date" required></label><label>Müşteri termini<input name="deadline" type="date"></label><label>Tedarikçiden beklenen geliş<input name="supplierDate" type="date"></label><label>İş durumu<select name="workStatus"><option>Bekliyor</option><option>Üretimde</option><option>Tedarik bekleniyor</option><option>Hazır</option></select></label><label>Nakliye notu<input name="transport" maxlength="200"></label><label>Konum<input name="location" maxlength="200"></label></div></fieldset>
+ <fieldset class="form-section"><legend>Notlar ve ekler</legend><label>Notlar<textarea name="notes" rows="3" maxlength="8000"></textarea></label><input id="orderFileInput" aria-label="Sipariş ekleri" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/webp" onchange="loadOrderFiles(event)"><p class="quote-help">Ekler isteğe bağlı. Dosya başına 150 KB, toplam 300 KB.</p><div id="orderFileList"></div></fieldset>
+ <div class="form-actions"><button class="quiet-button" type="button" onclick="closeModal('orderModal')">Vazgeç</button><button class="primary-button" type="submit">Kaydet</button></div>
+</form></div></div>
+<div id="orderDetailModal" class="fixed hidden quote-overlay"><div class="quote-panel quote-panel-wide"><button class="modal-close" onclick="closeModal('orderDetailModal')" aria-label="Pencereyi kapat">×</button><h3 id="orderDetailTitle">Sipariş</h3><div id="orderDetailContent"></div></div></div>
+<div id="orderActionModal" class="fixed hidden quote-overlay"><div class="quote-panel"><button class="modal-close" type="button" onclick="closeModal('orderActionModal')" aria-label="Pencereyi kapat">×</button><h3 id="orderActionTitle">İşlem</h3><p id="orderActionSubject" class="quote-help"></p><form id="orderActionForm" onsubmit="saveOrderAction(event)" novalidate><div id="orderDeliveryFields"><label>Eklenecek teslim miktarı<input name="qty" type="number" min="1" step="1"></label><label>İşlem tarihi<input name="date" type="date"></label></div><label>Açıklama / neden<textarea name="reason" required rows="3" maxlength="1500"></textarea></label><p class="quote-help">Bu işlem sevkiyat veya irsaliye oluşturmaz. İş durumu değişmez.</p><div class="form-actions"><button class="quiet-button" type="button" onclick="closeModal('orderActionModal')">Vazgeç</button><button class="primary-button" type="submit">Onayla</button></div></form></div></div>
 
-    <div id="biotaModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formBiota" onsubmit="saveForm(event, 'biota')" class="space-y-3"><input type="hidden" name="id"><div><label class="text-xs text-slate-500">Sipariş No</label><input type="text" name="orderNo" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Malzeme No</label><input type="text" name="materialNo" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Açıklama</label><input type="text" name="materialDesc" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Tarih</label><input type="text" name="date" class="w-full border p-2 rounded" placeholder="gg.aa.yyyy"></div><div class="grid grid-cols-2 gap-2"><div><label class="text-xs text-slate-500">Sipariş Adet</label><input type="number" min="0" name="qty" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-emerald-600 font-medium">Yeni Teslimat Ekle</label><input type="number" min="0" name="newDelivered" value="0" class="w-full border border-emerald-300 bg-emerald-50 p-2 rounded"></div><input type="hidden" name="deliveredQty" value="0"></div><div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal('biotaModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Kaydet</button></div></form></div></div>
+<div id="biotaModal" class="fixed inset-0 bg-slate-900/40 hidden items-center justify-center p-4 z-[150]"><div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"><form id="formBiota" onsubmit="saveForm(event, 'biota')" class="space-y-3"><input type="hidden" name="id"><div><label class="text-xs text-slate-500">Sipariş No</label><input type="text" name="orderNo" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Malzeme No</label><input type="text" name="materialNo" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Açıklama</label><input type="text" name="materialDesc" class="w-full border p-2 rounded"></div><div><label class="text-xs text-slate-500">Tarih</label><input type="text" name="date" class="w-full border p-2 rounded" placeholder="gg.aa.yyyy"></div><div class="grid grid-cols-2 gap-2"><div><label class="text-xs text-slate-500">Sipariş Adet</label><input type="number" min="0" name="qty" required class="w-full border p-2 rounded"></div><div><label class="text-xs text-emerald-600 font-medium">Yeni Teslimat Ekle</label><input type="number" min="0" name="newDelivered" value="0" class="w-full border border-emerald-300 bg-emerald-50 p-2 rounded"></div><input type="hidden" name="deliveredQty" value="0"></div><div class="flex justify-end gap-2 mt-4"><button type="button" onclick="closeModal('biotaModal')" class="px-4 py-2 border rounded">İptal</button><button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Kaydet</button></div></form></div></div>
     
 <div id="intelEditorModal" class="fixed hidden quote-overlay"><div class="quote-panel quote-panel-wide"><button class="modal-close" type="button" onclick="closeModal('intelEditorModal')" aria-label="Pencereyi kapat">×</button><h3 id="intelEditorTitle">Yeni duyum / fırsat notu</h3><p class="quote-subtitle">Başlık ve not yeterli. Firma, ürün ve kontrol tarihini bildiğin zaman ekle.</p><form id="intelEditorForm" onsubmit="saveIntel(event)" novalidate>
  <fieldset class="form-section"><legend>Bilgi ve bağlam</legend><div class="form-section-grid"><div><label for="iTitle">Başlık *</label><input id="iTitle" name="title" required maxlength="200"></div><div><label for="iCategory">Kategori</label><select id="iCategory" name="category"><option>Müşteri ihtiyacı</option><option>Rakip / tedarikçi</option><option>Ürün bilgisi</option><option>Sektör duyumu</option><option>Diğer</option></select></div><div><label for="iCompany">İlgili firma / müşteri</label><input id="iCompany" name="company" list="quoteCustomers" maxlength="160"></div><div><label for="iProduct">İlgili ürün / Unison kodu</label><input id="iProduct" name="product" maxlength="240"></div><div><label for="iDate">Bilginin alındığı tarih</label><input id="iDate" name="date" type="date"></div><div><label for="iProof">Bilgi durumu</label><select id="iProof" name="proof"><option value="rumor">Duyum / teyit bekliyor</option><option value="confirmed">Teyit edildi</option></select></div></div><label for="iDesc">Duyum / gözlem / not *</label><textarea id="iDesc" name="desc" rows="5" required maxlength="10000"></textarea></fieldset>
@@ -712,6 +625,9 @@
         </div>
     </div>
 
+<div id="backupModal" class="fixed hidden quote-overlay"><div class="quote-panel quote-panel-wide"><button class="modal-close" type="button" onclick="closeModal('backupModal')" aria-label="Pencereyi kapat">×</button><h3>Tam yedek ve geri yükleme</h3><p class="quote-help">Etkin tüm modüller, müşteri / ürün kataloğu, arşivler, geçmişler ve ekler dahildir. Ekran filtreleri kullanılmaz. Giriş şifresi ve Firebase konsol ayarları yedeğe dahil değildir.</p>
+<button id="fullBackupButton" class="primary-button" onclick="exportFullBackup()">Tüm verileri yedekle</button><p class="quote-help">İndirilen dosya finans ve özel kaynak notlarını da içerir; güvenli bir yerde sakla. Otomatik zamanlanmış yedek değildir.</p><hr><h4>Yedekten geri yükle</h4><input id="backupFile" aria-label="Tam yedek dosyası" type="file" accept="application/json,.json" onchange="readFullBackup(event)"><p class="quote-help">Yalnızca aynı kullanıcı hesabının GorkAPP tam yedeği kabul edilir. Önce dosya ve bütün kayıtlar kontrol edilir; dosya seçmek sunucuyu değiştirmez.</p><div id="backupPreview"></div><label>Geri yükleme şekli<select id="backupRestoreMode"><option value="missing">Yalnızca eksik kayıtları ekle</option><option value="overwrite">Aynı kimlikteki kayıtları yedekle değiştir</option></select></label><p class="quote-help">Geri yükleme gruplar hâlinde yapılır; bağlantı kesilirse tamamlanan gruplar korunur ve sonuçta bildirilir. Yedekte bulunmayan mevcut kayıtlar silinmez. Değiştirme seçeneğiyle mevcut geçmiş ve bilgiler yedekteki hâline döner.</p><button id="restoreBackupButton" class="primary-button" onclick="restoreFullBackup()" disabled>Önizlemedeki yedeği geri yükle</button><p id="backupStatus" role="status" aria-live="polite"></p></div></div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyApndGw-eVvtsVTwtPitHuQkldHsjJ4QTw",
@@ -753,15 +669,8 @@
             if (text.includes(',')) text=text.replace(/\./g,'').replace(',','.');
             return Number(text);
         }
-        function remainingQty(order) {
-            return Math.max(0,(numberValue(order.totalQty)||0)-(numberValue(order.deliveredQty)||0));
-        }
-        function filteredOrders() {
-            const search=(document.getElementById('searchOrders')?.value||'').toLocaleLowerCase('tr-TR');
-            const filter=document.getElementById('filterOrders')?.value||'active';
-            return appData.orders.filter(o => [o.customer,o.orderNo,o.productCode,o.unisonCode].some(v=>String(v??'').toLocaleLowerCase('tr-TR').includes(search)))
-                .filter(o=>filter==='active'?o.status!=='Tamamlandı':filter==='completed'?o.status==='Tamamlandı':filter==='late'?orderTiming(o).kind==='late':filter==='week'?inThisWeek(o):true);
-        }
+        function remainingQty(order) {const o=orderModel(order);return Math.max(0,o.totalQty-o.deliveredQty);}
+        function filteredOrders(){return orderListData();}
 
         function exportRows(module, rows) {
             const selected=selectedItems[module]||[];
@@ -785,18 +694,18 @@
             if (mod==='biota' && obj.date && !parseLocalDate(obj.date)) throw fieldError('Tarih gg.aa.yyyy veya yyyy-aa-gg olmalıdır.','date');
         }
 
-        const DATA_MODULES=Object.freeze(['orders','biota','intel','proposals','finance','production']);
+        const DATA_MODULES=Object.freeze(['orders','biota','intel','proposals','finance','production','catalog']);
         let db, auth;
         let currentUser = null;
         let currentTab = 'dashboard';
         let currentFinMonth = previousFinanceMonth();
         let selectedItems = { orders: [], biota: [] };
         let editedBiotaOrders = [];
-        let clockInterval;
+        let clockInterval,lastDashboardDay='';
         let dataUnsubscribers = [];
 
         let appData = {
-            orders: [], biota: [], intel: [],
+            orders: [], biota: [], intel: [], catalog: [],
             proposals: [], finance: [], production: []
         };
 
@@ -851,6 +760,7 @@
 
         function recordFingerprint(record, module) {
             const {id, ...data}=record;
+            delete data.updatedAt;if("isImportant" in data)data.isImportant=data.isImportant===true||data.isImportant==="on";
             if(module==='biota') delete data.deliveredQty;
             const normalize=value=>Array.isArray(value)?value.map(normalize):value && typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,normalize(value[key])])):value;
             return JSON.stringify(normalize(data));
@@ -896,7 +806,7 @@
                 seen.delete(value);
                 return total;
             }
-            if(!record || Array.isArray(record) || typeof record!=='object')throw new Error('Bir belge nesnesi gerekli.');
+            if(!record || Array.isArray(record) || typeof record!=='object' || ![Object.prototype,null].includes(Object.getPrototypeOf(record)))throw new Error('Bir belge nesnesi gerekli.');
             // Reserve room for the document path and SDK metadata below Firestore's 1 MiB limit.
             const estimated=size(record);
             if(estimated+8192>900000)throw new Error('Kayıt Firestore belge boyutu sınırına yaklaştı. Veri yedeğini al; geçmiş silinmez.');
@@ -935,13 +845,14 @@
         }
 
         function clearAppData() {
+            resetOrderWorkspace();resetBackupWorkspace();
             resetQuoteWorkspace();
             resetIntelWorkspace();
             resetFinanceWorkspace();
             Object.keys(appData).forEach(module => { appData[module] = []; });
             Object.keys(selectedItems).forEach(module => { selectedItems[module] = []; });
             editedBiotaOrders = [];
-            ['orders','biota','intel','proposals','finance','production'].forEach(refreshUI);
+            DATA_MODULES.forEach(refreshUI);
             document.querySelectorAll('.fixed[id$="Modal"]').forEach(modal=>{
                 closeModal(modal.id);
                 modal.querySelectorAll('form').forEach(form=>{form.reset();clearFormErrors(form);form._editOwner=null;form._editToken=null;form._draftToken={};form.querySelectorAll('input[type="hidden"]').forEach(field=>field.value=field.defaultValue);});
@@ -1008,7 +919,7 @@
                     appData[mod] = [];
                     snap.forEach(doc => { const record={...doc.data(),id:doc.id}; if('isImportant' in record) record.isImportant=record.isImportant===true || record.isImportant==='on'; appData[mod].push(record); });
                     refreshUI(mod);
-                }, error => {if(currentUser?.uid===owner) reportError(`${mod} verileri eşzamanlanamadı: ${error.message}`);});
+                }, error => {if(currentUser?.uid===owner) reportError(mod==='catalog'?'Müşteri / ürün kataloğu okunamadı. Firestore kurallarında users/{uid}/catalog erişimini kontrol edin.':`${mod} verileri eşzamanlanamadı: ${error.message}`);});
                 dataUnsubscribers.push(unsubscribe);
             });
 
@@ -1062,108 +973,31 @@
             if(mod === 'proposals') { renderProposals(); if(intelDetailId)renderIntel(); }
             if(mod === 'finance') renderFinance();
             if(mod === 'production') renderProduction();
+            if(mod === 'catalog')renderOrderCatalog();
+            if(!['orders','dashboard'].includes(mod))calcDashboard();
         }
 
-        function calcDashboard() {
-            if(!appData.orders) return;
-            const today = new Date();
-            today.setHours(0,0,0,0);
-
-            const active = appData.orders.filter(o => o.status !== 'Tamamlandı');
-            
-            let lateCount = 0;
-            let totalRemQty = 0;
-            let usd = 0, eur = 0, tl = 0;
-            let src = { 'Üretim': 0, 'İthal': 0, 'Stok': 0 };
-            
-            let heat7 = 0, heat15 = 0, heat30 = 0;
-            let age10 = 0, age20 = 0, age21 = 0;
-
-            let custMap = Object.create(null);
-            let srcQty = { 'Üretim': 0, 'İthal': 0, 'Stok': 0 };
-
-            active.forEach(o => {
-                let p = numberValue(o.price) || 0;
-                let tq = numberValue(o.totalQty) || 0;
-                let dq = numberValue(o.deliveredQty) || 0;
-                let rem = Math.max(0, tq - dq);
-                
-                totalRemQty += rem;
-
-                if(o.currency === 'USD') usd += (p * rem);
-                else if(o.currency === 'EUR') eur += (p * rem);
-                else if(o.currency === 'TL') tl += (p * rem);
-                
-                if(o.status && src[o.status] !== undefined) {
-                    src[o.status]++;
-                    if(srcQty[o.status] !== undefined) srcQty[o.status] += rem;
-                }
-                
-                if(!custMap[o.customer]) custMap[o.customer] = 0;
-                custMap[o.customer] += rem;
-
-                if(o.deadline) {
-                    let dDate = parseLocalDate(o.deadline);
-                    if (dDate) { 
-                        let diffTime = dDate - today;
-                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                        if(diffDays < 0) {
-                            lateCount++;
-                            let absLate = Math.abs(diffDays);
-                            if(absLate <= 10) age10++;
-                            else if(absLate <= 20) age20++;
-                            else age21++;
-                        } else {
-                            if(diffDays <= 7) heat7++;
-                            else if(diffDays <= 15) heat15++;
-                            else if(diffDays <= 30) heat30++;
-                        }
-                    }
-                }
-            });
-
-            document.getElementById('dash-active').innerText = active.length;
-            document.getElementById('dash-week').textContent=active.filter(inThisWeek).length;
-            document.getElementById('dash-late').innerText = lateCount;
-            document.getElementById('dash-rem-qty').innerText = totalRemQty.toLocaleString('tr-TR');
-            document.getElementById('dash-usd').innerText = usd.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' $';
-            document.getElementById('dash-eur').innerText = eur.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' €';
-            
-            let otif = active.length > 0 ? (((active.length - lateCount) / active.length) * 100).toFixed(0) : 0;
-            document.getElementById('dash-otif').innerText = '%' + otif;
-            document.getElementById('dash-src-prod').innerText = src['Üretim'];
-            document.getElementById('dash-src-imp').innerText = src['İthal'];
-            document.getElementById('dash-src-stk').innerText = src['Stok'];
-
-            document.getElementById('dash-heat-7').innerText = heat7;
-            document.getElementById('dash-heat-15').innerText = heat15;
-            document.getElementById('dash-heat-30').innerText = heat30;
-            
-            document.getElementById('dash-age-10').innerText = age10;
-            document.getElementById('dash-age-20').innerText = age20;
-            document.getElementById('dash-age-21').innerText = age21;
-
-            document.getElementById('dash-col-usd').innerText = usd.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' $';
-            document.getElementById('dash-col-eur').innerText = eur.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' €';
-            document.getElementById('dash-col-tl').innerText = tl.toLocaleString('tr-TR', {maximumFractionDigits:0}) + ' ₺';
-
-            let sortedCust = Object.keys(custMap).map(k => ({name:k, val:custMap[k]})).sort((a,b)=>b.val-a.val).slice(0,5);
-            let maxC = sortedCust.length > 0 ? Math.max(1,sortedCust[0].val) : 1;
-            document.getElementById('dash-top-customers').innerHTML = sortedCust.length ? sortedCust.map(c => {
-                let w = (c.val / maxC) * 100;
-                return `<div class="mb-2">
-                    <div class="flex justify-between text-[11px] font-medium text-slate-700 mb-0.5"><span class="truncate pr-2">${escapeHtml(c.name)}</span><span>${c.val.toLocaleString('tr-TR')} Ad.</span></div>
-                    <div class="progress-bar"><div class="progress-fill bg-blue-500" style="width:${w}%"></div></div>
-                </div>`;
-            }).join('') : '<p class="text-xs text-slate-400">Veri yok</p>';
-
-            document.getElementById('dash-qty-prod').innerText = srcQty['Üretim'].toLocaleString('tr-TR') + ' Ad.';
-            document.getElementById('dash-qty-imp').innerText = srcQty['İthal'].toLocaleString('tr-TR') + ' Ad.';
-            document.getElementById('dash-qty-stk').innerText = srcQty['Stok'].toLocaleString('tr-TR') + ' Ad.';
+        function calcDashboard(){
+            if(!qEl('dailyMetrics'))return;
+            const active=appData.orders.map(orderModel).filter(o=>orderGroup(o)==='active'),late=active.filter(o=>orderTiming(o).kind==='late'),soon=active.filter(o=>orderTiming(o).kind==='soon'),undated=active.filter(o=>orderTiming(o).kind==='undated');
+            const quotes=appData.proposals.map(quoteModel).filter(quoteOpen),dueQuotes=quotes.filter(q=>q.nextDate&&q.nextDate<=localDateKey()),notes=appData.intel.map(intelModel).filter(i=>!i.archived&&i.reviewDate&&i.reviewDate<=localDateKey());
+            const prod=productionFreshness(),stale=prod.filter(p=>p.stale),items=[['late','Geciken sipariş',late.length,"setOrderFilter('late',true)"],['soon','7 gün içinde termin',soon.length,"setOrderFilter('soon',true)"],['undated','Termin bekleyen',undated.length,"setOrderFilter('undated',true)"],['active','Açık sipariş kalemi',active.length,"setOrderFilter('active',true)"],['quotes','Takibi gelen teklif',dueQuotes.length,"openDailyQuotes()"],['intel','Kontrolü gelen not',notes.length,"openDailyIntel()"],['production','Eski / eksik üretim bilgisi',stale.length,"nav('production')"]];
+            qEl('dailyMetrics').innerHTML=items.map(([id,label,count,action])=>`<button class="metric-card ${id==='late'?'metric-late':''}" onclick="${action}"><span class="metric-label">${label}</span><strong id="dash-${id}">${count}</strong><span class="metric-hint">Listeyi aç →</span></button>`).join('');
+            const totals={EUR:0,USD:0,TL:0};let unknown=0;active.forEach(o=>{if(o.price!==null&&Number.isFinite(o.price)&&Object.hasOwn(totals,o.currency))totals[o.currency]+=o.price*remainingQty(o);else unknown++;});qEl('dash-rem-qty').textContent=formatQty(active.reduce((s,o)=>s+remainingQty(o),0));qEl('dash-usd').textContent=totals.USD.toLocaleString('tr-TR',{maximumFractionDigits:2})+' $';qEl('dash-eur').textContent=totals.EUR.toLocaleString('tr-TR',{maximumFractionDigits:2})+' €';qEl('dash-col-tl').textContent=totals.TL.toLocaleString('tr-TR',{maximumFractionDigits:2})+' ₺';qEl('dashboardMoneyHelp').textContent='Bütün fiyatlar 1 adet içindir. '+unknown+' açık kalemde fiyat veya para birimi eksik; tutarlara dahil edilmedi.';
+            const dated=active.filter(o=>parseLocalDate(o.deadline));qEl('dash-otif').textContent=dated.length?Math.round((dated.length-late.length)/dated.length*100)+'%':'—';qEl('dashboardTimingHelp').textContent=dated.length+' termini bilinen açık kalemde gecikmemiş kayıt oranı. '+undated.length+' terminsiz kalem hesaba katılmadı. Teslimat başarı oranı değildir.';
+            const row=(title,detail,action)=>`<button class="daily-row" onclick="${action}"><strong>${escapeHtml(title)}</strong><small>${escapeHtml(detail)}</small></button>`;
+            qEl('dailyOrders').innerHTML=[...late,...soon].slice(0,6).map(o=>row(o.customer+' · #'+o.orderNo,o.unisonCode+' · '+orderTiming(o).text+' · '+formatQty(remainingQty(o))+' adet',`openOrderDetail('${inlineId(o.id)}')`)).join('')||'<p class="quote-help">Geciken veya 7 gün içinde termini olan açık sipariş yok.</p>';
+            qEl('dailyQuotes').innerHTML=dueQuotes.sort((a,b)=>a.nextDate.localeCompare(b.nextDate)).slice(0,6).map(q=>row(q.customer+' · '+q.title,q.nextAction+' · '+formatDate(q.nextDate),`openQuoteDetail('${inlineId(q.id)}')`)).join('')||'<p class="quote-help">Tarihi gelen teklif takibi yok.</p>';
+            qEl('dailyIntel').innerHTML=notes.sort((a,b)=>a.reviewDate.localeCompare(b.reviewDate)).slice(0,6).map(i=>row(i.title,(i.nextAction||'Notu gözden geçir')+' · '+formatDate(i.reviewDate),`openIntelDetail('${inlineId(i.id)}')`)).join('')||'<p class="quote-help">Kontrol tarihi gelen aktif not yok.</p>';
+            qEl('dailyProduction').innerHTML=stale.slice(0,6).map(p=>row(p.machine.id,p.latest?'Son bilgi: '+formatDate(p.latest.recordDate):'Henüz kayıt yok',`openProductionModal('${inlineId(p.machine.id)}')`)).join('')||'<p class="quote-help">Tüm makinelerin bilgisi güncel.</p>';
+            qEl('dashboardSupply').innerHTML=['Üretim','İthal','Stok'].map(type=>`<p class="q-report-row"><span>${type}</span><strong>${formatQty(active.filter(o=>o.supplyType===type).reduce((s,o)=>s+remainingQty(o),0))} adet</strong></p>`).join('');
         }
+        function productionFreshness(){const threshold=new Date();threshold.setHours(0,0,0,0);threshold.setDate(threshold.getDate()-7);return MACHINE_LIST.map(machine=>{const latest=appData.production.filter(p=>p.machineId===machine.id).sort((a,b)=>parseDateSafely(b.recordDate)-parseDateSafely(a.recordDate)||(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0))[0];const date=parseLocalDate(latest?.recordDate);return {machine,latest,stale:!date||date<=threshold||date>parseLocalDate(localDateKey())};});}
+        function openDailyQuotes(){quoteFilter='all';qEl('quoteSearch').value='';qEl('quoteStageFilter').value='';qEl('quoteCurrencyFilter').value='';quoteFilter='due';nav('proposals');}
+        function openDailyIntel(){intelFilter='due';for(const id of ['intelSearch','intelProofFilter','intelCategoryFilter'])qEl(id).value='';nav('intel');}
 
         async function saveForm(e, mod) {
+            if(mod==='orders')return saveOrder(e);
             if(mod==='finance') { e.preventDefault(); return reportError('Finans kaydını aylık arşiv ekranından düzenle.'); }
             if(mod==='intel') { e.preventDefault(); return reportError('Notu yeni istihbarat ekranından düzenle.'); }
             if(mod==='proposals') { e.preventDefault(); return reportError('Teklif dosyasını yeni teklif ekranından düzenle.'); }
@@ -1201,6 +1035,7 @@
         }
 
         function openModal(id, dataId = null, mod = null) {
+            if(id==='orderModal')return openOrderEditor(dataId);
             const modal = document.getElementById(id);
             const form = modal.querySelector('form');
             if(form) { form._editOwner=currentUser?.uid;form._editToken=null;form._draftToken={};form.reset(); clearFormErrors(form); form.querySelectorAll('input[type="hidden"]').forEach(field=>field.value=field.defaultValue); }
@@ -1248,6 +1083,7 @@
             });
         }
         async function deleteSelected(mod) {
+            if(mod==='orders')return reportError('Siparişler silinmez. Sipariş detayındaki iptal işlemini kullan.');
             if(!['orders','biota'].includes(mod)) return reportError('Bu modülde toplu silme kullanılamaz.');
             if(selectedItems[mod].length === 0) return alert('Kayıt seçmediniz.');
             if(!confirm('Seçili kayıtları silmek istediğinize emin misiniz?')) return;
@@ -1270,56 +1106,14 @@
             }
         }
 
-        async function exportOrdersPDF() {
-            const owner=currentUser?.uid;
-            const fontB64 = await getPdfFont();
-            if(owner!==currentUser?.uid) return;
-            if(!fontB64) return reportError('PDF yazı tipi yüklenemedi. Bağlantınızı kontrol edip yeniden deneyin.');
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape');
-            
-            if(fontB64) {
-                doc.addFileToVFS("Roboto-Regular.ttf", fontB64);
-                doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-                doc.setFont("Roboto");
-            }
-            doc.text('Siparis Listesi', 14, 15);
-            const head = [['Siparis No/Trh', 'Firma', 'Urun (Unison)', 'Adet', 'Kalan', 'Fiyat', 'Durum/Termin', 'Aciklama']];
-            
-            const exp = exportRows('orders', filteredOrders());
-
-            const body = exp.map(o => [
-                `${o.orderNo || ''}\n${o.orderDate || ''}`, o.customer || '', `${o.productCode||''}\n${o.unisonCode||''}`,
-                o.totalQty || '', `${remainingQty(o)}`,
-                `${o.price||''} ${o.currency||''}`, `${o.status||''}\n${o.deadline||''}`, o.notes || ''
-            ]);
-
-            doc.autoTable({ head: head, body: body, startY: 20, styles: { font: fontB64 ? 'Roboto' : 'helvetica', fontSize: 7, cellPadding: 2 }, columnStyles: { 7: { cellWidth: 50 } } });
-            doc.save(`Siparisler_${localDateKey()}.pdf`);
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        async function exportOrdersPDF(){const owner=currentUser?.uid,font=await getPdfFont();if(owner!==currentUser?.uid)return;if(!font)return reportError('PDF yazı tipi yüklenemedi.');try{const doc=new window.jspdf.jsPDF('landscape');doc.addFileToVFS('Roboto-Regular.ttf',font);doc.addFont('Roboto-Regular.ttf','Roboto','normal');doc.setFont('Roboto');doc.text('Sipariş kalemleri — fiyatlar 1 adet içindir',14,15);doc.autoTable({head:[['Müşteri / Sipariş','Unison / Müşteri kodu','Toplam / Teslim / Kalan','Termin / Beklenen geliş','İş / Teslim','Birim fiyat']],body:filteredOrders().map(o=>[o.customer+' / '+o.orderNo,(o.unisonCode||'')+' / '+(o.productCode||''),o.totalQty+' / '+o.deliveredQty+' / '+remainingQty(o),(o.deadline||'—')+' / '+(o.supplierDate||'—'),o.workStatus+' / '+orderDeliveryLabel(o)+(o.cancelled?' / İPTAL':''),(o.price??'Girilmedi')+' '+o.currency]),startY:20,styles:{font:'Roboto',fontStyle:'normal',fontSize:8},headStyles:{fontStyle:'normal'}});doc.save('Siparişler_'+localDateKey()+'.pdf');}catch(error){reportError('PDF oluşturulamadı: '+error.message);}}
 
         function exportExcel(f, d) { if(d.length===0) return; const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d), f); XLSX.writeFile(wb, `${f}_${localDateKey()}.xlsx`); }
 
         
 
 
-        function updateClock() { const d = new Date(); document.getElementById('topTime').innerText = d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}); document.getElementById('topDate').innerText = d.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'}); }
+        function updateClock() { const d = new Date();if(currentUser && lastDashboardDay!==localDateKey(d)){lastDashboardDay=localDateKey(d);calcDashboard();} document.getElementById('topTime').innerText = d.toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}); document.getElementById('topDate').innerText = d.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'}); }
         
         function parseDateSafely(dStr) {
             return parseLocalDate(dStr)?.getTime() || 0;
@@ -1475,6 +1269,7 @@
         
         
         async function delItem(m,id) {
+            if(m==='orders')return openOrderAction(id,'cancel');
             if(m==='proposals') return archiveQuote(id,true);
             if(m==='intel') return openIntelArchive(id);
             if(m==='finance') return reportError('Aylık kayıtları düzenlemek için ay düzenleme ekranını, tamamen silmek için “Ayın kayıtlarını sil” düğmesini kullan.'); 
@@ -1605,71 +1400,58 @@
             finally {button.disabled=false;}
         }
 
-        function orderTiming(order) {
-            if(order.status==='Tamamlandı') return {kind:'completed',text:'Tamamlandı',icon:'fa-circle-check'};
-            const date=parseLocalDate(order.deadline),today=parseLocalDate(localDateKey());
-            if(!date) return {kind:'normal',text:'Termin belirtilmedi',icon:'fa-calendar'};
-            const days=Math.round((Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())-Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
-            if(days<0) return {kind:'late',text:Math.abs(days)+' gün gecikti',icon:'fa-circle-exclamation'};
-            if(days<=7) return {kind:'soon',text:days===0?'Bugün teslim':days+' gün kaldı',icon:'fa-clock'};
-            return {kind:'normal',text:'Planlandı',icon:'fa-calendar-check'};
+        const ORDER_WORK=['Bekliyor','Üretimde','Tedarik bekleniyor','Hazır'];
+        let orderEditor=null,orderFiles=[],orderFileBusy=false,orderDetailId=null,orderAction=null;
+        function orderModel(raw) {
+            const modern=raw.orderSchema===3;
+            const deliveries=modern?(Array.isArray(raw.deliveries)?raw.deliveries:[]):Number(raw.deliveredQty)>0?[{id:'opening-'+raw.id,qty:Number(raw.deliveredQty),date:'',at:'',kind:'opening',note:'Önceki kayıttan başlangıç teslim bakiyesi'}]:[];
+            const delivered=deliveries.filter(d=>!d.reversedAt).reduce((sum,d)=>sum+(Number(d.qty)||0),0);
+            return {...raw,orderSchema:modern?3:1,deliveries,deliveredQty:delivered,totalQty:Number(raw.totalQty)||0,cancelled:raw.cancelled===true,
+                price:raw.price===''||raw.price==null?null:numberValue(raw.price),currency:raw.currency||'',
+                supplyType:raw.supplyType||(['Üretim','İthal','Stok'].includes(raw.status)?raw.status:'Üretim'),
+                workStatus:ORDER_WORK.includes(raw.workStatus)?raw.workStatus:raw.status==='Üretim'?'Üretimde':raw.status==='İthal'?'Tedarik bekleniyor':raw.status==='Stok'?'Hazır':'Bekliyor',
+                history:Array.isArray(raw.history)?raw.history:[],files:Array.isArray(raw.files)?raw.files:[],version:Number(raw.version)||0};
         }
-        function inThisWeek(order) {
-            if(order.status==='Tamamlandı') return false;
-            const date=parseLocalDate(order.deadline),today=parseLocalDate(localDateKey());
-            const end=new Date(today);end.setDate(end.getDate()+((7-end.getDay())%7));
-            return date && date>=today && date<=end;
+        function orderFromId(id){const raw=appData.orders.find(o=>o.id===id);return raw?orderModel(raw):null;}
+        function orderGroup(raw){const o=orderModel(raw);return o.cancelled?'cancelled':remainingQty(o)===0?'completed':'active';}
+        function orderDeliveryLabel(raw){const o=orderModel(raw);return o.deliveredQty===0?'Teslim edilmedi':remainingQty(o)===0?'Tamamlandı':'Kısmen teslim edildi';}
+        function orderTiming(raw){const o=orderModel(raw);if(o.cancelled)return {kind:'cancelled',text:'İptal edildi',icon:'fa-ban'};if(!remainingQty(o))return {kind:'completed',text:'Tamamlandı',icon:'fa-check'};const date=parseLocalDate(o.deadline),today=parseLocalDate(localDateKey());if(!date)return {kind:'undated',text:'Termin bekleyen',icon:'fa-calendar'};const days=Math.round((Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())-Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);return days<0?{kind:'late',text:Math.abs(days)+' gün gecikti',icon:'fa-circle-exclamation'}:days<=7?{kind:'soon',text:days===0?'Bugün teslim':days+' gün kaldı',icon:'fa-clock'}:{kind:'normal',text:'Planlandı',icon:'fa-calendar-check'};}
+        function inThisWeek(o){return orderTiming(o).kind==='soon';}
+        function orderListData(){const text=String(qEl('searchOrders').value).trim().toLocaleLowerCase('tr-TR'),group=qEl('filterOrders').value,work=qEl('orderWorkFilter').value,timing=qEl('orderTimingFilter').value;return appData.orders.map(orderModel).filter(o=>[o.customer,o.orderNo,o.unisonCode,o.productCode].some(v=>String(v??'').toLocaleLowerCase('tr-TR').includes(text))).filter(o=>group==='all'||['active','completed','cancelled'].includes(group)?group==='all'||orderGroup(o)===group:orderTiming(o).kind===(group==='week'?'soon':group)).filter(o=>(!work||o.workStatus===work)&&(!timing||orderTiming(o).kind===timing)).sort((a,b)=>qEl('orderSort').value==='customer'?String(a.customer).localeCompare(String(b.customer),'tr'):qEl('orderSort').value==='date'?String(b.orderDate||'').localeCompare(a.orderDate||''):String(a.deadline||'9999').localeCompare(b.deadline||'9999'));}
+        let orderView='cards';try{orderView=localStorage.getItem('gorkapp-order-view')==='table'?'table':'cards';}catch{}
+        function setOrderView(mode){orderView=mode==='table'?'table':'cards';try{localStorage.setItem('gorkapp-order-view',orderView)}catch{}renderOrders();}
+        function setOrderFilter(filter,fromDashboard=false){qEl('filterOrders').value=filter;if(fromDashboard){qEl('searchOrders').value='';qEl('orderWorkFilter').value='';qEl('orderTimingFilter').value='';nav('orders')}else renderOrders();}
+        function formatQty(value){return (numberValue(value)||0).toLocaleString('tr-TR');}
+        function formatDate(value){return parseLocalDate(value)?.toLocaleDateString('tr-TR')||'Belirtilmedi';}
+        function timingBadge(timing){return `<span class="state-badge state-${timing.kind}">${escapeHtml(timing.text)}</span>`;}
+        function orderButtons(o){return `<button class="quiet-button" onclick="openOrderDetail('${inlineId(o.id)}')">Aç / geçmiş</button>`;}
+        function renderOrders(){if(!qEl('gridOrders'))return;const rows=orderListData(),filter=qEl('filterOrders').value;const labels={active:'Açık',completed:'Tamamlanan',cancelled:'İptal edilen',all:'Tümü',late:'Geciken',soon:'7 gün içinde',undated:'Termin bekleyen'};qEl('orderFilters').innerHTML=Object.entries(labels).map(([id,label])=>`<button class="filter-chip" aria-pressed="${filter===id}" onclick="setOrderFilter('${id}')">${label}</button>`).join('');qEl('orderCountText').textContent=rows.length+' kalem';document.querySelectorAll('[data-order-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.orderView===orderView)));const cards=orderView==='cards'||window.innerWidth<768;qEl('gridOrders').hidden=!cards;qEl('ordersTableWrap').hidden=cards;
+            qEl('gridOrders').innerHTML=rows.length?rows.map(o=>`<article class="order-card"><div class="order-card-head"><div><p class="order-number">#${escapeHtml(o.orderNo)}</p><h3>${escapeHtml(o.customer)}</h3></div>${timingBadge(orderTiming(o))}</div><div class="order-product">${escapeHtml(o.unisonCode||'Unison kodu girilmemiş')}<small>Müşteri kodu: ${escapeHtml(o.productCode||'—')}</small></div><div class="order-facts"><div><small>Kalan adet</small><strong>${formatQty(remainingQty(o))}</strong><small>${formatQty(o.deliveredQty)} teslim / ${formatQty(o.totalQty)} toplam</small></div><div><small>Müşteri termini</small><strong>${formatDate(o.deadline)}</strong><small>Beklenen geliş: ${formatDate(o.supplierDate)}</small></div></div><div class="order-card-footer"><div><span class="state-badge">${escapeHtml(o.workStatus)}</span> <span class="state-badge">${orderDeliveryLabel(o)}</span></div>${orderButtons(o)}</div></article>`).join(''):'<div class="empty-list"><strong>Bu görünümde sipariş yok.</strong></div>';
+            qEl('orderTableBody').innerHTML=rows.map(o=>`<tr><td>${escapeHtml(o.customer)}<small>#${escapeHtml(o.orderNo)}</small></td><td>${escapeHtml(o.unisonCode||'—')}<small>${escapeHtml(o.productCode||'—')}</small></td><td>${formatQty(o.totalQty)} / ${formatQty(o.deliveredQty)} / <strong>${formatQty(remainingQty(o))}</strong></td><td>${formatDate(o.deadline)}<small>${timingBadge(orderTiming(o))}</small></td><td>${escapeHtml(o.workStatus)}<small>${orderDeliveryLabel(o)}</small></td><td>${orderButtons(o)}</td></tr>`).join('');
+            if(orderDetailId&&!qEl('orderDetailModal').classList.contains('hidden')){if(orderFromId(orderDetailId))openOrderDetail(orderDetailId);else{closeModal('orderDetailModal');orderDetailId=null;}}
         }
-        function setOrderFilter(filter, fromDashboard=false) {
-            document.getElementById('filterOrders').value=filter;
-            if(fromDashboard) { document.getElementById('searchOrders').value=''; selectedItems.orders=[]; nav('orders'); }
-            else renderOrders();
-        }
-        let orderView='cards';
-        try { orderView=localStorage.getItem('gorkapp-order-view')==='table'?'table':'cards'; } catch {}
-        function setOrderView(mode) {
-            orderView=mode==='table'?'table':'cards';
-            try { localStorage.setItem('gorkapp-order-view',orderView); } catch {}
-            renderOrders();
-        }
-        function formatQty(value) { return (numberValue(value)||0).toLocaleString('tr-TR'); }
-        function formatDate(value) { return parseLocalDate(value)?.toLocaleDateString('tr-TR')||'Belirtilmedi'; }
-        function timingBadge(timing) { return `<span class="state-badge state-${timing.kind}"><i class="fas ${timing.icon}" aria-hidden="true"></i>${escapeHtml(timing.text)}</span>`; }
-        function renderOrders() {
-            const grid=document.getElementById('gridOrders');if(!grid)return;
-            const list=filteredOrders();
-            const filter=document.getElementById('filterOrders').value;
-            document.querySelectorAll('[data-order-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.orderFilter===filter)));
-            document.querySelectorAll('[data-order-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.orderView===orderView)));
-            document.getElementById('orderCountText').textContent=`${list.length} sipariş · ${list.filter(o=>selectedItems.orders.includes(o.id)).length} seçili`;
-            const table=document.getElementById('ordersTableWrap');
-            const isMobile=window.matchMedia('(max-width:767px)').matches;
-            const cards=orderView==='cards'||isMobile;
-            grid.hidden=!cards;table.hidden=cards;
-            if(!list.length) {
-                grid.innerHTML='<div class="empty-list"><i class="fas fa-box-open" aria-hidden="true"></i><strong>Bu görünümde sipariş bulunamadı.</strong><p>Aramayı veya filtreyi değiştirerek tekrar deneyin.</p></div>';
-                document.getElementById('orderTableBody').innerHTML='<tr><td colspan="7" class="empty-list">Bu görünümde sipariş bulunamadı.</td></tr>';
-                return;
-            }
-            const check=(o,layout)=>`<input aria-label="${escapeHtml(o.orderNo||'Sipariş')} numaralı siparişi seç" type="checkbox" class="cb-orders-${layout}" value="${escapeHtml(o.id)}" ${selectedItems.orders.includes(o.id)?'checked':''} onchange="toggleSelect('orders','${inlineId(o.id)}',this.checked); renderOrders()">`;
-            grid.innerHTML=list.map(o=>{
-                const timing=orderTiming(o);
-                return `<article class="order-card">
-                    <div class="order-card-head"><div><p class="order-number">SİPARİŞ #${escapeHtml(o.orderNo||'—')}</p><h3>${escapeHtml(o.customer||'Müşteri belirtilmedi')}</h3></div>${check(o,'cards')}</div>
-                    <div class="order-product">${escapeHtml(o.productCode||'Ürün kodu belirtilmedi')}<small>Unison: ${escapeHtml(o.unisonCode||'—')}</small></div>
-                    <div class="order-facts"><div><small>Kalan miktar</small><strong>${formatQty(remainingQty(o))} <span class="remaining-unit">adet</span></strong><small>Toplam ${formatQty(o.totalQty)} adet</small></div><div><small>Teslim tarihi</small><strong class="deadline-text">${formatDate(o.deadline)}</strong><small>${timingBadge(timing)}</small></div></div>
-                    <details class="order-details"><summary>Fiyat, nakliye ve notlar</summary><p><b>Birim fiyat:</b> ${escapeHtml(o.price||'0')} ${escapeHtml(o.currency||'')}</p><p><b>Sipariş tarihi:</b> ${formatDate(o.orderDate)}</p><p><b>Teslim edilen:</b> ${formatQty(o.deliveredQty)} adet</p><p><b>Nakliye:</b> ${escapeHtml(o.transport||'Belirtilmedi')} · ${escapeHtml(o.location||'Konum belirtilmedi')}</p><p>${escapeHtml(o.notes||'Not eklenmemiş.')}</p></details>
-                    <div class="order-card-footer"><span class="state-badge ${o.status==='Tamamlandı'?'state-completed':''}"><i class="fas ${o.status==='Tamamlandı'?'fa-check':'fa-box'}" aria-hidden="true"></i>${escapeHtml(o.status||'Belirtilmedi')}</span><button type="button" class="quiet-button" onclick="openModal('orderModal','${inlineId(o.id)}','orders')"><i class="fas fa-pen" aria-hidden="true"></i> Düzenle</button></div>
-                </article>`;
-            }).join('');
-            document.getElementById('orderTableBody').innerHTML=list.map(o=>`<tr><td>${check(o,'table')}</td><td><strong>${escapeHtml(o.customer||'—')}</strong><small>#${escapeHtml(o.orderNo||'—')}</small></td><td>${escapeHtml(o.productCode||'—')}<small>${escapeHtml(o.unisonCode||'—')}</small></td><td><strong>${formatQty(remainingQty(o))} adet</strong><small>Toplam ${formatQty(o.totalQty)}</small></td><td>${formatDate(o.deadline)}<small>${timingBadge(orderTiming(o))}</small></td><td><span class="state-badge ${o.status==='Tamamlandı'?'state-completed':''}">${escapeHtml(o.status||'—')}</span></td><td><button class="quiet-button" onclick="openModal('orderModal','${inlineId(o.id)}','orders')" aria-label="${escapeHtml(o.orderNo||'Sipariş')} düzenle"><i class="fas fa-pen" aria-hidden="true"></i> Düzenle</button></td></tr>`).join('');
-            grid.querySelectorAll('details').forEach(el=>el.addEventListener('toggle',()=>{if(el.open)el.scrollIntoView({block:'nearest',behavior:'instant'});}));
-        }
-        function selectVisibleOrders() {
-            const ids=filteredOrders().map(o=>o.id),all=ids.length>0&&ids.every(id=>selectedItems.orders.includes(id));
-            selectedItems.orders=all?selectedItems.orders.filter(id=>!ids.includes(id)):[...new Set([...selectedItems.orders,...ids])];
-            renderOrders();
-        }
+        function resetOrderWorkspace(){orderEditor=null;orderFiles=[];orderFileBusy=false;orderAction=null;orderDetailId=null;for(const id of ['orderDetailContent','orderFileList','orderDetailTitle','orderDeliveredHelp','orderCodeHint','orderActionSubject'])qEl(id).textContent='';qEl('searchOrders').value='';qEl('filterOrders').value='active';qEl('orderWorkFilter').value='';qEl('orderTimingFilter').value='';}
+        function catalogKey(value){return String(value||'').trim().normalize('NFKC').toLocaleLowerCase('tr-TR');}
+        async function catalogId(kind,key){const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(key));return kind+'_'+[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+        function renderOrderCatalog(){const names=new Set([...(appData.catalog||[]).filter(c=>c.kind==='customer').map(c=>c.name),...appData.orders.map(o=>o.customer)].filter(Boolean));qEl('orderCustomers').innerHTML=[...names].sort((a,b)=>a.localeCompare(b,'tr')).map(name=>`<option value="${escapeHtml(name)}"></option>`).join('');const codes=new Set([...(appData.catalog||[]).filter(c=>c.kind==='product').map(c=>c.code),...appData.orders.map(o=>o.unisonCode)].filter(Boolean));qEl('orderProducts').innerHTML=[...codes].sort().map(code=>`<option value="${escapeHtml(code)}"></option>`).join('');}
+        async function suggestOrderCode(){const editor=orderEditor;if(!editor)return;const form=qEl('formOrder'),name=form.elements.customer.value,code=form.elements.unisonCode.value;const pair=catalogKey(name)+'|'+catalogKey(code);if(editor.pair===pair)return;editor.pair=pair;form.elements.productCode.value='';qEl('orderCodeHint').textContent='';if(!name.trim()||!code.trim())return;const customerId=await catalogId('c',catalogKey(name)),productId=await catalogId('p',catalogKey(code));if(orderEditor!==editor||form.elements.customer.value!==name||form.elements.unisonCode.value!==code)return;const matches=(appData.catalog||[]).filter(x=>x.kind==='mapping'&&x.customerId===customerId&&x.productId===productId);const prior=appData.orders.filter(o=>catalogKey(o.customer)===catalogKey(name)&&catalogKey(o.unisonCode)===catalogKey(code)&&o.productCode).sort((a,b)=>String(b.updatedISO||b.orderDate||'').localeCompare(a.updatedISO||a.orderDate||''));const value=matches[0]?.code||prior[0]?.productCode||'';if(value){form.elements.productCode.value=value;qEl('orderCodeHint').textContent='Bu müşteri ve ürün için kayıtlı kod önerildi; değiştirebilirsin.'}else qEl('orderCodeHint').textContent='';}
+        function openOrderEditor(id=null){const o=id?orderFromId(id):null;if(id&&!o)return reportError('Sipariş bulunamadı.');if(o?.cancelled)return reportError('Önce siparişi yeniden aç.');const form=qEl('formOrder');form.reset();clearFormErrors(form);orderEditor={id,uid:currentUser?.uid,token:crypto.randomUUID(),fingerprint:id?recordFingerprint(appData.orders.find(x=>x.id===id)):null};orderFiles=structuredClone(o?.files||[]);orderFileBusy=false;const values={customer:o?.customer||'',orderNo:o?.orderNo||'',unisonCode:o?.unisonCode||'',productCode:o?.productCode||'',totalQty:o?.totalQty||'',initialDelivered:0,price:o?.price??'',currency:o?.currency||'EUR',boxQty:o?.boxQty||'',supplyType:o?.supplyType||'Üretim',orderDate:parseLocalDate(o?.orderDate)?localDateKey(parseLocalDate(o.orderDate)):localDateKey(),deadline:parseLocalDate(o?.deadline)?localDateKey(parseLocalDate(o.deadline)):'',supplierDate:parseLocalDate(o?.supplierDate)?localDateKey(parseLocalDate(o.supplierDate)):'',workStatus:o?.workStatus||'Bekliyor',notes:o?.notes||'',transport:o?.transport||'',location:o?.location||''};for(const [key,value]of Object.entries(values))form.elements[key].value=value;orderEditor.pair=catalogKey(values.customer)+'|'+catalogKey(values.unisonCode);qEl('orderInitialWrap').hidden=Boolean(o);qEl('orderDeliveredHelp').textContent=o?formatQty(o.deliveredQty)+' adet teslim kaydı var. Teslimleri sipariş detayından ekleyebilir veya geri alabilirsin.':'';qEl('orderEditorTitle').textContent=o?'Sipariş kalemini düzenle':'Yeni sipariş kalemi';qEl('orderCodeHint').textContent='';renderOrderCatalog();renderOrderFiles();openQuoteOverlay('orderModal');}
+        function orderEvent(type,text,extra={}){return {id:crypto.randomUUID(),type,text,at:new Date().toISOString(),by:currentUser.uid,...extra};}
+        function storeOrderLocal(id,data){const index=appData.orders.findIndex(o=>o.id===id);if(index<0)appData.orders.push({...data,id});else appData.orders[index]={...data,id};renderOrders();calcDashboard();}
+        async function saveOrder(event){event.preventDefault();const form=qEl('formOrder'),button=form.querySelector('[type=submit]');if(button.disabled)return;button.disabled=true;clearFormErrors(form);const editor=orderEditor;try{if(!editor||editor.uid!==currentUser?.uid)throw new Error('Oturum değişti. Siparişi yeniden aç.');if(orderFileBusy)throw new Error('Eklerin okunmasını bekle.');const v=name=>form.elements[name].value.trim(),draft={customer:v('customer'),orderNo:v('orderNo'),unisonCode:v('unisonCode'),productCode:v('productCode'),totalQty:numberValue(v('totalQty')),price:v('price')===''?null:numberValue(v('price')),currency:v('currency'),boxQty:v('boxQty')===''?null:numberValue(v('boxQty')),supplyType:v('supplyType'),orderDate:v('orderDate'),deadline:v('deadline'),supplierDate:v('supplierDate'),workStatus:v('workStatus'),notes:v('notes'),transport:v('transport'),location:v('location'),files:structuredClone(orderFiles)};
+            if(!draft.customer||!draft.orderNo||!draft.unisonCode)throw new Error('Müşteri, sipariş no ve Unison kodu gerekli.');if(!Number.isSafeInteger(draft.totalQty)||draft.totalQty<=0)throw new Error('Toplam adet pozitif bir tam sayı olmalı.');if(draft.price!==null&&(!Number.isFinite(draft.price)||draft.price<0))throw new Error('Birim fiyat negatif olmayan bir sayı olmalı.');if(draft.price!==null&&!Number.isSafeInteger(Math.round(draft.price*draft.totalQty*100)))throw new Error('Toplam fiyat hesaplama sınırını aşıyor.');if(draft.boxQty!==null&&(!Number.isSafeInteger(draft.boxQty)||draft.boxQty<=0))throw new Error('Koli içi adet pozitif tam sayı olmalı.');if(!['EUR','USD','TL'].includes(draft.currency)||!ORDER_WORK.includes(draft.workStatus)||!['Üretim','İthal','Stok'].includes(draft.supplyType))throw new Error('Durum veya para birimi geçersiz.');for(const key of ['orderDate','deadline','supplierDate'])if((key==='orderDate'||draft[key])&&!parseLocalDate(draft[key]))throw new Error('Geçerli bir tarih gir.');if(draft.orderDate>localDateKey())throw new Error('Sipariş tarihi gelecekte olamaz.');
+            const initial=editor.id?0:Number(v('initialDelivered')||0);if(!Number.isSafeInteger(initial)||initial<0||initial>draft.totalQty)throw new Error('Başlangıç teslim miktarı toplamı aşmayan bir tam sayı olmalı.');const owner=editor.uid,id=editor.id||createRecordId('orders'),ref=userCollection('orders').doc(id),customerId=await catalogId('c',catalogKey(draft.customer)),productId=await catalogId('p',catalogKey(draft.unisonCode)),mappingId=await catalogId('m',customerId+'|'+productId);const catalog=userCollection('catalog'),cRef=catalog.doc(customerId),pRef=catalog.doc(productId),mRef=catalog.doc(mappingId);draft.customerId=customerId;draft.productId=productId;
+            const saved=await runUserTransaction(owner,async tx=>{const snap=await tx.get(ref),cs=await tx.get(cRef),ps=await tx.get(pRef);await tx.get(mRef);if(editor.id&&(!snap.exists||recordFingerprint(snap.data())!==editor.fingerprint)||!editor.id&&snap.exists)throw new Error('Sipariş başka bir cihazda değişti veya silindi. Güncel kaydı yeniden aç.');const previous=snap.exists?orderModel({...snap.data(),id}):null;if(previous?.cancelled)throw new Error('Sipariş iptal edilmiş.');const deliveries=previous?previous.deliveries:initial?[{id:crypto.randomUUID(),qty:initial,date:draft.orderDate,at:new Date().toISOString(),kind:'initial',note:'Başlangıç teslimi'}]:[];const delivered=deliveries.filter(d=>!d.reversedAt).reduce((sum,d)=>sum+d.qty,0);if(delivered>draft.totalQty)throw new Error('Toplam adet teslim edilenden az olamaz.');const history=[...(previous?.history||[])];if(previous&&(previous.deadline||'')!==draft.deadline)history.push(orderEvent('deadline','Müşteri termini değişti',{before:previous.deadline||'',after:draft.deadline}));history.push(orderEvent(previous?'edit':'created',previous?'Sipariş bilgileri güncellendi':'Sipariş kalemi oluşturuldu',previous?{changes:Object.keys(draft).filter(key=>!['files','customerId','productId'].includes(key)&&JSON.stringify(previous[key]??'')!==JSON.stringify(draft[key]??'')).map(key=>({field:key,before:previous[key]??'',after:draft[key]??''}))}:{}));const record={...(snap.exists?snap.data():{}),...draft,orderSchema:3,version:(previous?.version||0)+1,deliveries,deliveredQty:delivered,cancelled:false,history,createdISO:previous?.createdISO||new Date().toISOString(),updatedISO:new Date().toISOString(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};if(previous&&previous.orderSchema!==3)record.legacyStatus=previous.status||'';if(!cs.exists)tx.set(cRef,{kind:'customer',name:draft.customer});if(!ps.exists)tx.set(pRef,{kind:'product',code:draft.unisonCode});tx.set(mRef,{kind:'mapping',customerId,productId,code:draft.productCode,updatedISO:record.updatedISO});assertQuoteSize(record);tx.set(ref,record,{merge:true});return record;});if(currentUser?.uid===owner){storeOrderLocal(id,saved);if(orderEditor===editor){closeModal('orderModal');orderEditor=null;orderFiles=[];}}}catch(error){if(orderEditor===editor)showFormError(form,error)}finally{button.disabled=false;}}
+        function openOrderDetail(id){const o=orderFromId(id);if(!o)return;orderDetailId=id;qEl('orderDetailTitle').textContent=o.customer+' · #'+o.orderNo;qEl('orderDetailContent').innerHTML=`<div class="q-detail-summary"><div><strong>${escapeHtml(o.unisonCode||'—')}</strong><p>Müşteri kodu: ${escapeHtml(o.productCode||'—')}</p><p>${escapeHtml(o.supplyType)} · ${escapeHtml(o.workStatus)} · ${orderDeliveryLabel(o)}</p></div><div><strong>${formatQty(remainingQty(o))} adet kalan</strong><p>${formatQty(o.deliveredQty)} teslim / ${formatQty(o.totalQty)} toplam</p>${timingBadge(orderTiming(o))}</div></div><div class="q-detail-actions">${o.cancelled?`<button class="primary-button" onclick="openOrderAction('${inlineId(id)}','reopen')">Yeniden aç</button>`:`<button class="quiet-button" onclick="openOrderEditor('${inlineId(id)}')">Düzenle</button>${remainingQty(o)>0?`<button class="primary-button" onclick="openOrderAction('${inlineId(id)}','deliver')">Teslim ekle</button>`:''}<button class="quiet-button delete-action" onclick="openOrderAction('${inlineId(id)}','cancel')">İptal et</button>`}</div><p>Sipariş: ${formatDate(o.orderDate)} · Müşteri termini: ${formatDate(o.deadline)} · Beklenen geliş: ${formatDate(o.supplierDate)}</p><p>Birim fiyat / 1 adet: ${o.price===null?'Girilmedi':escapeHtml(o.price)+' '+escapeHtml(o.currency)} · Kalan tutar: ${o.price===null?'Bilinmiyor':escapeHtml((o.price*remainingQty(o)).toLocaleString('tr-TR',{maximumFractionDigits:2}))+' '+escapeHtml(o.currency)}</p><p class="q-prewrap">${escapeHtml(o.notes||'Not yok.')}</p><p>${escapeHtml(o.transport||'')} ${escapeHtml(o.location||'')}</p><h4>Ekler</h4>${o.files.map((f,i)=>`<button class="quiet-button" onclick="downloadOrderFile('${inlineId(id)}',${i})">${escapeHtml(f.name)}</button>`).join('')||'<p class="quote-help">Ek yok.</p>'}<h4>Teslim geçmişi</h4>${[...o.deliveries].reverse().map(d=>`<article class="finance-revision"><strong>${formatQty(d.qty)} adet ${d.reversedAt?'· Geri alındı':''}</strong><p>${d.date?formatDate(d.date):'Önceki kayıttan başlangıç bakiyesi'} · ${escapeHtml(d.note||'')}</p>${d.reversedAt?`<p>Geri alma: ${escapeHtml(new Date(d.reversedAt).toLocaleString('tr-TR'))} · ${escapeHtml(d.reverseReason)}</p>`:!o.cancelled?`<button class="quiet-button" onclick="openOrderAction('${inlineId(id)}','reverse','${inlineId(d.id)}')">Bu teslimi geri al</button>`:''}</article>`).join('')||'<p class="quote-help">Teslim kaydı yok.</p>'}<h4>İşlem ve termin geçmişi</h4>${[...o.history].reverse().map(h=>`<article class="finance-revision"><small>${escapeHtml(new Date(h.at).toLocaleString('tr-TR'))}</small><p>${escapeHtml(h.text)}</p>${h.type==='deadline'?`<p>${formatDate(h.before)} → ${formatDate(h.after)}</p>`:''}${h.reason?`<p>${escapeHtml(h.reason)}</p>`:''}${h.changes?.length?`<details><summary>Değişen bilgiler</summary>${h.changes.map(c=>`<p>${escapeHtml(({customer:'Müşteri',orderNo:'Sipariş no',unisonCode:'Unison kodu',productCode:'Müşteri ürün kodu',totalQty:'Toplam adet',price:'Birim fiyat',currency:'Para birimi',boxQty:'Koli içi adet',supplyType:'Tedarik şekli',orderDate:'Sipariş tarihi',deadline:'Müşteri termini',supplierDate:'Beklenen geliş',workStatus:'İş durumu',notes:'Notlar',transport:'Nakliye notu',location:'Konum'})[c.field]||c.field)}: ${escapeHtml(c.before)} → ${escapeHtml(c.after)}</p>`).join('')}</details>`:''}</article>`).join('')||'<p class="quote-help">Eski kayıt için ayrıntılı geçmiş yok.</p>'}`;openQuoteOverlay('orderDetailModal');}
+        function openOrderAction(id,type,deliveryId=null){const o=orderFromId(id);if(!o)return;orderAction={id,type,deliveryId,uid:currentUser?.uid,token:crypto.randomUUID()};const form=qEl('orderActionForm');form.reset();clearFormErrors(form);qEl('orderActionTitle').textContent={deliver:'Teslim miktarı ekle',reverse:'Teslim işlemini geri al',cancel:'Siparişi iptal et',reopen:'Siparişi yeniden aç'}[type];qEl('orderActionSubject').textContent=o.customer+' · #'+o.orderNo+' · '+o.unisonCode;qEl('orderDeliveryFields').hidden=type!=='deliver';form.elements.qty.required=type==='deliver';form.elements.date.required=type==='deliver';form.elements.date.value=localDateKey();form.elements.qty.max=remainingQty(o);openQuoteOverlay('orderActionModal');}
+        async function saveOrderAction(event){event.preventDefault();const form=qEl('orderActionForm'),button=form.querySelector('[type=submit]'),action=orderAction;if(button.disabled)return;button.disabled=true;clearFormErrors(form);try{if(!action||action.uid!==currentUser?.uid)throw new Error('Oturum değişti. İşlemi yeniden aç.');const reason=form.elements.reason.value.trim(),qty=Number(form.elements.qty.value),date=form.elements.date.value;if(!reason)throw new Error('Açıklama / neden gerekli.');if(action.type==='deliver'&&(!Number.isSafeInteger(qty)||qty<=0||!parseLocalDate(date)||date>localDateKey()))throw new Error('Pozitif tam sayı miktar ve bugün veya geçmişte bir tarih gir.');const owner=action.uid,ref=userCollection('orders').doc(action.id);const saved=await runUserTransaction(owner,async tx=>{const snap=await tx.get(ref);if(!snap.exists)throw new Error('Sipariş bulunamadı.');const o=orderModel({...snap.data(),id:action.id}),deliveries=structuredClone(o.deliveries);if(action.type!=='reopen'&&o.cancelled)throw new Error('Sipariş iptal edilmiş.');if(action.type==='deliver'){if(deliveries.some(d=>d.id===action.token))return snap.data();if(qty>remainingQty(o))throw new Error('Teslim miktarı kalan miktarı aşamaz.');deliveries.push({id:action.token,qty,date,at:new Date().toISOString(),note:reason});}else if(action.type==='reverse'){const d=deliveries.find(d=>d.id===action.deliveryId);if(!d||d.reversedAt)throw new Error('Bu teslim bulunamadı veya zaten geri alındı.');d.reversedAt=new Date().toISOString();d.reverseReason=reason;}else if(action.type==='cancel'){if(o.cancelled)throw new Error('Sipariş zaten iptal.');}else if(action.type==='reopen'){if(!o.cancelled)throw new Error('Sipariş zaten açık.');}else throw new Error('Geçersiz işlem.');const record={...snap.data(),orderSchema:3,workStatus:o.workStatus,supplyType:o.supplyType,deliveries,deliveredQty:deliveries.filter(d=>!d.reversedAt).reduce((sum,d)=>sum+d.qty,0),cancelled:action.type==='cancel'?true:action.type==='reopen'?false:o.cancelled,history:[...o.history,orderEvent(action.type,{deliver:'Teslim eklendi',reverse:'Teslim geri alındı',cancel:'Sipariş iptal edildi',reopen:'Sipariş yeniden açıldı'}[action.type],{reason,...(action.type==='deliver'?{qty,date}:{})})],version:o.version+1,updatedISO:new Date().toISOString(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};assertQuoteSize(record);tx.set(ref,record);return record;});if(currentUser?.uid===owner){storeOrderLocal(action.id,saved);if(orderAction===action){closeModal('orderActionModal');orderAction=null;}openOrderDetail(action.id);}}catch(error){if(orderAction===action)showFormError(form,error)}finally{button.disabled=false;}}
+        function renderOrderFiles(){qEl('orderFileList').innerHTML=orderFiles.map((f,i)=>`<div class="q-file"><span>${escapeHtml(f.name)}</span><button class="quiet-button" type="button" onclick="removeOrderFile(${i})">Kaldır</button></div>`).join('');}
+        function removeOrderFile(i){if(orderFileBusy)return;orderFiles.splice(i,1);renderOrderFiles();}
+        async function loadOrderFiles(event){const editor=orderEditor;if(!editor||orderFileBusy)return;orderFileBusy=true;try{const files=[...orderFiles];for(const file of event.target.files){if(!['application/pdf','image/png','image/jpeg','image/webp'].includes(file.type)||file.size>150*1024)throw new Error('PDF veya görsel seç; dosya başına en fazla 150 KB.');if(files.reduce((s,f)=>s+(f.size||0),0)+file.size>300*1024)throw new Error('Eklerin toplamı 300 KB sınırını aşıyor.');const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Dosya okunamadı.'));r.readAsDataURL(file)});files.push({name:file.name,type:file.type,size:file.size,data});}if(orderEditor===editor&&currentUser?.uid===editor.uid){orderFiles=files;renderOrderFiles();}}catch(error){if(orderEditor===editor)showFormError(qEl('formOrder'),error)}finally{orderFileBusy=false;event.target.value='';}}
+        function downloadOrderFile(id,index){const file=orderFromId(id)?.files[index];if(!file)return;const match=/^data:(application\/pdf|image\/png|image\/jpeg|image\/webp);base64,([A-Za-z0-9+/=\s]+)$/.exec(file.data||'');if(!match)return reportError('Ek dosya okunamadı.');try{downloadQuoteBlob(new Blob([Uint8Array.from(atob(match[2]),c=>c.charCodeAt(0))],{type:match[1]}),file.name||'Ek-dosya');}catch{reportError('Ek dosya okunamadı.');}}
+        function orderExportRows(){return filteredOrders().map(o=>({'Müşteri':o.customer,'Sipariş no':o.orderNo,'Unison kodu':o.unisonCode||'','Müşteri ürün kodu':o.productCode||'','Toplam':o.totalQty,'Teslim':o.deliveredQty,'Kalan':remainingQty(o),'Birim fiyat / 1 adet':o.price??'','Para birimi':o.currency,'Sipariş tarihi':o.orderDate||'','Müşteri termini':o.deadline||'','Beklenen geliş':o.supplierDate||'','İş durumu':o.workStatus,'Teslim durumu':orderDeliveryLabel(o),'İptal':o.cancelled?'Evet':'Hayır','Not':o.notes||''}));}
+        function exportOrdersExcel(){exportExcel('Siparişler',orderExportRows());}
+
         function toggleMobileMenu(force) {
             const sidebar=document.getElementById('sidebar');
             const open=force??sidebar.classList.contains('hidden');
@@ -1732,8 +1514,7 @@
             } finally {button.disabled=false;button.textContent='Şifremi unuttum';}
         }
         function initDesign() {
-            document.getElementById('searchOrders').addEventListener('input',renderOrders);
-            groupForm('formOrder',[['Sipariş bilgileri',['customer','orderNo','productCode','unisonCode','orderDate','status']],['Miktar ve fiyat',['totalQty','deliveredQty','price','currency','boxQty']],['Teslimat ve notlar',['deadline','transport','location','notes']]]);
+
             groupForm('formBiota',[['Sipariş bilgileri',['orderNo','materialNo','materialDesc','date']],['Miktar ve teslimat',['qty','newDelivered']]]);
             document.querySelectorAll('.fixed[id$="Modal"] input:not([type="hidden"]):not([type="checkbox"]):not([type="file"]),.fixed[id$="Modal"] select,.fixed[id$="Modal"] textarea').forEach(field=>{
                 const container=field.parentElement;
@@ -1749,7 +1530,7 @@
             document.querySelectorAll('input:not([type="hidden"]),select,textarea').forEach((field,index)=>{
                 if(!field.id) field.id='gork-field-'+index;
                 if(field.type==='checkbox'||field.type==='file')return;
-                const label=field.parentElement.querySelector('label');
+                const label=field.closest('label')||field.parentElement.querySelector('label');
                 if(label && !label.htmlFor)label.htmlFor=field.id;
                 if(!label && !field.hasAttribute('aria-label'))field.setAttribute('aria-label',field.placeholder||field.name||'Bilgi alanı');
             });
@@ -1770,7 +1551,7 @@
                 };
                 new MutationObserver(labelCells).observe(table.querySelector('tbody'),{childList:true});labelCells();
             });
-            window.addEventListener('resize',()=>{renderOrders();if(window.innerWidth>=768){document.getElementById('mobileShade').hidden=true;}else toggleMobileMenu(false);});
+
             document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.fixed[id$="Modal"]:not(.hidden)').forEach(modal=>closeModal(modal.id));if(window.innerWidth<768)toggleMobileMenu(false);}});
             if(window.innerWidth<768)toggleMobileMenu(false);
         }
@@ -1778,12 +1559,13 @@
         const QUOTE_SAMPLES={none:'Belirtilmedi',requested:'Talep edildi',sent:'Gönderildi',approved:'Onaylandı',rejected:'Uygun bulunmadı'};
         let quoteFilter='open',quoteView='list',quoteEditor=null,quoteFiles=[],quoteDetailId=null,quoteActivityId=null,quoteFileBusy=false;
         const qEl=id=>document.getElementById(id);
+        function singleUnitLine(line){const basis=Number(line.basis)||1;return {...line,basis:1,price:line.price==null||line.price===''?null:Number(line.price)/basis};}
         function quoteModel(raw) {
             const modern=raw.schemaVersion===2;
             const legacyStage={Teklif:'draft',Takip:'review','Sonuç':'review','Tamamlandı':'legacyClosed'};
             return {...raw,stage:modern?(QUOTE_STAGES[raw.stage]?raw.stage:'legacyClosed'):(legacyStage[raw.status]||'legacyClosed'),
                 quoteNumber:raw.quoteNumber||('ESKİ-'+String(raw.id||'').slice(0,8).toUpperCase()),currency:['EUR','USD','TL'].includes(raw.currency)?raw.currency:'',
-                lines:Array.isArray(raw.lines)?raw.lines:[],history:Array.isArray(raw.history)?raw.history:[],revisions:Array.isArray(raw.revisions)?raw.revisions:[],files:Array.isArray(raw.files)?raw.files:[],
+                lines:Array.isArray(raw.lines)?raw.lines.map(singleUnitLine):[],history:Array.isArray(raw.history)?raw.history:[],revisions:Array.isArray(raw.revisions)?raw.revisions:[],files:Array.isArray(raw.files)?raw.files:[],
                 version:Number(raw.version)||0,revision:Number(raw.revision)||0,archived:raw.archived===true,legacy:!modern,legacyStage:modern?raw.legacyStage:(raw.status||'Belirtilmedi')};
         }
         function quoteOpen(q){return !q.archived&&!['won','lost','legacyClosed'].includes(q.stage);}
@@ -1809,6 +1591,7 @@
                 if(stage&&q.stage!==stage||currency&&q.currency!==currency)return false;
                 if(search&&![q.customer,q.title,q.quoteNumber,q.contact,q.notes,...q.lines.flatMap(l=>[l.product,l.unisonCode,l.customerCode])].join(' ').toLocaleLowerCase('tr-TR').includes(search))return false;
                 if(!applyFilter)return true;
+                if(quoteFilter==='due')return quoteOpen(q)&&q.nextDate&&q.nextDate<=localDateKey();
                 return quoteFilter==='open'?quoteOpen(q):quoteFilter==='today'?quoteOpen(q)&&q.nextDate===localDateKey():quoteFilter==='overdue'?quoteOpen(q)&&q.nextDate&&q.nextDate<localDateKey():quoteFilter==='missing'?quoteOpen(q)&&(!q.nextDate||!q.nextAction):quoteFilter==='expiring'?quoteExpiring(q)||quoteExpired(q):quoteFilter==='won'?q.stage==='won':quoteFilter==='lost'?q.stage==='lost':quoteFilter==='legacy'?q.stage==='legacyClosed':true;
             });
             const sort=qEl('quoteSort').value;
@@ -1822,7 +1605,7 @@
             const all=appData.proposals.map(quoteModel),active=all.filter(quoteOpen),closed=all.filter(q=>!q.archived&&['won','lost'].includes(q.stage));
             const metrics=[['open','Açık teklifler',active.length],['today','Bugün takip',active.filter(q=>q.nextDate===localDateKey()).length],['overdue','Geciken takip',active.filter(q=>q.nextDate&&q.nextDate<localDateKey()).length],['missing','Sonraki adım eksik',active.filter(q=>!q.nextDate||!q.nextAction).length],['expiring','Süre kontrolü',active.filter(q=>quoteExpiring(q)||quoteExpired(q)).length]];
             qEl('quoteMetrics').innerHTML=metrics.map(([filter,label,count])=>`<button class="q-metric ${filter==='overdue'?'q-metric-alert':''}" onclick="setQuoteFilter('${filter}')"><span>${label}</span><strong>${count}</strong></button>`).join('');
-            const filters=[['open','Açık'],['all','Tümü'],['today','Bugün'],['overdue','Geciken'],['missing','Adım eksik'],['expiring','Geçerlilik'],['won','Kazanılan'],['lost','Kaybedilen'],['legacy','Eski sonuçlar'],['archived','Arşiv']];
+            const filters=[['due','Takibi gelen'],['open','Açık'],['all','Tümü'],['today','Bugün'],['overdue','Geciken'],['missing','Adım eksik'],['expiring','Geçerlilik'],['won','Kazanılan'],['lost','Kaybedilen'],['legacy','Eski sonuçlar'],['archived','Arşiv']];
             qEl('quoteFilters').innerHTML=filters.map(([id,label])=>`<button class="filter-chip" aria-pressed="${quoteFilter===id}" onclick="setQuoteFilter('${id}')">${label}</button>`).join('');
             document.querySelectorAll('[data-quote-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.quoteView===quoteView)));
             const rows=quoteListData();qEl('quoteResultCount').textContent=rows.length+' teklif';
@@ -1861,12 +1644,13 @@
             qEl('quoteCustomers').innerHTML=customers.map(name=>`<option value="${escapeHtml(name)}"></option>`).join('');openQuoteOverlay('quoteModal');
         }
         function addQuoteLine(line={}){
+            line=singleUnitLine(line);
             const element=document.createElement('div');element.className='q-line';
-            element.innerHTML=`<div class="q-line-heading"><strong>Ürün kalemi</strong><button type="button" class="quiet-button" aria-label="Ürün kalemini kaldır" onclick="this.closest('.q-line').remove();updateQuoteTotals()">Kaldır</button></div><div class="q-line-grid"><label>Ürün / açıklama *<input data-line="product" maxlength="240" value="${escapeHtml(line.product||'')}" aria-label="Ürün açıklaması"></label><label>Unison kodu<input data-line="unisonCode" maxlength="100" value="${escapeHtml(line.unisonCode||'')}" aria-label="Unison kodu"></label><label>Müşteri ürün kodu<input data-line="customerCode" maxlength="100" value="${escapeHtml(line.customerCode||'')}" aria-label="Müşteri ürün kodu"></label><label>Miktar *<input data-line="qty" type="number" min="1" step="1" value="${escapeHtml(line.qty??'')}" oninput="updateQuoteTotals()" aria-label="Teklif miktarı"></label><label>Birim fiyat<input data-line="price" type="number" min="0" step="any" value="${escapeHtml(line.price??'')}" oninput="updateQuoteTotals()" aria-label="Birim fiyat"></label><label>Fiyatın birimi<select data-line="basis" onchange="updateQuoteTotals()" aria-label="Fiyatın miktar birimi"><option value="1">1 adet</option><option value="1000" ${Number(line.basis)===1000?'selected':''}>1.000 adet</option></select></label><label>İskonto %<input data-line="discount" type="number" min="0" max="100" step="any" value="${escapeHtml(line.discount||0)}" oninput="updateQuoteTotals()" aria-label="İskonto yüzdesi"></label><label>Kalem türü<select data-line="alternative" onchange="updateQuoteTotals()" aria-label="Ana kalem veya alternatif"><option value="no">Ana kalem</option><option value="yes" ${line.alternative?'selected':''}>Alternatif</option></select></label></div>`;
+            element.innerHTML=`<div class="q-line-heading"><strong>Ürün kalemi</strong><button type="button" class="quiet-button" aria-label="Ürün kalemini kaldır" onclick="this.closest('.q-line').remove();updateQuoteTotals()">Kaldır</button></div><div class="q-line-grid"><label>Ürün / açıklama *<input data-line="product" maxlength="240" value="${escapeHtml(line.product||'')}" aria-label="Ürün açıklaması"></label><label>Unison kodu<input data-line="unisonCode" maxlength="100" value="${escapeHtml(line.unisonCode||'')}" aria-label="Unison kodu"></label><label>Müşteri ürün kodu<input data-line="customerCode" maxlength="100" value="${escapeHtml(line.customerCode||'')}" aria-label="Müşteri ürün kodu"></label><label>Miktar *<input data-line="qty" type="number" min="1" step="1" value="${escapeHtml(line.qty??'')}" oninput="updateQuoteTotals()" aria-label="Teklif miktarı"></label><label>Birim fiyat / 1 adet<input data-line="price" type="number" min="0" step="any" value="${escapeHtml(line.price??'')}" oninput="updateQuoteTotals()" aria-label="Birim fiyat"></label><input type="hidden" data-line="basis" value="1"><label>İskonto %<input data-line="discount" type="number" min="0" max="100" step="any" value="${escapeHtml(line.discount||0)}" oninput="updateQuoteTotals()" aria-label="İskonto yüzdesi"></label><label>Kalem türü<select data-line="alternative" onchange="updateQuoteTotals()" aria-label="Ana kalem veya alternatif"><option value="no">Ana kalem</option><option value="yes" ${line.alternative?'selected':''}>Alternatif</option></select></label></div>`;
             qEl('qLines').append(element);updateQuoteTotals();
         }
         function collectQuoteLines(validate=false){
-            return [...qEl('qLines').children].map((row,index)=>{const value=key=>row.querySelector(`[data-line="${key}"]`).value.trim();const line={product:value('product'),unisonCode:value('unisonCode'),customerCode:value('customerCode'),qty:numberValue(value('qty')),price:value('price')===''?null:numberValue(value('price')),basis:Number(value('basis')),discount:numberValue(value('discount')||0),alternative:value('alternative')==='yes'};
+            return [...qEl('qLines').children].map((row,index)=>{const value=key=>row.querySelector(`[data-line="${key}"]`).value.trim();const line={product:value('product'),unisonCode:value('unisonCode'),customerCode:value('customerCode'),qty:numberValue(value('qty')),price:value('price')===''?null:numberValue(value('price')),basis:1,discount:numberValue(value('discount')||0),alternative:value('alternative')==='yes'};
                 if(validate&&(!line.product||!Number.isSafeInteger(line.qty)||line.qty<=0||line.price!==null&&(!Number.isFinite(line.price)||line.price<0)||!Number.isFinite(line.discount)||line.discount<0||line.discount>100))throw new Error(`${index+1}. ürün kaleminde açıklama, pozitif tam sayı miktar, fiyat ve iskontoyu kontrol et.`);
                 return line;});
         }
@@ -1924,7 +1708,7 @@
                 if(quoteEditor?.token===editor?.token&&currentUser?.uid===editor?.uid){quoteFiles=pending;renderQuoteFiles();}
             }catch(error){showFormError(form,error);}finally{quoteFileBusy=false;event.target.value='';}
         }
-        function quoteLinesTable(q){return q.lines.length?`<div class="q-table-wrap"><table class="q-table"><thead><tr><th>Ürün / Kod</th><th>Miktar</th><th>Fiyat</th><th>İskonto</th><th>Tür</th></tr></thead><tbody>${q.lines.map(l=>`<tr><td><strong>${escapeHtml(l.product)}</strong><small>${escapeHtml(l.unisonCode||'—')} · ${escapeHtml(l.customerCode||'—')}</small></td><td>${formatQty(l.qty)}</td><td>${l.price===null?'Belirlenmedi':escapeHtml(l.price)+' '+escapeHtml(q.currency)} / ${formatQty(l.basis||1)} adet</td><td>%${escapeHtml(l.discount||0)}</td><td>${l.alternative?'Alternatif':'Ana kalem'}</td></tr>`).join('')}</tbody></table></div>`:'<p class="quote-help">Henüz ürün kalemi eklenmemiş.</p>';}
+        function quoteLinesTable(q){return q.lines.length?`<div class="q-table-wrap"><table class="q-table"><thead><tr><th>Ürün / Kod</th><th>Miktar</th><th>Fiyat</th><th>İskonto</th><th>Tür</th></tr></thead><tbody>${q.lines.map(singleUnitLine).map(l=>`<tr><td><strong>${escapeHtml(l.product)}</strong><small>${escapeHtml(l.unisonCode||'—')} · ${escapeHtml(l.customerCode||'—')}</small></td><td>${formatQty(l.qty)}</td><td>${l.price===null?'Belirlenmedi':escapeHtml(l.price)+' '+escapeHtml(q.currency)} / ${formatQty(l.basis||1)} adet</td><td>%${escapeHtml(l.discount||0)}</td><td>${l.alternative?'Alternatif':'Ana kalem'}</td></tr>`).join('')}</tbody></table></div>`:'<p class="quote-help">Henüz ürün kalemi eklenmemiş.</p>';}
         function openQuoteDetail(id){
             const q=quoteFromId(id);if(!q)return reportError('Teklif bulunamadı.');quoteDetailId=id;
             qEl('quoteDetailTitle').textContent=q.customer+' · '+q.title;
@@ -1955,7 +1739,7 @@
         function downloadQuoteBlob(blob,name){const link=document.createElement('a'),url=URL.createObjectURL(blob);link.href=url;link.download=name.replace(/[<>:"/\\|?*]/g,'_');document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
         function downloadQuoteFile(id,index){const file=quoteFromId(id)?.files[index];if(!file)return;const match=/^data:(application\/pdf|image\/png|image\/jpeg|image\/webp);base64,([A-Za-z0-9+/=\s]+)$/.exec(file.data||'');if(!match)return reportError('Belge türü veya içeriği geçersiz.');try{const bytes=Uint8Array.from(atob(match[2]),c=>c.charCodeAt(0));downloadQuoteBlob(new Blob([bytes],{type:match[1]}),file.name);}catch{reportError('Belge açılamadı.');}}
         function downloadQuoteRecord(id){const q=appData.proposals.find(x=>x.id===id);if(q)downloadQuoteBlob(new Blob([JSON.stringify(q,null,2)],{type:'application/json'}),'Teklif_'+(q.quoteNumber||id)+'.json');}
-        function exportQuotesBackup(){const rows=quoteListData();downloadQuoteBlob(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),quotes:rows},null,2)],{type:'application/json'}),'Teklif_Yedegi_'+localDateKey()+'.json');}
+        function exportQuotesBackup(){openBackupCenter();}
         function exportQuotesExcel(){const rows=quoteListData().map(q=>({Firma:q.customer,Konu:q.title,'Teklif No':q.quoteNumber,Aşama:QUOTE_STAGES[q.stage],Revizyon:q.revision,'İlgili kişi':q.contact||'','Sonraki işlem':q.nextAction||'','Takip tarihi':q.nextDate||'',Geçerlilik:q.validUntil||'','Ana kalem tutarı':quoteTotals(q).total,'Para birimi':q.currency,'Tutar eksik':!quoteTotals(q).known?'Evet':'Hayır','Kaybetme nedeni':q.lossReason||'',Arşiv:q.archived?'Evet':'Hayır'}));if(!rows.length)return reportError('Dışa aktarılacak teklif yok.');exportExcel('Teklifler',rows);}
         function initQuotes(){qEl('quoteStageFilter').innerHTML='<option value="">Tüm aşamalar</option>'+Object.entries(QUOTE_STAGES).map(([id,label])=>`<option value="${id}">${label}</option>`).join('');qEl('qStage').innerHTML=Object.entries(QUOTE_STAGES).map(([id,label])=>`<option value="${id}">${label}</option>`).join('');renderProposals();}
 
@@ -1994,7 +1778,7 @@
         async function restoreIntel(id){const item=intelFromId(id);if(!item?.archived)return;if(!confirm('Not yeniden aktif izlemeye alınsın mı? Önceki kontrol tarihi korunur.'))return;try{await mutateIntel(id,current=>{if(!current.archived)throw new Error('Not zaten aktif.');return {archived:false,history:[...current.history,intelEvent('restore','Yeniden aktif izlemeye alındı')]};});}catch(error){reportError(error.message);}}
         function createQuoteFromIntel(id){const item=intelFromId(id);if(!item||item.archived)return;if((item.linkedQuoteIds||[]).length&&!confirm('Bu notun bağlı teklifleri var. Yeni bir teklif dosyası açılsın mı?'))return;openQuoteEditor();quoteEditor.sourceIntelId=id;qEl('qCustomer').value=item.company;qEl('qTitle').value=item.title;qEl('qNotes').value='İstihbarat notundan oluşturuldu. Bilgi durumu: '+(item.proof==='confirmed'?'Teyit edildi':'Duyum / teyit bekliyor')+(item.product?'\nİlgili ürün: '+item.product:'');}
         function exportIntelExcel(){const rows=intelRows().map(item=>({Başlık:item.title,Firma:item.company,Ürün:item.product,Kategori:item.category,'Bilgi durumu':item.proof==='confirmed'?'Teyit edildi':'Duyum',Tarih:item.date,'Kontrol tarihi':item.reviewDate||'','Sonraki adım':item.nextAction||'',Not:item.desc,Kaynak:item.source||'',Etiketler:item.tags.join(', '),Arşiv:item.archived?'Evet':'Hayır','Arşiv nedeni':item.archiveReason||''}));if(!rows.length)return reportError('Dışa aktarılacak not yok.');exportExcel('Istihbarat',rows);}
-        function exportIntelBackup(){downloadQuoteBlob(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),notes:intelRows()},null,2)],{type:'application/json'}),'Istihbarat_Yedegi_'+localDateKey()+'.json');}
+        function exportIntelBackup(){openBackupCenter();}
         function initIntel(){renderIntel();}
 
 
@@ -2081,4 +1865,52 @@
         }
         function financeSnapshot(record){return {month:record.month,sections:structuredClone(record.sections),zero:{...record.zero},notes:record.notes||''};}
         function financeAssertSize(record){if(new TextEncoder().encode(JSON.stringify(record)).length>750000)throw new Error('Bu ayın kayıt geçmişi büyüdü. Veri yedeği al; geçmiş kendiliğinden silinmez.');}
-        async function saveFinanceMonth(event){event.preventDefault();const form=qEl('financeEditorForm'),button=form.querySelector('[type=submit]');if(button.disabled)return;clearFormErrors(form);button.disabled=true;try{if(!currentUser||financeEditor?.uid!==currentUser.uid)throw new Error('Oturum değişti. Ay kaydını yeniden aç.');if(financeEditor.legacy&&!qEl('financeLegacyConfirm').checked)throw new Error('Eski tutarların yeni ay sonu tanımlarını kontrol edip onay kutusunu işaretle.');const draft=readFinanceEditor(true),month=financeEditor.month,exp
+        async function saveFinanceMonth(event){event.preventDefault();const form=qEl('financeEditorForm'),button=form.querySelector('[type=submit]');if(button.disabled)return;clearFormErrors(form);button.disabled=true;try{if(!currentUser||financeEditor?.uid!==currentUser.uid)throw new Error('Oturum değişti. Ay kaydını yeniden aç.');if(financeEditor.legacy&&!qEl('financeLegacyConfirm').checked)throw new Error('Eski tutarların yeni ay sonu tanımlarını kontrol edip onay kutusunu işaretle.');const draft=readFinanceEditor(true),month=financeEditor.month,expected=financeEditor.version,owner=currentUser.uid,token=financeEditor.token,legacyIds=[...financeEditor.legacyIds],ref=userCollection('finance').doc(financeDocId(month)),now=new Date().toISOString(),reason=qEl('financeChangeNote').value.trim();if(!validFinanceMonth(month)||month>localDateKey().slice(0,7))throw new Error('Geçerli bir geçmiş ay veya mevcut ay seç.');for(const key of Object.keys(FIN_SECTIONS)){const total=financeSectionTotal(draft,key);if(!Number.isSafeInteger(draft.sections[key].reduce((sum,row)=>sum+(row.amount===null?0:Math.round(row.amount*100)),0)))throw new Error('Tutar toplamı hesaplama sınırını aşıyor.');}
+                const saved=await runUserTransaction(owner,async tx=>{const snap=await tx.get(ref),previous=snap.exists?snap.data():null;if(previous&&previous.financeSchema!==2)throw new Error('Bu ayın kayıt kimliği başka bir kayıtla çakışıyor.');if((Number(previous?.version)||0)!==expected||!previous&&expected>0)throw new Error('Bu ay başka bir cihazda değişti. Formu kapatıp güncel kaydı yeniden aç.');const record={financeSchema:2,month,...draft,version:expected+1,definition:'month-end-total-balances',currency:'TL',verified:true,legacyIds:previous?.legacyIds||legacyIds,createdISO:previous?.createdISO||now,updatedISO:now,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};const history=[...(previous?.history||[])];history.push({version:record.version,at:now,by:owner,note:reason||(previous?'Aylık kayıt güncellendi':legacyIds.length?'Eski tutarlar kontrol edilerek aylık arşive alındı':'İlk ay sonu kaydı'),snapshot:financeSnapshot(record)});record.history=history;financeAssertSize(record);tx.set(ref,record);return record;});
+                if(currentUser?.uid===owner){const row={...saved,id:financeDocId(month)},index=appData.finance.findIndex(r=>r.id===row.id);if(index<0)appData.finance.push(row);else appData.finance[index]=row;if(financeEditor?.token===token){closeModal('financeEditorModal');financeEditor=null;}renderFinance();}
+            }catch(error){showFormError(form,error);}finally{button.disabled=false;}}
+        function openFinanceHistory(){const model=financeModel(currentFinMonth);qEl('financeHistoryTitle').textContent=financeMonthLabel(currentFinMonth)+' · Düzenleme geçmişi';qEl('financeHistoryContent').innerHTML=model.history.length?[...model.history].reverse().map(h=>`<details class="finance-revision"><summary>Sürüm ${Number(h.version)} · ${escapeHtml(new Date(h.at).toLocaleString('tr-TR'))}</summary><p class="quote-help">${escapeHtml(h.note)}</p><div class="finance-sections">${Object.keys(FIN_SECTIONS).map(key=>financeSectionHtml(h.snapshot,key)).join('')}</div><p class="q-prewrap">${escapeHtml(h.snapshot.notes||'')}</p></details>`).join(''):'<p class="quote-help">Bu ay için yeni arşivde düzenleme geçmişi yok. Düzenleme sırasında eski belgeler korunur; ilk kaydetmede yeni sürüm oluşur.</p>';openQuoteOverlay('financeHistoryModal');}
+        function financeExportRows(model){const rows=[];for(const [key,info]of Object.entries(FIN_SECTIONS)){if(model.zero?.[key])rows.push({Ay:model.month,Bölüm:info.label,Kalem:'Bu bölümde tutar yok',Tür:'',Miktar:'',Birim:'','Tutar (TL)':0,Durum:'Sıfır olarak kaydedildi'});else if(!model.sections[key].length)rows.push({Ay:model.month,Bölüm:info.label,Kalem:'Girilmedi','Tutar (TL)':'',Durum:'Eksik'});else model.sections[key].forEach(row=>rows.push({Ay:model.month,Bölüm:info.label,Kalem:row.name,Tür:key==='incomes'?FIN_INCOME_TYPES[row.incomeType]||'Diğer gelir':row.assetType||'',Miktar:row.quantity??'',Birim:row.unit||'','Tutar (TL)':row.amount??'',Durum:row.amount===null?'Eksik':'Girildi'}));}return rows;}
+        function exportFinanceExcel(){const model=financeModel(currentFinMonth);if(!model.exists)return reportError('Bu ay için kayıt yok.');exportExcel('Finans_'+currentFinMonth,financeExportRows(model).map(row=>({...row,'Tanım teyidi':model.verified?'Ay sonu tanımı onaylı':'Eski kayıt — kontrol gerekli','Aylık not':model.notes||''})));}
+        function exportFinanceBackup(){const rows=appData.finance.filter(r=>r.month===currentFinMonth);if(!rows.length)return reportError('Bu ay için kayıt yok.');downloadQuoteBlob(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),month:currentFinMonth,records:rows},null,2)],{type:'application/json'}),'Finans_'+currentFinMonth+'.json');}
+        async function exportFinancePDF(){const model=financeModel(currentFinMonth);if(!model.exists)return reportError('Bu ay için kayıt yok.');const owner=currentUser?.uid,month=currentFinMonth,font=await getPdfFont();if(owner!==currentUser?.uid||month!==currentFinMonth)return;if(!font)return reportError('PDF yazı tipi yüklenemedi. Bağlantını kontrol edip yeniden dene.');try{const {jsPDF}=window.jspdf,doc=new jsPDF();doc.addFileToVFS('Roboto-Regular.ttf',font);doc.addFont('Roboto-Regular.ttf','Roboto','normal');doc.setFont('Roboto');doc.setFontSize(16);doc.text('Aylık Finans Arşivi',14,18);doc.setFontSize(10);doc.text(financeMonthLabel(model.month)+' · Ay sonu: '+formatDate(financeMonthEnd(model.month)),14,27);doc.text(model.verified?'Gelir aylıktır; borç ve birikimler ay sonu toplamlarıdır.':'ESKİ KAYIT: Ay sonu tanımları henüz teyit edilmedi.',14,34);doc.autoTable({head:[['Bölüm','Kalem / Tür','Miktar','Tutar (TL)']],body:financeExportRows(model).map(row=>[row.Bölüm,row.Kalem+(row.Tür?' / '+row.Tür:''),[row.Miktar??'',row.Birim||''].join(' '),row['Tutar (TL)']===''?'Girilmedi':financeMoney(row['Tutar (TL)'])]),startY:40,styles:{font:'Roboto',fontStyle:'normal',fontSize:9},headStyles:{fontStyle:'normal'}});if(model.notes){doc.autoTable({head:[['Aylık not']],body:[[model.notes]],startY:doc.lastAutoTable.finalY+8,styles:{font:'Roboto',fontStyle:'normal',fontSize:9},headStyles:{fontStyle:'normal'}});}doc.save('Finans_'+model.month+'.pdf');}catch(error){reportError('PDF oluşturulamadı: '+error.message);}}
+        function initFinance(){resetFinanceWorkspace();qEl('finMonthPicker').max=localDateKey().slice(0,7);qEl('financeCompareMonth').max=localDateKey().slice(0,7);renderFinance();}
+
+        let backupDraft=null,backupBusy=false,backupReadToken=null;
+        function resetBackupWorkspace(){backupDraft=null;backupReadToken=null;qEl('backupFile').value='';qEl('backupRestoreMode').value='missing';qEl('backupPreview').textContent='';qEl('backupStatus').textContent='';qEl('restoreBackupButton').disabled=true;}
+        function openBackupCenter(){openQuoteOverlay('backupModal');}
+        function backupEncode(value){if(typeof value==='number'&&!Number.isFinite(value))throw new Error('Geçersiz sayısal değer bulundu; veri değiştirilmeden yedek durduruldu.');if(value===null||['string','boolean','number'].includes(typeof value))return {t:'scalar',v:value};if(typeof firebase.firestore.Timestamp==='function'&&value instanceof firebase.firestore.Timestamp)return {t:'timestamp',s:value.seconds,n:value.nanoseconds};if(value instanceof Date)return {t:'date',v:value.toISOString()};if(typeof firebase.firestore.GeoPoint==='function'&&value instanceof firebase.firestore.GeoPoint)return {t:'geo',a:value.latitude,o:value.longitude};if(typeof firebase.firestore.Blob==='function'&&value instanceof firebase.firestore.Blob)return {t:'blob',v:value.toBase64()};if(typeof firebase.firestore.DocumentReference==='function'&&value instanceof firebase.firestore.DocumentReference)return {t:'ref',v:value.path};if(Array.isArray(value))return {t:'array',v:value.map(backupEncode)};if(value&&typeof value==='object'&&Object.getPrototypeOf(value)===Object.prototype)return {t:'map',v:Object.entries(value).map(([key,item])=>[key,backupEncode(item)])};throw new Error('Yedeklenemeyen veri türü bulundu. Hiçbir kayıt atlanmadı.');}
+        function backupDecode(node,owner,depth=0){if(!node||depth>22||typeof node!=='object')throw new Error('Yedek veri yapısı geçersiz.');switch(node.t){case 'scalar':if(node.v!==null&&!['string','boolean','number'].includes(typeof node.v))throw new Error('Yedek değer türü geçersiz.');return node.v;case 'timestamp':return new firebase.firestore.Timestamp(node.s,node.n);case 'date':return new Date(node.v);case 'geo':return new firebase.firestore.GeoPoint(node.a,node.o);case 'blob':return firebase.firestore.Blob.fromBase64String(node.v);case 'ref':if(typeof node.v!=='string'||node.v.split('/')[0]!=='users'||node.v.split('/')[1]!==owner)throw new Error('Başka hesaba ait belge referansı kabul edilmez.');return db.doc(node.v);case 'array':if(!Array.isArray(node.v))throw new Error('Dizi geçersiz.');return node.v.map(n=>backupDecode(n,owner,depth+1));case 'map':{if(!Array.isArray(node.v))throw new Error('Nesne geçersiz.');const result={};for(const pair of node.v){if(!Array.isArray(pair)||pair.length!==2||typeof pair[0]!=='string'||Object.hasOwn(result,pair[0]))throw new Error('Tekrarlı veya geçersiz alan.');Object.defineProperty(result,pair[0],{value:backupDecode(pair[1],owner,depth+1),writable:true,enumerable:true,configurable:true});}return result;}default:throw new Error('Yedekte bilinmeyen veri türü.');}}
+        function validateBackupRecord(mod,id,data){
+            if(!data||typeof data!=='object'||Array.isArray(data)||Object.getPrototypeOf(data)!==Object.prototype)throw new Error('Belge verisi nesne olmalı.');
+            if(mod==='orders'&&data.orderSchema===3){
+                if(!Number.isSafeInteger(data.totalQty)||data.totalQty<=0||!Array.isArray(data.deliveries)||!ORDER_WORK.includes(data.workStatus))throw new Error('Sipariş miktarı veya durumu geçersiz.');
+                const ids=new Set();let delivered=0;
+                for(const d of data.deliveries){if(!d||typeof d.id!=='string'||!d.id||ids.has(d.id)||!Number.isSafeInteger(d.qty)||d.qty<=0)throw new Error('Teslim geçmişi geçersiz.');ids.add(d.id);if(!d.reversedAt)delivered+=d.qty;}
+                if(delivered>data.totalQty||delivered!==data.deliveredQty)throw new Error('Siparişin teslim toplamı tutarsız.');
+            }
+            if(mod==='finance'&&data.financeSchema===2){if(!validFinanceMonth(data.month)||id!==financeDocId(data.month)||!data.sections||Object.keys(FIN_SECTIONS).some(key=>!Array.isArray(data.sections[key])||data.sections[key].some(row=>row.amount!==null&&(typeof row.amount!=='number'||!Number.isFinite(row.amount)||row.amount<0))))throw new Error('Aylık finans belgesi geçersiz.');}
+            if(mod==='proposals'&&data.schemaVersion===2&&(!Array.isArray(data.lines)||!QUOTE_STAGES[data.stage]))throw new Error('Teklif belgesi geçersiz.');
+            if(mod==='catalog'&&!['customer','product','mapping'].includes(data.kind))throw new Error('Katalog belgesi geçersiz.');
+        }
+        async function backupHash(payload){const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(payload)));return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+        function setBackupBusy(value){backupBusy=value;qEl('fullBackupButton').disabled=value;qEl('backupFile').disabled=value;qEl('backupRestoreMode').disabled=value;qEl('restoreBackupButton').disabled=value||!backupDraft;}
+        async function exportFullBackup(){if(backupBusy)return;if(!currentUser)return reportError('Önce oturum aç.');const owner=currentUser.uid;setBackupBusy(true);qEl('backupStatus').textContent='Sunucudan tüm etkin koleksiyonlar okunuyor…';try{const collections={};for(const mod of DATA_MODULES){const snap=await userCollection(mod).get({source:'server'});if(currentUser?.uid!==owner)throw new Error('Oturum değişti.');collections[mod]=[];snap.forEach(doc=>collections[mod].push({id:doc.id,data:backupEncode(doc.data())}));}const payload={format:'gorkapp-full-backup',version:1,ownerUid:owner,createdAt:new Date().toISOString(),collections};const checksum=await backupHash(payload);if(currentUser?.uid!==owner)throw new Error('Oturum değişti.');const blob=new Blob([JSON.stringify({payload,checksum},null,2)],{type:'application/json'});if(blob.size>50*1024*1024)throw new Error('Tam yedek 50 MB dosya sınırını aşıyor; dosya indirilmedi.');downloadQuoteBlob(blob,'GorkAPP_Tam_Yedek_'+localDateKey()+'.json');qEl('backupStatus').textContent=Object.values(collections).reduce((s,rows)=>s+rows.length,0)+' kayıt yedeklendi. Koleksiyonlar sırayla okundu; bu sırada başka cihazda düzenleme yapmamaya dikkat et.';}catch(error){if(currentUser?.uid===owner)qEl('backupStatus').textContent='Yedek alınamadı: '+error.message;}finally{setBackupBusy(false);}}
+        async function readFullBackup(event){if(backupBusy)return;backupDraft=null;qEl('backupRestoreMode').value='missing';qEl('backupPreview').textContent='';qEl('restoreBackupButton').disabled=true;const file=event.target.files[0],owner=currentUser?.uid,token=crypto.randomUUID();backupReadToken=token;if(!file)return;try{if(!owner)throw new Error('Önce oturum aç.');if(file.size>50*1024*1024)throw new Error('Yedek dosyası 50 MB sınırını aşıyor.');const document=JSON.parse(await file.text()),payload=document.payload;if(payload?.format!=='gorkapp-full-backup'||payload.version!==1||payload.ownerUid!==owner)throw new Error('Bu dosya aynı hesabın desteklenen GorkAPP tam yedeği değil.');if(await backupHash(payload)!==document.checksum)throw new Error('Yedeğin bütünlük kontrolü başarısız.');if(!payload.collections||DATA_MODULES.some(mod=>!Array.isArray(payload.collections[mod]))||Object.keys(payload.collections).some(mod=>!DATA_MODULES.includes(mod)))throw new Error('Yedeğin koleksiyonları eksik veya desteklenmiyor.');const rows=[],counts={};for(const mod of DATA_MODULES){const ids=new Set();counts[mod]=payload.collections[mod].length;for(const entry of payload.collections[mod]){if(typeof entry.id!=='string'||!entry.id||entry.id.includes('/')||entry.id==='.'||entry.id==='..'||/^__.*__$/.test(entry.id)||new TextEncoder().encode(entry.id).length>1500||ids.has(entry.id))throw new Error('Geçersiz veya tekrarlı belge kimliği.');ids.add(entry.id);const data=backupDecode(entry.data,owner);validateBackupRecord(mod,entry.id,data);const bytes=assertFirestoreRecord(data);rows.push({mod,id:entry.id,data,bytes});}}if(currentUser?.uid!==owner||backupReadToken!==token)return;backupDraft={owner,rows,counts,createdAt:payload.createdAt};qEl('backupPreview').innerHTML='<p>Yedek tarihi: '+escapeHtml(payload.createdAt)+'</p><p>'+rows.length+' kayıt kontrol edildi.</p>'+Object.entries(counts).map(([mod,count])=>'<p>'+escapeHtml(({orders:'Siparişler',biota:'Biota',intel:'Pazar istihbaratı',proposals:'Teklifler',finance:'Aylık finans',production:'Üretim',catalog:'Müşteri / ürün kataloğu'})[mod])+': '+count+'</p>').join('');qEl('restoreBackupButton').disabled=!rows.length;qEl('backupStatus').textContent='Dosya kontrol edildi. Henüz sunucuda değişiklik yapılmadı.';}catch(error){if(backupReadToken===token&&currentUser?.uid===owner)qEl('backupStatus').textContent='Dosya kabul edilmedi: '+error.message;}}
+        async function restoreFullBackup(){if(backupBusy||!backupDraft)return;const draft=backupDraft,owner=currentUser?.uid,mode=qEl('backupRestoreMode').value;if(owner!==draft.owner)return reportError('Oturum değişti; dosyayı yeniden seç.');if(!['missing','overwrite'].includes(mode))return;if(!confirm(draft.rows.length+' kayıt geri yükleme için işlenecek. '+(mode==='missing'?'Mevcut kayıtlar korunacak; sadece eksikler eklenecek.':'Aynı kimlikteki mevcut kayıtlar yedekteki hâliyle tamamen değişecek.')+' Yedekte olmayan kayıtlar silinmez. Devam edilsin mi?'))return;setBackupBusy(true);let written=0,skipped=0;try{const groups=[];let group=[],bytes=0;for(const row of [...draft.rows].sort((a,b)=>(a.mod==='catalog'?0:1)-(b.mod==='catalog'?0:1))){if(group.length&&(group.length>=40||bytes+row.bytes>2000000)){groups.push(group);group=[];bytes=0}group.push(row);bytes+=row.bytes;}if(group.length)groups.push(group);for(const batch of groups){const result=await runUserTransaction(owner,async tx=>{const checks=[];for(const row of batch){const ref=userCollection(row.mod).doc(row.id),snap=await tx.get(ref);checks.push({row,ref,exists:snap.exists});}let done=0,ignored=0;for(const {row,ref,exists}of checks){if(exists&&mode==='missing'){ignored++;continue;}tx.set(ref,row.data);done++;}return {done,ignored};});written+=result.done;skipped+=result.ignored;if(currentUser?.uid===owner)qEl('backupStatus').textContent=written+' kayıt geri yüklendi; '+skipped+' mevcut kayıt korundu.';}if(currentUser?.uid===owner){qEl('backupStatus').textContent='Geri yükleme tamamlandı. '+written+' yazıldı, '+skipped+' mevcut kayıt korundu. Açık düzenleme formlarını kapatıp güncel kayıtları yeniden aç.';closeModal('orderModal');closeModal('quoteModal');closeModal('intelEditorModal');closeModal('financeEditorModal');orderEditor=null;quoteEditor=null;intelEditor=null;financeEditor=null;}}catch(error){if(currentUser?.uid===owner)qEl('backupStatus').textContent='Geri yükleme durdu: '+error.message+' Bu çalışmada '+written+' kayıt daha önce tamamlanan gruplarda yazıldı, '+skipped+' mevcut kayıt korundu. İşlem tüm dosya için tek parça değildir; yeniden deneyebilirsin.';}finally{setBackupBusy(false);}}
+
+        document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&currentUser){updateClock();calcDashboard();}});
+        initDesign();
+        initQuotes();
+        initIntel();
+        initFinance();
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
