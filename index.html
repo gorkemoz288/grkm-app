@@ -145,7 +145,7 @@
         #gridOrders { grid-template-columns:1fr!important; }.order-selection>div { display:flex; gap:4px; }.order-selection button { padding:5px 8px; }
         .form-section-grid { grid-template-columns:1fr; }.form-section-grid > div { grid-column:auto!important; }.form-actions { position:sticky; bottom:0; background:white; padding:14px 0 2px; }.fixed[id$="Modal"] { padding:10px; }.fixed[id$="Modal"]>div { padding:20px; max-height:94dvh; }
         #view-orders>div.flex-1 { min-height:0; }#view-orders,#view-biota { min-width:0; }
-        #view-biota>div:first-child { flex-wrap:wrap; gap:12px; }#view-biota>div:nth-child(2)>div { flex-wrap:wrap; width:100%; }#searchBiota { width:100%; }
+        #view-biota>div:first-child { flex-wrap:wrap; gap:12px; }#view-biota .biota-toolbar>div { flex-wrap:wrap; width:100%; }#searchBiota { width:100%; }
         #view-biota .glass:has(table) { background:transparent; border:0; box-shadow:none; overflow:visible; }#view-biota .glass>div:has(table) { overflow-x:hidden; }
         .responsive-records,.responsive-records tbody { display:block; width:100%; }.responsive-records thead { display:none; }.responsive-records tr { display:block; background:white; border:1px solid var(--line); border-radius:13px; padding:12px 16px; margin-bottom:12px; }.responsive-records td { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; width:100%!important; min-width:0!important; max-width:none!important; border:0!important; padding:8px 0!important; white-space:normal!important; overflow-wrap:anywhere; font-size:13px!important; text-align:right; }.responsive-records td::before { content:attr(data-label); text-align:left; flex:0 0 92px; color:var(--muted); font-size:12px; font-weight:550; }.responsive-records td:has(input[type="checkbox"]) { justify-content:flex-end; }.responsive-records td:has(input[type="checkbox"])::before { margin-right:auto; }.responsive-records td:last-child { border-top:1px solid var(--line)!important; margin-top:6px; padding-top:12px!important; flex-wrap:wrap; }.responsive-records td:last-child button { min-height:38px; }.responsive-records td:last-child::before { margin-right:auto; }.responsive-records td:empty { display:none; }
         .responsive-records td > .cell-content { min-width:0; flex:1; overflow-wrap:anywhere; }
@@ -296,6 +296,12 @@
  @media(max-width:767px){.finance-workspace .section-intro{flex-wrap:wrap;gap:12px}.finance-metrics{gap:8px}.finance-metric{padding:14px}.finance-metric strong{font-size:19px}.finance-sections{grid-template-columns:1fr}.finance-month-controls{width:100%;gap:10px}.finance-month-controls label{flex:1;min-width:130px}.finance-edit-row>.finance-row-fields,.finance-edit-row[data-fin-section="assets"]>.finance-row-fields,.finance-edit-row[data-fin-section="incomes"]>.finance-row-fields{grid-template-columns:1fr}.finance-editor-preview{grid-template-columns:1fr}.finance-history-panel{padding:15px}.finance-data-row{gap:10px}.finance-data-row strong{white-space:normal;text-align:right}.finance-section{padding:17px}.finance-copy-toolbar>button{width:100%}}
 }
 
+        .biota-metrics {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+        .biota-metrics section {padding:14px 16px;display:flex;flex-direction:column;gap:5px;min-width:0;}
+        .biota-metrics small,.biota-metrics span {font-size:12px;color:var(--muted,#64748b);}
+        .biota-metrics strong {font-size:24px;line-height:1.25;color:var(--ink,#263836);overflow-wrap:anywhere;}
+        .biota-metrics section:nth-child(3) strong {color:var(--blue,#23776d);}
+        @media(max-width:767px) {.biota-metrics {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}.biota-metrics section {padding:12px;}.biota-metrics strong {font-size:21px;}}
     </style>
 </head>
 
@@ -502,8 +508,17 @@
                         <div><h3 class="font-bold text-emerald-700 dark:text-emerald-400">Biota Özel Sipariş Modülü</h3><p class="text-xs text-slate-500">Kısmi teslimatları girerek ana siparişten otomatik düşürün.</p></div>
                         <button onclick="copyBiotaMail()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-500 transition shadow-sm"><i class="fas fa-envelope mr-1"></i> Maile Kopyala</button>
                     </div>
-                    <div class="flex flex-wrap justify-between items-center gap-2 no-print shrink-0">
-                        <input type="text" id="searchBiota" placeholder="Malzeme No, Açıklama, Sipariş No..." class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 outline-none focus:border-blue-500 transition" onkeyup="renderBiota()">
+                    <div class="biota-summary shrink-0" aria-label="Biota sipariş özeti">
+                        <div class="biota-metrics">
+                            <section class="glass"><small>Toplam sipariş adedi</small><strong id="biotaTotalQty">0</strong><span>adet</span></section>
+                            <section class="glass"><small>Teslim edilen</small><strong id="biotaDeliveredQty">0</strong><span>adet</span></section>
+                            <section class="glass"><small>Toplam kalan</small><strong id="biotaRemainingQty">0</strong><span>adet</span></section>
+                            <section class="glass"><small>Sipariş kalemi</small><strong id="biotaRecordCount">0</strong><span id="biotaOpenCount">0 açık kalem</span></section>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Özet tüm Biota kayıtlarını kapsar; arama yalnızca aşağıdaki listeyi süzer.</p>
+                    </div>
+                    <div class="biota-toolbar flex flex-wrap justify-between items-center gap-2 no-print shrink-0">
+                        <input type="search" id="searchBiota" placeholder="Malzeme No, Açıklama, Sipariş No..." class="px-3 py-2 rounded-lg border border-slate-200 dark:bg-slate-900 dark:border-slate-700 text-sm w-72 outline-none focus:border-blue-500 transition" oninput="renderBiota()">
                         <div class="flex gap-2">
                             <input type="file" id="biotaExcelInput" class="hidden" accept=".xlsx, .xls, .csv" onchange="importBiotaExcel(event)">
                             <button onclick="document.getElementById('biotaExcelInput').click()" class="bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100 transition"><i class="fas fa-file-import mr-1"></i> İçe Aktar</button>
@@ -560,7 +575,7 @@
                 <!-- 10. FİNANS -->
 <div id="view-finance" class="view-section hidden w-full h-full p-4 md:p-6 finance-workspace">
  <div class="section-intro"><div><span class="section-eyebrow">KİŞİSEL / AY SONU KAYITLARI</span><h3>Aylık finans arşivi</h3><p>Biten ayın gelirini, ay sonu borçlarını ve birikimini kaydet.</p></div><button class="primary-button" onclick="openFinanceEditor()" id="financeEditButton">Ayı kaydet</button></div>
- <div class="quote-toolbar"><div class="tool-row"><div class="finance-month-controls"><label for="finMonthPicker">Kayıt ayı<input type="month" id="finMonthPicker" onchange="changeFinMonth(this.value)"></label><label for="financeCompareMonth">Karşılaştırılacak ay<input type="month" id="financeCompareMonth" onchange="renderFinance()"></label></div><div class="tool-actions"><button class="quiet-button" onclick="exportFinancePDF()">PDF</button><button class="quiet-button" onclick="exportFinanceExcel()">Excel</button><button class="quiet-button" onclick="exportFinanceBackup()">Veri yedeği</button></div></div></div>
+ <div class="quote-toolbar"><div class="tool-row"><div class="finance-month-controls"><label for="finMonthPicker">Kayıt ayı<input type="month" id="finMonthPicker" onchange="changeFinMonth(this.value)"></label><label for="financeCompareMonth">Karşılaştırılacak ay<input type="month" id="financeCompareMonth" onchange="renderFinance()"></label></div><div class="tool-actions"><button class="quiet-button" onclick="exportFinancePDF()">PDF</button><button class="quiet-button" onclick="exportFinanceExcel()">Excel</button><button class="quiet-button" onclick="exportFinanceBackup()">Veri yedeği</button><button type="button" class="quiet-button delete-action" id="financeDeleteButton" onclick="deleteFinanceMonth()" hidden>Ayın kayıtlarını sil</button></div></div></div>
  <div id="financeMonthStatus" role="status" aria-live="polite"></div><div id="financeSummary" class="quote-metrics finance-metrics"></div>
  <div class="finance-context"><span>Gelir: yalnızca seçili ayın geliri.</span><span>Borç ve birikim: o ay sonundaki toplam durum.</span><span>Tüm değerler elle girilen TL karşılıklarıdır.</span></div>
  <div id="financeSections" class="finance-sections"></div><section id="financeMonthNotes" class="finance-note"></section>
@@ -905,7 +920,8 @@
                 };
                 const guarded={
                     get:async ref=>{assertOwner(ref);const snap=await tx.get(ref);assertOwner(ref);existing.set(ref.path,snap.exists?snap.data():{});return snap;},
-                    set:(ref,data,...options)=>{assertOwner(ref);assertFirestoreRecord(options[0]?.merge&&existing.has(ref.path)?mergeMaps(existing.get(ref.path),data):data);return tx.set(ref,data,...options);}
+                    set:(ref,data,...options)=>{assertOwner(ref);assertFirestoreRecord(options[0]?.merge&&existing.has(ref.path)?mergeMaps(existing.get(ref.path),data):data);return tx.set(ref,data,...options);},
+                    delete:ref=>{assertOwner(ref);return tx.delete(ref);}
                 };
                 const result=await callback(guarded);
                 assertOwner();
@@ -1203,6 +1219,7 @@
             } else if(form) {
                 if(form.elements['id']) form.elements['id'].value = '';
             }
+            if(id==='biotaModal' && form) form.elements.date.value=formatDate(localDateKey());
             modal._returnFocus=document.activeElement;
             modal.classList.remove('hidden'); modal.classList.add('flex');
             requestAnimationFrame(()=>modal.querySelector('input:not([type="hidden"]),select,textarea,button')?.focus());
@@ -1393,13 +1410,26 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function renderBiota() { 
+        function normalizeBiotaSearch(value) {
+            return String(value??'').normalize('NFKC').toLocaleLowerCase('tr-TR').replace(/[\s\u200B-\u200D\uFEFF*"'“”‘’«»]/gu,'');
+        }
+        function renderBiotaSummary() {
+            let total=0,delivered=0,remaining=0,open=0;
+            for(const record of appData.biota) {
+                const qty=Math.max(0,numberValue(record.qty)||0),done=Math.max(0,numberValue(record.deliveredQty)||0),left=Math.max(0,qty-done);
+                total+=qty;delivered+=done;remaining+=left;if(left>0)open++;
+            }
+            for(const [id,value] of Object.entries({biotaTotalQty:total,biotaDeliveredQty:delivered,biotaRemainingQty:remaining,biotaRecordCount:appData.biota.length}))document.getElementById(id).textContent=formatQty(value);
+            document.getElementById('biotaOpenCount').textContent=formatQty(open)+' açık kalem';
+        }
+        function renderBiota() {
             const tb = document.getElementById('tbodyBiota'); 
             if(!tb) return; 
-            const searchTerm = (document.getElementById('searchBiota')?.value || '').toLocaleLowerCase('tr-TR');
+            renderBiotaSummary();
+            const searchTerm = normalizeBiotaSearch(document.getElementById('searchBiota')?.value);
             
             tb.innerHTML = appData.biota.filter(x => 
-                [x.materialNo,x.materialDesc,x.orderNo].some(value=>String(value??'').toLocaleLowerCase('tr-TR').includes(searchTerm))
+                [x.materialNo,x.materialDesc,x.orderNo].some(value=>normalizeBiotaSearch(value).includes(searchTerm))
             ).map(x => { 
                 const t = numberValue(x.qty) || 0, d = numberValue(x.deliveredQty) || 0, r = t - d; 
                 const isChecked = selectedItems.biota.includes(x.id) ? 'checked' : '';
@@ -1418,7 +1448,7 @@
 
         async function copyBiotaMail() { 
             if(editedBiotaOrders.length === 0) return alert("Düzenlenen sipariş yok.");
-            const t = `Merhaba Müge Hanım,\n\nDüzenlenen sipariş numaraları;\n${editedBiotaOrders.join('\n')}\n\nTeşekkürler.`; 
+            const t = `Merhaba Bilge Hanım,\n\nDüzenlenen sipariş numaraları;\n${editedBiotaOrders.join('\n')}\n\nTeşekkürler.`;
             try {await navigator.clipboard.writeText(t);alert('Kopyalandı!');editedBiotaOrders=[];}
             catch(error) {reportError('Panoya kopyalanamadı. HTTPS üzerinden açıp tekrar deneyin. Düzenlenen sipariş listesi korundu.');} 
         }
@@ -1447,7 +1477,7 @@
         async function delItem(m,id) {
             if(m==='proposals') return archiveQuote(id,true);
             if(m==='intel') return openIntelArchive(id);
-            if(m==='finance') return reportError('Aylık kayıtları ay düzenleme ekranından değiştir; eski belgeler burada silinmez.'); 
+            if(m==='finance') return reportError('Aylık kayıtları düzenlemek için ay düzenleme ekranını, tamamen silmek için “Ayın kayıtlarını sil” düğmesini kullan.'); 
             if(confirm('Silmek istediğinize emin misiniz?')){
                 if (!currentUser) return reportError('Silmek için önce oturum açın.');
                 try {
@@ -1996,6 +2026,7 @@
         function financeSectionHtml(model,key){const info=FIN_SECTIONS[key],total=financeSectionTotal(model,key),rows=model.sections[key]||[];return `<section class="finance-section"><h4>${info.label}</h4><p>${info.help}</p>${model.zero?.[key]?'<p>Bu bölümde tutar olmadığı 0 olarak kaydedilmiş.</p>':rows.length?rows.map(row=>`<div class="finance-data-row"><div>${escapeHtml(row.name)}${key==='incomes'&&row.name!==FIN_INCOME_TYPES[row.incomeType]?`<small>${escapeHtml(FIN_INCOME_TYPES[row.incomeType]||'Diğer gelir')}</small>`:''}${key==='assets'?`<small>${escapeHtml(row.assetType||'Tür belirtilmedi')}${row.quantity!==null&&row.quantity!==undefined?' · '+escapeHtml(row.quantity)+' '+escapeHtml(row.unit||''):''}</small>`:''}</div><strong>${financeMoney(row.amount)}</strong></div>`).join(''):'<p class="quote-help">Kalem eklenmedi. Bu bilgi henüz girilmedi.</p>'}<div class="finance-section-total"><span>Bölüm toplamı</span><strong>${financeTotalText(total)}</strong></div></section>`;}
         function renderFinance(){if(!qEl('financeSummary'))return;const model=financeModel(currentFinMonth),comparison=qEl('financeCompareMonth').value,baseline=validFinanceMonth(comparison)?financeModel(comparison):{exists:false,verified:false,sections:{},zero:{}};
             qEl('finMonthPicker').value=currentFinMonth;qEl('financeEditButton').textContent=model.exists?'Ayı düzenle':'Ayı kaydet';
+            qEl('financeDeleteButton').hidden=!model.exists;
             qEl('financeMonthStatus').innerHTML=model.legacy?'<p class="quote-notice">Eski kayıtlar gösteriliyor. Borç ve yatırım tutarlarının yeni ay sonu tanımlarına uygunluğu henüz teyit edilmedi; karşılaştırmaya alınmaz. Düzenleyerek kontrol et.</p>':`<p class="finance-status"><strong>${financeMonthLabel(currentFinMonth)}</strong> · Ay sonu: ${formatDate(financeMonthEnd(currentFinMonth))} · ${!model.exists?'Henüz kaydedilmedi':financeComplete(model)?'Kayıt tamam':'Eksik bilgiler var / taslak'}${currentFinMonth>=localDateKey().slice(0,7)?' · Seçili ay henüz kapanmadı':''}</p>`;
             qEl('financeSummary').innerHTML=Object.entries(FIN_SECTIONS).map(([key,info])=>{const total=financeSectionTotal(model,key);let detail='';if(key==='incomes'){const meal=(model.sections.incomes||[]).filter(r=>r.incomeType==='meal');detail='<small>Yemek kartı: '+(model.zero?.incomes?financeMoney(0):meal.length&&meal.every(r=>r.amount!==null)?financeMoney(meal.reduce((sum,r)=>sum+r.amount,0)):'Girilmedi')+'</small>';}return `<section class="finance-metric"><small>${info.label}</small><strong class="${key==='cards'||key==='loans'?'finance-debt':''}">${financeTotalText(total)}</strong>${detail}<div class="finance-delta">${financeDelta(model,baseline,key)}</div></section>`;}).join('');
             qEl('financeSections').innerHTML=Object.keys(FIN_SECTIONS).map(key=>financeSectionHtml(model,key)).join('');qEl('financeMonthNotes').innerHTML='<h4>Aylık not</h4><p class="q-prewrap">'+escapeHtml(model.notes||'Bu aya ait not eklenmemiş.')+'</p>';
@@ -2012,24 +2043,42 @@
         function openFinanceEditor(){if(!validFinanceMonth(currentFinMonth)||currentFinMonth>localDateKey().slice(0,7))return reportError('Gelecekteki bir ay için ay sonu kaydı girilemez.');const model=financeModel(currentFinMonth),form=qEl('financeEditorForm');form.reset();clearFormErrors(form);financeEditor={month:currentFinMonth,version:model.version,uid:currentUser?.uid,token:crypto.randomUUID(),legacy:model.legacy,legacyIds:model.legacyIds||[]};qEl('financeEditorTitle').textContent=financeMonthLabel(currentFinMonth)+' · '+(model.exists?'Kaydı düzenle':'Yeni ay sonu kaydı');qEl('financeLegacyNotice').hidden=!model.legacy;qEl('financeLegacyConfirm').checked=false;qEl('financeNotes').value=model.notes||'';renderFinanceEditorSections(model);
             const months=[...new Set(appData.finance.map(r=>r.month).filter(m=>validFinanceMonth(m)&&m!==currentFinMonth))].sort().reverse(),previous=previousFinanceMonth(currentFinMonth);qEl('financeCopyMonth').innerHTML='<option value="">Ay seçin</option>'+months.map(month=>`<option value="${month}" ${month===previous?'selected':''}>${financeMonthLabel(month)}</option>`).join('');qEl('financeCopyToolbar').hidden=!months.length;openQuoteOverlay('financeEditorModal');}
         function copyFinanceLabels(){if(!financeEditor)return;const source=qEl('financeCopyMonth').value;if(!validFinanceMonth(source))return showFormError(qEl('financeEditorForm'),new Error('Kalemleri kopyalamak için bir ay seç.'));if(!confirm('Formdaki kalemler seçili ayın isimleriyle değiştirilecek; tutar ve miktarlar boş olacak. Devam edilsin mi?'))return;const from=financeModel(source),sections={};for(const key of Object.keys(FIN_SECTIONS))sections[key]=from.sections[key].map(row=>({...row,id:crypto.randomUUID(),amount:null,...(key==='assets'?{quantity:null}:{})}));renderFinanceEditorSections({sections,zero:{}});}
+        async function deleteFinanceMonth() {
+            const button=qEl('financeDeleteButton');
+            if(button.disabled)return;
+            if(!currentUser || !validFinanceMonth(currentFinMonth))return reportError('Silmek için oturum açıp geçerli bir kayıt ayı seç.');
+            const owner=currentUser.uid,month=currentFinMonth,collection=userCollection('finance');
+            button.disabled=true;
+            try {
+                const snapshot=await collection.where('month','==',month).get({source:'server'});
+                if(currentUser?.uid!==owner || currentFinMonth!==month)throw new Error('Hesap veya seçili ay değişti. Silme işlemini yeniden başlat.');
+                const records=[];
+                snapshot.forEach(doc=>records.push({ref:collection.doc(doc.id),data:doc.data()}));
+                if(!records.length) {appData.finance=appData.finance.filter(record=>record.month!==month);renderFinance();return reportError('Bu ayın sunucuda silinecek kaydı yok.');}
+                if(records.length>450)throw new Error('Bu ayda tek işlem sınırından fazla belge var. Hiçbir kayıt silinmedi.');
+                if(!confirm(financeMonthLabel(month)+' ayına ait '+records.length+' kayıt tamamen silinsin mi?\n\nBu ayın gelirleri, kart ve diğer borçları, birikimleri, eski kayıtları ve düzenleme geçmişi kalıcı olarak silinir. Diğer aylara dokunulmaz. Bu işlem geri alınamaz.'))return;
+                await runUserTransaction(owner,async tx=>{
+                    const expected=new Map(records.map(record=>[record.ref.path,recordFingerprint(record.data)]));
+                    const refs=records.map(record=>record.ref),canonical=collection.doc(financeDocId(month));
+                    if(!expected.has(canonical.path))refs.push(canonical);
+                    for(const ref of refs) {
+                        const snap=await tx.get(ref);
+                        if(expected.has(ref.path)) {
+                            if(!snap.exists || snap.data().month!==month || recordFingerprint(snap.data())!==expected.get(ref.path))throw new Error('Bu ay başka bir işlemle değişti. Hiçbir kayıt silinmedi; güncel ayı kontrol edip yeniden dene.');
+                        } else if(snap.exists)throw new Error('Bu ay için yeni bir kayıt oluşturulmuş. Silmeyi yeniden başlat.');
+                    }
+                    for(const record of records)tx.delete(record.ref);
+                });
+                if(currentUser?.uid===owner) {
+                    const removed=new Set(records.map(record=>record.ref.id));
+                    appData.finance=appData.finance.filter(record=>!removed.has(record.id));
+                    if(financeEditor?.month===month) {closeModal('financeEditorModal');financeEditor=null;qEl('financeEditorForm').reset();qEl('financeEditorSections').textContent='';qEl('financeEditorPreview').textContent='';}
+                    closeModal('financeHistoryModal');qEl('financeHistoryContent').textContent='';
+                    renderFinance();
+                }
+            } catch(error) {if(currentUser?.uid===owner)reportError('Aylık kayıtlar silinemedi: '+error.message);}
+            finally {button.disabled=false;}
+        }
         function financeSnapshot(record){return {month:record.month,sections:structuredClone(record.sections),zero:{...record.zero},notes:record.notes||''};}
         function financeAssertSize(record){if(new TextEncoder().encode(JSON.stringify(record)).length>750000)throw new Error('Bu ayın kayıt geçmişi büyüdü. Veri yedeği al; geçmiş kendiliğinden silinmez.');}
-        async function saveFinanceMonth(event){event.preventDefault();const form=qEl('financeEditorForm'),button=form.querySelector('[type=submit]');if(button.disabled)return;clearFormErrors(form);button.disabled=true;try{if(!currentUser||financeEditor?.uid!==currentUser.uid)throw new Error('Oturum değişti. Ay kaydını yeniden aç.');if(financeEditor.legacy&&!qEl('financeLegacyConfirm').checked)throw new Error('Eski tutarların yeni ay sonu tanımlarını kontrol edip onay kutusunu işaretle.');const draft=readFinanceEditor(true),month=financeEditor.month,expected=financeEditor.version,owner=currentUser.uid,token=financeEditor.token,legacyIds=[...financeEditor.legacyIds],ref=userCollection('finance').doc(financeDocId(month)),now=new Date().toISOString(),reason=qEl('financeChangeNote').value.trim();if(!validFinanceMonth(month)||month>localDateKey().slice(0,7))throw new Error('Geçerli bir geçmiş ay veya mevcut ay seç.');for(const key of Object.keys(FIN_SECTIONS)){const total=financeSectionTotal(draft,key);if(!Number.isSafeInteger(draft.sections[key].reduce((sum,row)=>sum+(row.amount===null?0:Math.round(row.amount*100)),0)))throw new Error('Tutar toplamı hesaplama sınırını aşıyor.');}
-                const saved=await runUserTransaction(owner,async tx=>{const snap=await tx.get(ref),previous=snap.exists?snap.data():null;if(previous&&previous.financeSchema!==2)throw new Error('Bu ayın kayıt kimliği başka bir kayıtla çakışıyor.');if((Number(previous?.version)||0)!==expected||!previous&&expected>0)throw new Error('Bu ay başka bir cihazda değişti. Formu kapatıp güncel kaydı yeniden aç.');const record={financeSchema:2,month,...draft,version:expected+1,definition:'month-end-total-balances',currency:'TL',verified:true,legacyIds:previous?.legacyIds||legacyIds,createdISO:previous?.createdISO||now,updatedISO:now,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};const history=[...(previous?.history||[])];history.push({version:record.version,at:now,by:owner,note:reason||(previous?'Aylık kayıt güncellendi':legacyIds.length?'Eski tutarlar kontrol edilerek aylık arşive alındı':'İlk ay sonu kaydı'),snapshot:financeSnapshot(record)});record.history=history;financeAssertSize(record);tx.set(ref,record);return record;});
-                if(currentUser?.uid===owner){const row={...saved,id:financeDocId(month)},index=appData.finance.findIndex(r=>r.id===row.id);if(index<0)appData.finance.push(row);else appData.finance[index]=row;if(financeEditor?.token===token){closeModal('financeEditorModal');financeEditor=null;}renderFinance();}
-            }catch(error){showFormError(form,error);}finally{button.disabled=false;}}
-        function openFinanceHistory(){const model=financeModel(currentFinMonth);qEl('financeHistoryTitle').textContent=financeMonthLabel(currentFinMonth)+' · Düzenleme geçmişi';qEl('financeHistoryContent').innerHTML=model.history.length?[...model.history].reverse().map(h=>`<details class="finance-revision"><summary>Sürüm ${Number(h.version)} · ${escapeHtml(new Date(h.at).toLocaleString('tr-TR'))}</summary><p class="quote-help">${escapeHtml(h.note)}</p><div class="finance-sections">${Object.keys(FIN_SECTIONS).map(key=>financeSectionHtml(h.snapshot,key)).join('')}</div><p class="q-prewrap">${escapeHtml(h.snapshot.notes||'')}</p></details>`).join(''):'<p class="quote-help">Bu ay için yeni arşivde düzenleme geçmişi yok. Eski kayıtlar silinmez; ilk kaydetmede yeni sürüm oluşur.</p>';openQuoteOverlay('financeHistoryModal');}
-        function financeExportRows(model){const rows=[];for(const [key,info]of Object.entries(FIN_SECTIONS)){if(model.zero?.[key])rows.push({Ay:model.month,Bölüm:info.label,Kalem:'Bu bölümde tutar yok',Tür:'',Miktar:'',Birim:'','Tutar (TL)':0,Durum:'Sıfır olarak kaydedildi'});else if(!model.sections[key].length)rows.push({Ay:model.month,Bölüm:info.label,Kalem:'Girilmedi','Tutar (TL)':'',Durum:'Eksik'});else model.sections[key].forEach(row=>rows.push({Ay:model.month,Bölüm:info.label,Kalem:row.name,Tür:key==='incomes'?FIN_INCOME_TYPES[row.incomeType]||'Diğer gelir':row.assetType||'',Miktar:row.quantity??'',Birim:row.unit||'','Tutar (TL)':row.amount??'',Durum:row.amount===null?'Eksik':'Girildi'}));}return rows;}
-        function exportFinanceExcel(){const model=financeModel(currentFinMonth);if(!model.exists)return reportError('Bu ay için kayıt yok.');exportExcel('Finans_'+currentFinMonth,financeExportRows(model).map(row=>({...row,'Tanım teyidi':model.verified?'Ay sonu tanımı onaylı':'Eski kayıt — kontrol gerekli','Aylık not':model.notes||''})));}
-        function exportFinanceBackup(){const rows=appData.finance.filter(r=>r.month===currentFinMonth);if(!rows.length)return reportError('Bu ay için kayıt yok.');downloadQuoteBlob(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),month:currentFinMonth,records:rows},null,2)],{type:'application/json'}),'Finans_'+currentFinMonth+'.json');}
-        async function exportFinancePDF(){const model=financeModel(currentFinMonth);if(!model.exists)return reportError('Bu ay için kayıt yok.');const owner=currentUser?.uid,month=currentFinMonth,font=await getPdfFont();if(owner!==currentUser?.uid||month!==currentFinMonth)return;if(!font)return reportError('PDF yazı tipi yüklenemedi. Bağlantını kontrol edip yeniden dene.');try{const {jsPDF}=window.jspdf,doc=new jsPDF();doc.addFileToVFS('Roboto-Regular.ttf',font);doc.addFont('Roboto-Regular.ttf','Roboto','normal');doc.setFont('Roboto');doc.setFontSize(16);doc.text('Aylık Finans Arşivi',14,18);doc.setFontSize(10);doc.text(financeMonthLabel(model.month)+' · Ay sonu: '+formatDate(financeMonthEnd(model.month)),14,27);doc.text(model.verified?'Gelir aylıktır; borç ve birikimler ay sonu toplamlarıdır.':'ESKİ KAYIT: Ay sonu tanımları henüz teyit edilmedi.',14,34);doc.autoTable({head:[['Bölüm','Kalem / Tür','Miktar','Tutar (TL)']],body:financeExportRows(model).map(row=>[row.Bölüm,row.Kalem+(row.Tür?' / '+row.Tür:''),[row.Miktar??'',row.Birim||''].join(' '),row['Tutar (TL)']===''?'Girilmedi':financeMoney(row['Tutar (TL)'])]),startY:40,styles:{font:'Roboto',fontStyle:'normal',fontSize:9},headStyles:{fontStyle:'normal'}});if(model.notes){doc.autoTable({head:[['Aylık not']],body:[[model.notes]],startY:doc.lastAutoTable.finalY+8,styles:{font:'Roboto',fontStyle:'normal',fontSize:9},headStyles:{fontStyle:'normal'}});}doc.save('Finans_'+model.month+'.pdf');}catch(error){reportError('PDF oluşturulamadı: '+error.message);}}
-        function initFinance(){resetFinanceWorkspace();qEl('finMonthPicker').max=localDateKey().slice(0,7);qEl('financeCompareMonth').max=localDateKey().slice(0,7);renderFinance();}
-
-        initDesign();
-        initQuotes();
-        initIntel();
-        initFinance();
-
-    </script>
-</body>
-</html>
+        async function saveFinanceMonth(event){event.preventDefault();const form=qEl('financeEditorForm'),button=form.querySelector('[type=submit]');if(button.disabled)return;clearFormErrors(form);button.disabled=true;try{if(!currentUser||financeEditor?.uid!==currentUser.uid)throw new Error('Oturum değişti. Ay kaydını yeniden aç.');if(financeEditor.legacy&&!qEl('financeLegacyConfirm').checked)throw new Error('Eski tutarların yeni ay sonu tanımlarını kontrol edip onay kutusunu işaretle.');const draft=readFinanceEditor(true),month=financeEditor.month,exp
