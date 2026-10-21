@@ -686,7 +686,7 @@
             }
             if(['orders','biota'].includes(mod) && !(numberValue(mod==='biota'?obj.qty:obj.totalQty)>0)) throw fieldError('Miktar sıfırdan büyük olmalıdır.',mod==='biota'?'qty':'totalQty');
             const total=mod==='biota'?obj.qty:obj.totalQty;
-            if (total!=null && Number(obj.deliveredQty||0)+Number(obj.newDelivered||0)>total) throw new Error('Teslim edilen miktar sipariş miktarını aşamaz.');
+            if (mod!=='biota' && total!=null && Number(obj.deliveredQty||0)+Number(obj.newDelivered||0)>total) throw new Error('Teslim edilen miktar sipariş miktarını aşamaz.');
             for (const key of ['deadline','orderDate','startDate','endDate','recordDate','availableDate']) {
                 if (obj[key] && !parseLocalDate(obj[key])) throw fieldError('Geçerli bir tarih girin.',key);
             }
@@ -1128,7 +1128,7 @@
                 'Tarih': item.date || '',
                 'Sipariş Adedi': numberValue(item.qty) || 0,
                 'Teslim Edilen': numberValue(item.deliveredQty) || 0,
-                'Kalan': Math.max(0, (numberValue(item.qty)||0) - (numberValue(item.deliveredQty)||0))
+                'Kalan': (numberValue(item.qty)||0) - (numberValue(item.deliveredQty)||0)
             }));
             const sheet = XLSX.utils.json_to_sheet(rows);
             const workbook = XLSX.utils.book_new();
@@ -1210,7 +1210,7 @@
         function renderBiotaSummary() {
             let total=0,delivered=0,remaining=0,open=0;
             for(const record of appData.biota) {
-                const qty=Math.max(0,numberValue(record.qty)||0),done=Math.max(0,numberValue(record.deliveredQty)||0),left=Math.max(0,qty-done);
+                const qty=Math.max(0,numberValue(record.qty)||0),done=Math.max(0,numberValue(record.deliveredQty)||0),left=qty-done;
                 total+=qty;delivered+=done;remaining+=left;if(left>0)open++;
             }
             for(const [id,value] of Object.entries({biotaTotalQty:total,biotaDeliveredQty:delivered,biotaRemainingQty:remaining,biotaRecordCount:appData.biota.length}))document.getElementById(id).textContent=formatQty(value);
@@ -1234,7 +1234,7 @@
                     <td class="p-3 text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title="${escapeHtml(x.materialDesc)}">${escapeHtml(x.materialDesc)}</td>
                     <td class="p-3 text-xs">${escapeHtml(x.date)}</td>
                     <td class="p-3 font-medium">${t}</td>
-                    <td class="p-3 font-bold ${r<=0 ? 'text-emerald-500' : 'text-amber-500'}">${r<=0 ? 'Bitti' : r}</td>
+                    <td class="p-3 font-bold ${r<0 ? 'text-red-500' : r===0 ? 'text-emerald-500' : 'text-amber-500'}">${r===0 ? 'Bitti' : formatQty(r)}</td>
                     <td class="p-3"><button onclick="openModal('biotaModal', '${inlineId(x.id)}', 'biota')" class="text-slate-400 hover:text-blue-500 hover:bg-blue-50 p-1.5 rounded transition"><i class="fas fa-pen"></i></button></td>
                 </tr>`;
             }).join(''); 
